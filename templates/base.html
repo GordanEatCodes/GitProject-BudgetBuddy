@@ -1,12 +1,348 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel = "stylesheet" href ="style.css">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Budget Buddy</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Budget Buddy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&display=swap" rel="stylesheet" />
+
+
+  <!-- <THIS IS THE MY HEADER FOR CSS EDITION>  -->
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;  
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* ── Shared header base ── */
+    header {
+      background: #ffffff;
+      width: 100%;
+      position: relative;
+    }
+
+
+    /* ── Desktop header (≥ 1280px) ── */
+    .header-desktop {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 64px;
+    }
+
+    .logo-primary-desktop {
+      display: block;
+      cursor: pointer;
+      height: 82px;
+      width: 215px;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+
+    .nav-desktop {
+      display: flex;
+      gap: 40px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    /* ── Logo images ── */
+    .logo-primary-mobile img,
+    .logo-primary-desktop img,
+    .logo-secondary-mobile img,
+    .logo-secondary-desktop img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+      max-width: none;
+    }
+
+    /* ── Nav links shared ── */
+    .nav-mobile a,
+    .nav-desktop a,
+    .nav-mobile span,
+    .nav-desktop span {
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      font-style: normal;
+      font-size: 16px;
+      letter-spacing: -0.08px;
+      color: #000000;
+      text-transform: capitalize;
+      text-align: center;
+      white-space: nowrap;
+      line-height: 1.45;
+      text-decoration: none;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* ── Responsive visibility ── */
+    .header-mobile  { display: flex; }
+    .header-desktop { display: none; }
+
+    @media (min-width: 1280px) {
+      .header-mobile  { display: none; }
+      .header-desktop { display: flex; }
+    }
+  </style>
+
+  <!-- <END OF HEADER CSS EDITION>  -->
+
+
+  <!-- <THIS IS THE HEADER HTML EDITION> -->
 </head>
 <body>
 
+  <header class="header-desktop" data-name="Header 1">
+
+    <a class="logo-primary-desktop" href="home.html" target="_self" data-name="Logologo">
+      <img alt="Logo" src="LOGO.png" />
+    </a>
+
+    <nav class="nav-desktop" data-name="Nav">
+      <span>login</span>
+      <span>Get started</span>
+    </nav>
+
+  </header>
+
+    <!-- <END OF HEADER HTML EDITION>  -->
+
+    <!-- <THIS IS THE FOOTER CSS EDITION>  -->
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+ 
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+ 
+    /* ── Shared ── */
+    footer {
+      background-color: #ffefdb;
+      width: 100%;
+      position: relative;
+    }
+ 
+    .col-header {
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 16px;
+      color: #000;
+      letter-spacing: -0.08px;
+      white-space: nowrap;
+      line-height: 1.45;
+    }
+ 
+    .col-link {
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      font-size: 16px;
+      color: rgba(0, 0, 0, 0.55);
+      letter-spacing: -0.08px;
+      line-height: 1.45;
+      cursor: pointer;
+      text-decoration: none;
+      display: block;
+    }
+ 
+    .col-link:hover {
+      color: rgba(0, 0, 0, 0.8);
+    }
+ 
+    /* ── SVG social icons ── */
+    .social-btn {
+      display: block;
+      position: relative;
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+    }
+ 
+    .social-btn svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+ 
+    .footer-desktop {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 0 64px 120px;
+    }
+ 
+    .container-desktop {
+      position: relative;
+      display: flex;
+      gap: 120px;
+      align-items: flex-start;
+      padding: 80px 0;
+      flex: 1 0 0;
+      min-width: 0;
+    }
+ 
+    .container-desktop::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
+      pointer-events: none;
+    }
+ 
+    /* Content block – desktop */
+    .content-desktop {
+      display: flex;
+      flex-direction: column;
+      gap: 56px;
+      align-items: flex-start;
+      flex: 1 0 0;
+      min-width: 0;
+    }
+ 
+    .text-desktop {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: flex-start;
+      width: 100%;
+    }
+ 
+    .company-desktop {
+      display: flex;
+      align-items: center;
+      width: 100px;
+      overflow: visible;
+    }
+ 
+    .company-name-desktop {
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 24px;
+      color: #000;
+      letter-spacing: -0.48px;
+      text-align: left;
+      line-height: 1.10;
+      width: 182px;
+    }
+
+    .company-logo {
+      width: 50%;
+      height: 50%;
+      max-width: none;
+      margin-right: 10px;
+    }
+
+    .tagline {
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      font-size: 16px;
+      color: rgba(0, 0, 0, 0.55);
+      letter-spacing: -0.08px;
+      line-height: 1.45;
+      text-align: left;
+    } 
+ 
+    .social-links-desktop {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+      cursor: pointer;
+    }
+ 
+    /* Nav columns – desktop */
+    .nav-desktop {
+      display: flex;
+      gap: 40px;
+      align-items: flex-start;
+      flex-shrink: 0;
+    }
+ 
+    .col-desktop {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: flex-start;
+      justify-content: center;
+      width: 130px;
+    }
+ 
+    .col-header-desktop {
+      padding-bottom: 16px;
+    }
+ 
+    /* ── Responsive toggle ── */
+    @media (min-width: 1280px) {
+      .footer-mobile  { display: none; }
+      .footer-desktop { display: flex; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- THE END OF THE CSS FOOTER-->
+ 
+  <!-- THIS IT THE FOOTER HTML EDITION -->
+
+  <footer class="footer-desktop" data-name="Footer 2">
+    <div class="container-desktop" data-name="Container">
+ 
+      <!-- Content -->
+      <div class="content-desktop" data-name="Content">
+        <div class="text-desktop" data-name="Text">
+          <div class="company-desktop" data-name="Company">
+              <img class="company-logo" alt="Logo" src="NoLogopic.png" />
+            <span class="company-name-desktop">Budget Buddy</span>
+          </div>
+          <p class="tagline">
+            <br>A centralized platform for university students
+            <br> to find housing and connect with roommates.</p>
+        </div>
+ 
+          <!-- Social media links -->
+         
+        </nav>
+      </div>
+ 
+      <!-- Nav -->
+      <div class="nav-desktop" data-name="Nav">
+ 
+
+        <!-- Learn more -->
+          <a class="col-link" href="about_us.html">About Us</a>
+        </nav>
+
+        <!-- Support -->
+          <a class="col-link" href="contact_us.html">Contact Us</a> 
+        </nav>
+ 
+      </div>
+    </div>
+  </footer>
 </body>
 </html>
+<!-- <END OF FOOTER HTML EDITION>  -->
+
