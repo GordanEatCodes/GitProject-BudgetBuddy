@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Budget Buddy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* ── Page layout ── */
+    .page-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    /* ════════════════════════════
+       HEADER
+    ════════════════════════════ */
+    header {
+      flex-shrink: 0;
+      background: #ffffff;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 64px;
+    }
+
+    .logo-wrap {
+      display: block;
+      cursor: pointer;
+      height: 82px;
+      width: 215px;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .logo-wrap img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      pointer-events: none;
+    }
+
+    nav.main-nav {
+      display: flex;
+      gap: 40px;
+      align-items: center;
+    }
+
+    nav.main-nav a {
+      font-weight: 500;
+      font-size: 16px;
+      letter-spacing: -0.08px;
+      color: #000;
+      text-decoration: none;
+      white-space: nowrap;
+      line-height: 1.45;
+    }
+
+    nav.main-nav a:hover {
+      opacity: 0.6;
+    }
+
+    /* ════════════════════════════
+       HERO
+    ════════════════════════════ */
+    .hero {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      align-items: stretch;
+      width: 100%;
+    }
+
+    .hero-content {
+      flex: 1 0 0;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 60px 64px;
+      gap: 32px;
+    }
+
+    .text-block {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .headline {
+      font-weight: 700;
+      font-size: 56px;
+      color: #000;
+      letter-spacing: -1.12px;
+      line-height: 1.1;
+    }
+
+    .subheadline {
+      font-weight: 500;
+      font-size: 24px;
+      color: rgba(0, 0, 0, 0.55);
+      letter-spacing: -0.12px;
+      line-height: 1.45;
+    }
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .btn-primary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      font-size: 18px;
+      letter-spacing: -0.09px;
+      white-space: nowrap;
+      padding: 12px 16px;
+      border: none;
+      border-radius: 12px;
+      width: 195px;
+      cursor: pointer;
+      line-height: 1.45;
+    }
+
+    .btn-primary:hover { background: #222; }
+
+    .btn-secondary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      color: #000;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      font-size: 18px;
+      letter-spacing: -0.09px;
+      white-space: nowrap;
+      padding: 12px 16px;
+      border: 2px solid rgba(0, 0, 0, 0.15);
+      border-radius: 12px;
+      cursor: pointer;
+      line-height: 1.45;
+    }
+
+    .btn-secondary:hover { border-color: rgba(0, 0, 0, 0.35); }
+
+    .hero-image {
+      flex: 1 0 0;
+      min-width: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-image img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+    }
+
+    /* ════════════════════════════
+       FOOTER
+    ════════════════════════════ */
+    footer {
+      flex-shrink: 0;
+      background-color: #ffefdb;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 64px;
+    }
+
+    .footer-inner {
+      display: flex;
+      gap: 120px;
+      align-items: flex-start;
+      width: 100%;
+      padding-top: 32px;
+    }
+
+    .footer-brand {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1 0 0;
+      min-width: 0;
+    }
+
+    .footer-brand-name {
+      font-weight: 600;
+      font-size: 20px;
+      color: #000;
+      letter-spacing: -0.4px;
+      line-height: 1.45;
+    }
+
+    .footer-tagline {
+      font-weight: 500;
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.55);
+      letter-spacing: -0.08px;
+      line-height: 1.45;
+    }
+
+    .footer-nav {
+      display: flex;
+      gap: 64px;
+      align-items: flex-start;
+      flex-shrink: 0;
+    }
+
+    .footer-col {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .footer-col-header {
+      font-weight: 600;
+      font-size: 14px;
+      color: #000;
+      letter-spacing: -0.08px;
+      line-height: 1.45;
+      margin-bottom: 4px;
+    }
+
+    .col-link {
+      font-weight: 500;
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.55);
+      letter-spacing: -0.08px;
+      line-height: 1.45;
+      text-decoration: none;
+      display: block;
+    }
+
+    .col-link:hover { color: rgba(0, 0, 0, 0.8); }
+  </style>
+</head>
+<body>
+
+  <div class="page-wrapper">
+
+    <!-- ══ HEADER ══ -->
+    <header>
+      <a class="logo-wrap" href="home.html" data-name="Logo">
+        <img alt="Budget Buddy Logo" src="LOGO.png" />
+      </a>
+      <nav class="main-nav">
+        <a href="user/login.html">Login</a>
+        <a href="user/register.html">Register</a>
+      </nav>
+    </header>
+
+    <!-- ══ HERO ══ -->
+    <section class="hero">
+      <div class="hero-content">
+        <div class="text-block">
+          <h1 class="headline">Enter the world<br>where finding<br>roommates and <br>housing is easy</h1>
+          <p class="subheadline">A centralized platform for university students<br>to find housing and connect with roommates.</p>
+        </div>
+        <div class="buttons">
+          <button class="btn-primary">RENT HOUSE</button>
+          <button class="btn-secondary">FIND ROOMMATES</button>
+        </div>
+      </div>
+
+      <div class="hero-image" aria-hidden="true">
+        <img alt="" src="https://via.placeholder.com/800x600?text=Hero+Image" />
+      </div>
+    </section>
+
+    <!-- ══ FOOTER ══ -->
+    <footer>
+      <div class="footer-inner">
+
+        <div class="footer-brand">
+          <span class="footer-brand-name">Budget Buddy</span>
+          <p class="footer-tagline">A centralized platform for university students<br>to find housing and connect with roommates.</p>
+        </div>
+
+        <nav class="footer-nav">
+          <div class="footer-col">
+            <span class="footer-col-header">Company</span>
+            <a class="col-link" href="about_us.html">About Us</a>
+            <a class="col-link" href="contact_us.html">Contact Us</a>
+          </div>
+          <div class="footer-col">
+            <span class="footer-col-header">Features</span>
+            <a class="col-link" href="#">Rent House</a>
+            <a class="col-link" href="#">Find Roommates</a>
+          </div>
+        </nav>
+
+      </div>
+    </footer>
+
+  </div>
+
+</body>
+</html>
