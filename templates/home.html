@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Budget Buddy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet" />
+  
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+</head>
+<body>
+ 
+  <div class="page-wrapper">
+ 
+    <!-- ══ HEADER ══ -->
+    <header>
+      <a class="logo-wrap" href="/" data-name="Logo">
+        <img alt="Budget Buddy Logo" src="{% static 'images/LOGO.png' %}" />
+      </a>
+      <nav class="main-nav">
+        <a href="{% url 'register'}">Register</a>
+        <a href="{% url 'login'}">Login</a>
+      </nav>
+    </header>
+ 
+    <!-- ══ HERO ══ -->
+    <section class="hero">
+      <div class="hero-content">
+        <div class="text-block">
+          <h1 class="headline">Enter the world<br>where finding<br>roommates and house is easy</h1>
+          <p class="subheadline">A centralized platform for university students<br>to find housing and connect with roommates.</p>
+        </div>
+        <div class="buttons">
+          <button class="btn-primary">RENT HOUSE</button>
+          <button class="btn-secondary">FIND ROOMMATES</button>
+        </div>
+      </div>
+ 
+      <div class="hero-image" aria-hidden="true">
+        <img alt="" src="https://via.placeholder.com/800x600?text=Hero+Image" />
+      </div>
+    </section>
+ 
+    <!-- ══ FOOTER ══ -->
+    <footer>
+      <div class="footer-inner">
+ 
+        <div class="footer-brand">
+          <span class="footer-brand-name">Budget Buddy</span>
+          <p class="footer-tagline">A centralized platform for university students<br>to find housing and connect with roommates.</p>
+        </div>
+ 
+        <nav class="footer-nav">
+          <div class="footer-col">
+            <span class="footer-col-header">Company</span>
+            <a class="col-link" href="/about/">About Us</a>
+            <a class="col-link" href="/contact/">Contact Us</a>
+          </div>
+          <div class="footer-col">
+            <span class="footer-col-header">Features</span>
+            <a class="col-link" href="#">Rent House</a>
+            <a class="col-link" href="#">Find Roommates</a>
+          </div>
+        </nav>
+ 
+      </div>
+    </footer>
+ 
+  </div>
+</body>
+</html>
