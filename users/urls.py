@@ -22,12 +22,7 @@ from . import views
 urlpatterns = [
     path('templates/home.html/', views.home, name='home'),
     path('register/', views.register_view, name='register'),
-    path('login/', views.home_view, name='login'),
-    path('logout/', views.home_view, name='logout'),
-    path('dashboard/', views.home_view, name='dashboard'),
-    path('profile/', views.home_view, name='profile'),
-    path('profile/edit/', views.home_view, name='edit_profile'),
-
+    path('dashboard_coordinator/', views.home_view, name='dashboard'),
     path('setup_role/', views.setup_role_view, name='setup_role'),
     path('setup_owner_method/', views.setup_owner_method_view, name='setup_owner_method'),
     path('setup_tenant_type/', views.setup_tenant_type_view, name='setup_tenant_type'),
