@@ -2,23 +2,41 @@ from django.db import models
 from django.contrib.auth.models import User
 # Create your models here.
 
-class UserProfile(models.Model):
-    ROLE_CHOICES = [
-    ('owner', 'house owner'),
-    ('coordinator', 'main coordinator'),
-    ('tenant', 'primary tenant'),
+ROLE_CHOICES = [
+    ['owner', 'Owner'],
+    ['tenant', 'Tenant'],
+    ['coordinator', 'Coordinator'],
 ]
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+RENTAL_METHOD_CHOICES = [
+    ('direct', 'Direct Room Rental'),
+    ('coordinator', 'Whole Unit Rental through Coordinator'),
+]
+
+TENANT_TYPE_CHOICES = [
+    ('direct', 'Direct Tenant'),
+    ('matching', 'Matching Tenant System'),
+]
+
+class UserProfile(models.Model):
+    user = models. OneToOneField(User, on_delete=models.CASCADE)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
 
-    gender = models.CharField(max_length=10, blank=True, null=True)
+    rental_method = models.CharField(
+        max_length=20, 
+        choices=RENTAL_METHOD_CHOICES,
+        blank=True,
+    )
+
+    tenant_type = models.CharField(
+        max_length=20,
+        choices=TENANT_TYPE_CHOICES,
+        blank=True,
+    )
+
+    gender = models.CharField(max_length=20, blank=True)
     sleep_schedule = models.CharField(max_length=20, blank=True)
-    cleanliness = models.CharField(max_length=20, blank=True)
-    noise_tolerance = models.CharField(max_length=20, blank=True)
-    guest_frequency = models.CharField(max_length=20, blank=True)
-    smoking_preference = models.CharField(max_length=20, blank=True)
-    religion = models.CharField(max_length=20, blank=True)
+    cleanliness = models.IntegerField(default=3)
+    noise_tolerance = models.IntegerField(default=3)
+    religion = models.CharField(max_length=30, blank=True)
     study_habits = models.CharField(max_length=20, blank=True)
-
-
