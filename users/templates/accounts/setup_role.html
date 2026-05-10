@@ -1,14 +1,109 @@
-<DOCTYPE html>
+{% load static %}
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Setup Role - Budget Buddy</title>
-  {% csrf_token%}
-  {{ form.as_p }}
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="{% static 'css/setup_role.css' %}" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Choose your role</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{% static 'css/setup_role.css' %}"/>
 </head>
 <body>
+<div class="wrap">
+  <div class="brand">
+    <div class="brand-name">BudgetBuddy</div>
+  </div>
+
+  <div class="progress-dots">
+    <div class="dot done"></div>
+    <div class="dot active"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+  
+  <div class="step-label">STEP 2 OF 4 — YOUR ROLE</div>
+
+  <div class="page-title">How will you use BudgetBuddy?</div>
+  <div class="page-sub">Pick one — you can always contact us if you need to change it later.</div>
+
+  <!--
+    BACKEND WIRING:
+    POST /setup/role
+      req.body.role = 'tenant' or 'owner'
+      → UPDATE users SET role = $1 WHERE id = $2
+      → req.session.role = role
+      → res.redirect('/setup/profile')
+  -->
+  <form id="RoleSelectForm" action="{% url 'setup_role' %}" method="POST">
+    {% csrf_token %}
+
+    <div class="role-grid">
+      <label class="role-card tenant" id="tenantCard">
+        <input type="radio" name="role" value="tenant" id="tenantRadio"/>
+        <div class="check-badge" id="tenantCheck">✓</div>
+        <span class="role-icon">&#127968;</span>
+        <div class="role-name">Tenant</div>
+        <div class="role-desc">I'm looking for a place to rent</div>
+      </label>
+
+      <label class="role-card owner" id="ownerCard">
+        <input type="radio" name="role" value="owner" id="ownerRadio"/>
+        <div class="check-badge" id="ownerCheck">✓</div>
+        <span class="role-icon">&#127959;</span>
+        <div class="role-name">Owner</div>
+        <div class="role-desc">I'm renting out a property</div>
+      </label>
+    </div>
+
+    <!-- Dynamic feature preview based on selected role -->
+    <div class="features" id="featuresBox">
+      <div class="features-label">SELECT A ROLE TO SEE WHAT YOU GET</div>
+    </div>
+
+    <button type="submit" class="btn-primary" id="continueBtn" disabled>
+      Continue &rarr;
+    </button>
+  </form>
+</div>
+
+<script>
+  const tenantFeatures = [
+    'Browse and search rental listings',
+    'Get matched listings based on your preferences',
+    'Send booking requests to landlords',
+    'Track your application status',
+  ];
+  const ownerFeatures = [
+    'Create and manage your property listings',
+    'Receive and accept booking requests',
+    'See which tenants are a good match',
+    'Manage your bookings in one place',
+  ];
+
+  const form = document.getElementById('RoleSelectForm');
+  const featuresBox = document.getElementById('featuresBox');
+  const continueBtn = document.getElementById('continueBtn');
+  const radios = document.querySelectorAll('input[type="radio"]');
+
+  function renderFeatures(role) {
+    const list = role === 'tenant' ? tenantFeatures : ownerFeatures;
+    const color = role === 'tenant' ? 'var(--tenant-text)' : 'var(--owner-text)';
+    featuresBox.innerHTML = `
+      <div class="features-label" style="color:${color}">
+        ${role === 'tenant' ? 'AS A TENANT YOU CAN' : 'AS A OWNER YOU CAN'}
+      </div>
+      <ul class="feature-list">
+        ${list.map(f => `<li>${f}</li>`).join('')}
+      </ul>
+    `;
+  }
+
+  radios.forEach(radio => {
+    radio.addEventListener('change', () => {
+      continueBtn.disabled = false;
+      renderFeatures(radio.value);
+    });
+  });
+</script>
+</body>
+</html>

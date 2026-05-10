@@ -1,0 +1,116 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Set up your profile — BudgetBuddy</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{% static 'css/base.css' %}"/>
+  <link rel="stylesheet" href="{% static 'css/profile.css' %}"/>
+</head>
+<body>
+<div class="wrap">
+ 
+  <div class="brand">
+    <div class="brand-name">BudgetBuddy</div>
+  </div>
+ 
+  <div class="progress-dots">
+    <div class="dot done"></div>
+    <div class="dot done"></div>
+    <div class="dot active"></div>
+    <div class="dot"></div>
+  </div>
+
+    <div class="server-error" id="serverErr"></div>
+
+ 
+  <div class="card">
+    <div class="page-header">
+      <div class="page-title">Set up your profile</div>
+      <div class="page-sub">Helps owners and tenants know who they're dealing with. Editable anytime.</div>
+    </div>
+ 
+    <!--
+      POST /setup/profile  (multipart/form-data)
+      Django view: setup_profile_view
+      Saves: display_name, phone, state, bio, photo → UserProfile
+      Redirects: → setup_tenant_preferences (if tenant) or home (owner/coordinator)
+    -->
+    <form action="{% url 'setup_profile' %}" method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div class="field">
+        <label for="displayName">Username</label>
+        <input type="text" id="displayName" name="display_name"
+               placeholder="How should we call you?" autocomplete="nickname"/>
+        <div class="field-hint">Shown to other users — not your legal name</div>
+      </div>
+ 
+      <div class="field-row">
+        <div class="field" style="margin-bottom:0;">
+          <label for="phone_number">Phone <span class="opt">optional</span></label>
+          <input type="tel" id="phone_number" name="phone"
+                 placeholder="+60 12-345 6789" autocomplete="tel"/>
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label for="state">State</label>
+          <select id="state" name="state">
+            <option value="" disabled selected>Select state</option>
+            <option>Selangor</option>
+            <option>Kuala Lumpur</option>
+            <option>Johor</option>
+            <option>Penang</option>
+            <option>Perak</option>
+            <option>Kedah</option>
+            <option>Kelantan</option>
+            <option>Terengganu</option>
+            <option>Pahang</option>
+            <option>Negeri Sembilan</option>
+            <option>Melaka</option>
+            <option>Perlis</option>
+            <option>Sabah</option>
+            <option>Sarawak</option>
+            <option>Putrajaya</option>
+            <option>Labuan</option>
+          </select>
+        </div>
+      </div>
+ 
+      <div class="field" style="margin-top:18px;">
+        <label for="bio">Short bio <span class="opt">optional</span></label>
+        <textarea id="bio" name="bio"
+                  placeholder="Tell landlords or tenants a bit about yourself…"></textarea>
+      </div>
+ 
+      <button type="submit" class="btn-primary">Continue to preferences &rarr;</button>
+    </form>
+ 
+    <a href="{% url 'home' %}" class="skip-link">Skip for now</a>
+  </div>
+ 
+</div>
+<script>
+  const photoInput  = document.getElementById('photoInput');
+  const avatarImg   = document.getElementById('avatarImg');
+  const avatarInit  = document.getElementById('avatarInitials');
+  const displayName = document.getElementById('displayName');
+ 
+  photoInput.addEventListener('change', () => {
+    const file = photoInput.files[0];
+    if (!file) return;
+    avatarImg.src = URL.createObjectURL(file);
+    avatarImg.style.display = 'block';
+    avatarInit.style.display = 'none';
+  });
+ 
+  displayName.addEventListener('input', () => {
+    if (avatarImg.style.display === 'block') return;
+    const v = displayName.value.trim();
+    avatarInit.textContent = v.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || '?';
+  });
+</script>
+</body>
+</html>
+ 

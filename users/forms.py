@@ -4,11 +4,15 @@ from django.contrib.auth.models import User
 from .models import UserProfile
 
 class RegistrationForm(UserCreationForm):
+    fullname = forms.CharField(max_length=30, required=True)
     email = forms.EmailField(required=True)
+    password1 = forms.CharField(label='Password', widget=forms.PasswordInput, required=True, help_text=" Your password must be at least 8 characters long and contain a mix of letters and numbers.")
+    password2 = forms.CharField(label='Confirm Password', widget=forms.PasswordInput, required=True, help_text=" Enter the same password again. ")
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'password1', 'password2')
+        fields = ('fullname', 'email', 'password1', 'password2')
+        
 
     def save(self, commit=True):
         user = super().save(commit=False)
@@ -16,21 +20,35 @@ class RegistrationForm(UserCreationForm):
         if commit:
             user.save()
         return user
-
+    
 class RoleSelectForm(forms.ModelForm):
     class Meta:
         model = UserProfile
         fields = ['role']
 
-class OwnerMethodSelectForm(forms.ModelForm):
+class ProfileSetupForm(forms.ModelForm):
     class Meta:
         model = UserProfile
-        fields = ['rental_method']
-
-class TenantTypeSelectForm(forms.ModelForm):
-    class Meta:
-        model = UserProfile
-        fields = ['tenant_type']
+        fields = [
+            'display_name',
+            'phone_number',
+            'bio',
+            'state',
+        ]
+        widgets = {
+             'display_name': forms.TextInput(attrs={
+                'placeholder': 'How should we call you?',
+                'autocomplete': 'nickname',
+            }),
+            'phone_number': forms.TextInput(attrs={
+                'placeholder': '+60 12-345 6789',
+                'autocomplete': 'tel',
+            }),
+            'bio': forms.Textarea(attrs={
+                'placeholder': 'Tell owners or tenants a bit about yourself…',
+                'rows': 4,
+            }),
+        }
 
 class TenantPreferenceForm(forms.ModelForm):
     class Meta:
@@ -43,3 +61,7 @@ class TenantPreferenceForm(forms.ModelForm):
             'religion',
             'study_habits',
         ]
+
+class LoginForm(forms.Form):
+    username = forms.CharField(max_length=30, required=True)
+    password = forms.CharField(label='Password', widget=forms.PasswordInput, required=True)
