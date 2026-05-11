@@ -1,0 +1,11 @@
+<h1>Add Roommate Post</h1>
+
+<form method="POST">
+    {% csrf_token %}
+    <input name="title" placeholder="Title"><br>
+    <textarea name="description"></textarea><br>
+    <input name="location"><br>
+    <input name="budget"><br>
+    <input name="contact"><br>
+    <button type="submit">Submit</button>
+</form>
