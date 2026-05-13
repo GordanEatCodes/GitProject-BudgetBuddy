@@ -1,18 +1,32 @@
-<h1>Roommate Posts</h1>
+{% extends 'base.html' %}
 
-<a href="{% url 'add_roommate' %}">Add Roommate</a>
+{% block content %}
+
+<h2>Roommate Posts</h2>
 
 {% for post in posts %}
-    <div>
-        <h3>{{ post.title }}</h3>
+    <div class="card mb-3 p-3 shadow-sm">
+
+        <h4>{{ post.title }}</h4>
         <p>{{ post.description }}</p>
-        <p>Location: {{ post.location }}</p>
-        <p>Budget: {{ post.budget }}</p>
-        <p>Contact: {{ post.contact }}</p>
 
-        <a href="{% url 'delete_roommate' post.id %}">Delete</a>
-        <a href="{% url 'edit_roommate' post.id %}">Edit</a>
+        <small>
+            📍 {{ post.location }} | 💰 {{ post.budget }}
+        </small>
 
-        <hr>
+        <br>
+
+       <a href="{% url 'delete_roommate' post.id %}" class="btn btn-danger btn-sm">
+            Delete
+        </a>
+
+        <a href="/roommates/edit/{{ post.id }}/" class="btn btn-sm btn-warning">
+            Edit
+        </a>
+
     </div>
+{% empty %}
+    <p>No posts yet</p>
 {% endfor %}
+
+{% endblock %}

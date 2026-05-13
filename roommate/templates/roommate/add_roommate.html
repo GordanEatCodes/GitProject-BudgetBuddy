@@ -1,11 +1,35 @@
-<h1>Add Roommate Post</h1>
+{% extends 'base.html' %}
 
-<form method="POST">
+{% block content %}
+
+<h2>➕ Add Roommate</h2>
+
+<form method="POST" class="mt-3 p-4 border rounded shadow-sm bg-light">
     {% csrf_token %}
-    <input name="title" placeholder="Title"><br>
-    <textarea name="description"></textarea><br>
-    <input name="location"><br>
-    <input name="budget"><br>
-    <input name="contact"><br>
-    <button type="submit">Submit</button>
+
+    <input type="text" name="title" placeholder="Title"
+           class="form-control mb-2">
+
+    <textarea name="description" placeholder="Description"
+              class="form-control mb-2"></textarea>
+
+    <input type="text" name="location" placeholder="Location"
+           class="form-control mb-2">
+
+    <input type="number" name="budget" placeholder="Budget"
+           class="form-control mb-2">
+
+    <input type="text" name="contact" placeholder="Contact"
+           class="form-control mb-3">
+
+    <button type="submit" class="btn btn-success">
+        Save
+    </button>
+
+    <a href="/roommates/" class="btn btn-secondary">
+        Cancel
+    </a>
+
 </form>
+
+{% endblock %}
