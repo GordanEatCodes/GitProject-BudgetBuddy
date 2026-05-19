@@ -22,10 +22,11 @@ class UserProfile(models.Model):
     sleep_schedule = models.CharField(max_length=20, blank=True)
     cleanliness = models.IntegerField(default=3)
     noise_tolerance = models.IntegerField(default=3)
+    race = models.CharField(max_length=30, blank=True)
     religion = models.CharField(max_length=30, blank=True)
     study_habits = models.CharField(max_length=20, blank=True)
 
-    display_name   = models.CharField(max_length=60, blank=True)
+    Username       = models.CharField(max_length=60, blank=True)
     phone_number   = models.CharField(max_length=20, blank=True)
     state          = models.CharField(max_length=30, blank=True)
     bio            = models.TextField(blank=True)

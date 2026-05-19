@@ -20,21 +20,17 @@
     <div class="dot done"></div>
     <div class="dot done"></div>
     <div class="dot done "></div>
+    <div class="dot done"></div>
     <div class="dot active"></div>
   </div>
 
   <div class="card">
     <div class="page-header">
-      <div class="page-title">Your living preferences</div>
+      <div class="page-title">Your Living Preferences</div>
       <div class="page-sub">Help us match you with compatible roommates and listings.</div>
     </div>
 
-    <!--
-      POST /setup/tenant-preferences
-      Django view: setup_tenant_preferences_view
-      Form: TenantPreferenceForm → saves to UserProfile
-      Redirects: → home (dashboard)
-    -->
+
     <form action="{% url 'setup_tenant_preferences' %}" method="POST">
       {% csrf_token %}
 
@@ -44,8 +40,6 @@
         <div class="chip-group" id="chips-gender">
           <div class="chip" data-val="male"       onclick="pickChip(this,'gender')">Male</div>
           <div class="chip" data-val="female"     onclick="pickChip(this,'gender')">Female</div>
-          <div class="chip" data-val="non_binary" onclick="pickChip(this,'gender')">Non-binary</div>
-          <div class="chip" data-val="prefer_not" onclick="pickChip(this,'gender')">Prefer not to say</div>
         </div>
         <input type="hidden" name="gender" id="val-gender"/>
       </div>
@@ -54,8 +48,8 @@
       <div class="field">
         <label>Sleep schedule</label>
         <div class="chip-group" id="chips-sleep_schedule">
-          <div class="chip" data-val="early_bird" onclick="pickChip(this,'sleep_schedule')">🌅 Early bird</div>
-          <div class="chip" data-val="night_owl"  onclick="pickChip(this,'sleep_schedule')">🦉 Night owl</div>
+          <div class="chip" data-val="early" onclick="pickChip(this,'sleep_schedule')">🌅 Before 10pm</div>
+          <div class="chip" data-val="late_night"  onclick="pickChip(this,'sleep_schedule')">🦉 After 10pm</div>
           <div class="chip" data-val="flexible"   onclick="pickChip(this,'sleep_schedule')">😌 Flexible</div>
         </div>
         <input type="hidden" name="sleep_schedule" id="val-sleep_schedule"/>
@@ -89,11 +83,21 @@
         <input type="hidden" name="noise_tolerance" id="val-noise_tolerance" value="3"/>
       </div>
 
+      <!-- Race -->
+      <div class="field">
+        <label for="race">Race <span class="opt">optional</span></label>
+        <select name="race" id="race">
+          <option value="malay">Malay</option>
+          <option value="chinese">Chinese</option>
+          <option value="indian">Indian</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
       <!-- Religion -->
       <div class="field">
         <label for="religion">Religion <span class="opt">optional</span></label>
         <select name="religion" id="religion">
-          <option value="">Prefer not to say</option>
           <option value="islam">Islam</option>
           <option value="christianity">Christianity</option>
           <option value="buddhism">Buddhism</option>
@@ -104,7 +108,7 @@
 
       <!-- Study habits -->
       <div class="field">
-        <label>Study / work habits</label>
+        <label>Study habits</label>
         <div class="chip-group" id="chips-study_habits">
           <div class="chip" data-val="heavy"    onclick="pickChip(this,'study_habits')">📚 Heavy studier</div>
           <div class="chip" data-val="moderate" onclick="pickChip(this,'study_habits')">🙂 Moderate</div>
@@ -116,7 +120,7 @@
       <button type="submit" class="btn-primary">Done &rarr;</button>
     </form>
 
-    <a href="{% url 'setup_profile' %}" class="skip-link">← Back to profile</a>
+    <a href="{% url 'setup_profile' %}" class="role-link">← Back to profile</a>
   </div>
 
 </div>

@@ -15,17 +15,18 @@
     <div class="brand-tag">Define your budget, simplify your life</div>
   </div>
 
-  <!-- Progress indicator: step 1 of 4 -->
+  
   <div class="progress-dots">
     <div class="dot active"></div>
     <div class="dot"></div>
     <div class="dot"></div>
     <div class="dot"></div>
+    <div class="dot"></div>
   </div>
-  <div class="step-label">STEP 1 OF 4 — CREATE ACCOUNT</div>
+  <div class="step-label">STEP 1 OF 5 — CREATE ACCOUNT</div>
 
   <div class="card">
-    <div class="card-title">Create your account</div>
+    <div class="card-title">Create Your Account</div>
     <div class="card-sub">Takes about 2 minutes to set up</div>
 
     <div class="server-error" id="serverErr"></div>
@@ -74,7 +75,7 @@
   </div>
 
   <div class="link-row">
-    Already have an account? <a href="/login">Sign in</a>
+    Already have an account? <a href="{% url 'login' %}">Sign in</a>
   </div>
 </div>
 

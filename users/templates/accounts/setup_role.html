@@ -16,12 +16,13 @@
 
   <div class="progress-dots">
     <div class="dot done"></div>
+    <div class="dot done"></div>
     <div class="dot active"></div>
     <div class="dot"></div>
     <div class="dot"></div>
   </div>
   
-  <div class="step-label">STEP 2 OF 4 — YOUR ROLE</div>
+  <div class="step-label">STEP 2 OF 5 — YOUR ROLE</div>
 
   <div class="page-title">How will you use BudgetBuddy?</div>
   <div class="page-sub">Pick one — you can always contact us if you need to change it later.</div>
@@ -38,6 +39,14 @@
     {% csrf_token %}
 
     <div class="role-grid">
+      <label class="role-card owner" id="ownerCard">
+        <input type="radio" name="role" value="owner" id="ownerRadio"/>
+        <div class="check-badge" id="ownerCheck">✓</div>
+        <span class="role-icon">&#127959;</span>
+        <div class="role-name">Owner</div>
+        <div class="role-desc">I'm renting out a property</div>
+      </label>
+
       <label class="role-card tenant" id="tenantCard">
         <input type="radio" name="role" value="tenant" id="tenantRadio"/>
         <div class="check-badge" id="tenantCheck">✓</div>
@@ -46,13 +55,6 @@
         <div class="role-desc">I'm looking for a place to rent</div>
       </label>
 
-      <label class="role-card owner" id="ownerCard">
-        <input type="radio" name="role" value="owner" id="ownerRadio"/>
-        <div class="check-badge" id="ownerCheck">✓</div>
-        <span class="role-icon">&#127959;</span>
-        <div class="role-name">Owner</div>
-        <div class="role-desc">I'm renting out a property</div>
-      </label>
     </div>
 
     <!-- Dynamic feature preview based on selected role -->

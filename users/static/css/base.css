@@ -157,8 +157,9 @@ input[type="file"] { display: none; }
 }
 .btn-outline-sm:hover { border-color: var(--accent); background: var(--accent-light); }
 
-.skip-link {
+.role-link {
   display: block; text-align: center; margin-top: 14px;
   font-size: 13px; color: var(--muted); text-decoration: none;
 }
-.skip-link:hover { color: var(--text); text-decoration: underline; }
+.role-link:hover { color: var(--text); text-decoration: underline; }
+

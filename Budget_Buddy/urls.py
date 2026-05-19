@@ -32,8 +32,9 @@ def about(request):
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home, name='home'),
-    path('', contact, name='contact'),
-    path('', about, name='about'),
+    path('dashboard/', lambda request: render(request, 'dashboard.html'), name='dashboard'),
+    path('contact/', contact, name='contact'),
+    path('about/', about, name='about'),
     path('users/', include('users.urls')),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
