@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet" />
   
-  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
 </head>
 <body>
  
@@ -20,10 +20,6 @@
       <a class="logo-wrap" href="/" data-name="Logo">
         <img alt="Budget Buddy Logo" src="{% static 'images/LOGO.png' %}" />
       </a>
-      <nav class="main-nav">
-        <a href="{% url 'register' %}">Register</a>
-        <a href="{% url 'login' %}">Login</a>
-      </nav>
     </header>
  
     <!-- ══ HERO ══ -->
@@ -34,8 +30,8 @@
           <p class="subheadline">A centralized platform for university students<br>to find housing and connect with roommates.</p>
         </div>
         <div class="buttons">
-          <a href="{% url 'register' %}"><button class="btn-primary">RENT HOUSE</button></a>
-          <a href="{% url 'register' %}"><button class="btn-secondary">FIND ROOMMATES</button></a>
+          <a href=""><button class="btn-primary">RENT HOUSE</button></a>
+          <a href=""><button class="btn-secondary">FIND ROOMMATES</button></a>
         </div>
       </div>
  
