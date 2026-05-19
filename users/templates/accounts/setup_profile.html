@@ -1,0 +1,97 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Set Up Your Profile — BudgetBuddy</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{% static 'css/base.css' %}"/>
+  <link rel="stylesheet" href="{% static 'css/profile.css' %}"/>
+</head>
+<body>
+<div class="wrap">
+ 
+  <div class="brand">
+    <div class="brand-name">BudgetBuddy</div>
+  </div>
+ 
+  <div class="progress-dots">
+    <div class="dot done"></div>
+    <div class="dot done"></div>
+    <div class="dot done"></div>
+    <div class="dot active"></div>
+    <div class="dot"></div>
+  </div>
+
+    <div class="server-error" id="serverErr"></div>
+
+ 
+  <div class="card">
+    <div class="page-header">
+      <div class="page-title">Set Up Your Profile</div>
+      <div class="page-sub">Helps owners and tenants know who you are. Editable anytime.</div>
+    </div>
+ 
+    <form action="{% url 'setup_profile' %}" method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div class="field">
+        <label for="Username">Username</label>
+        <input type="text" id="Username" name="username"
+               placeholder="How should we call you?" autocomplete="nickname"/>
+        <div class="field-hint">Shown to other users — not your legal name</div>
+      </div>
+ 
+      <div class="field-row">
+        <div class="field" style="margin-bottom:0;">
+          <label for="phone_number">Phone <span class="opt">optional</span></label>
+          <input type="tel" id="phone_number" name="phone"
+                 placeholder="+60 12-345 6789" autocomplete="tel"/>
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label for="state">State</label>
+          <select id="state" name="state">
+            <option value="" disabled selected>Select state</option>
+            <option>Selangor</option>
+            <option>Johor</option>
+            <option>Penang</option>
+            <option>Perak</option>
+            <option>Kedah</option>
+            <option>Kelantan</option>
+            <option>Terengganu</option>
+            <option>Pahang</option>
+            <option>Negeri Sembilan</option>
+            <option>Melaka</option>
+            <option>Perlis</option>
+            <option>Sabah</option>
+            <option>Sarawak</option>
+          </select>
+        </div>
+      </div>
+ 
+      <div class="field" style="margin-top:18px;">
+        <label for="bio">Short bio <span class="opt">optional</span></label>
+        <textarea id="bio" name="bio"
+                  placeholder="Tell owners or tenants a bit about yourself…"></textarea>
+      </div>
+ 
+      <button type="submit" class="btn-primary">Continue &rarr;</button>
+    </form>
+ 
+    <a href="{% url 'setup_role' %}" class="role-link">← Back to setup role</a>
+  </div>
+ 
+</div>
+<script>
+  const displayName = document.getElementById('displayName');
+ 
+  displayName.addEventListener('input', () => {
+    if (avatarImg.style.display === 'block') return;
+    const v = displayName.value.trim();
+    avatarInit.textContent = v.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || '?';
+  });
+</script>
+</body>
+</html>
+ 

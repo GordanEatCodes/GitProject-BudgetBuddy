@@ -1,0 +1,151 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create account</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{% static 'css/register.css' %}"/>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <div class="brand-name">BudgetBuddy</div>
+    <div class="brand-tag">Define your budget, simplify your life</div>
+  </div>
+
+  
+  <div class="progress-dots">
+    <div class="dot active"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+  <div class="step-label">STEP 1 OF 5 — CREATE ACCOUNT</div>
+
+  <div class="card">
+    <div class="card-title">Create Your Account</div>
+    <div class="card-sub">Takes about 2 minutes to set up</div>
+
+    <div class="server-error" id="serverErr"></div>
+
+    <!--
+      ACTION points to your backend register route.
+      On success your backend does: res.redirect('/setup/role')
+      On error your backend re-renders this page with an error message.
+    -->
+    <form id="RegistrationForm" action="{% url 'register' %}" method="POST">
+      {% csrf_token %}
+
+      <div class="field">
+        <label for="fullname">Full name</label>
+        <input type="text" id="fullname" name="fullname" placeholder="Johnny Cage" autocomplete="name"/>
+        <div class="field-error" id="nameErr">Please enter your full name</div>
+      </div>
+
+      <div class="field">
+        <label for="email">Email address</label>
+        <input type="email" id="email" name="email" placeholder="your@email.com" autocomplete="email"/>
+        <div class="field-error" id="emailErr">Enter a valid email address</div>
+      </div>
+
+      <div class="field">
+        <label for="password1">Password</label>
+        <div class="pw-wrap">
+          <input type="password" id="password1" name="password1" placeholder="At least 8 characters" autocomplete="new-password"/>
+          <button type="button" class="pw-toggle" id="pwToggle">show</button>
+        </div>
+        <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+        <div class="strength-label" id="strengthLabel"></div>
+        <div class="field-error" id="pwErr">Password must be at least 8 characters</div>
+      </div>
+
+      <div class="field">
+        <label for="password2">Confirm password</label>
+        <div class="pw-wrap">
+          <input type="password" id="password2" name="password2" placeholder="Same password again" autocomplete="new-password"/>
+        </div>
+        <div class="field-error" id="confirmErr">Passwords do not match</div>
+      </div>
+
+      <button type="submit" class="btn-primary" id="submitBtn">Create account &rarr;</button>
+    </form>
+  </div>
+
+  <div class="link-row">
+    Already have an account? <a href="{% url 'login' %}">Sign in</a>
+  </div>
+</div>
+
+<script>
+  const form = document.getElementById('RegistrationForm');
+  const nameEl = document.getElementById('username');
+  const emailEl = document.getElementById('email');
+  const pwEl = document.getElementById('password1');
+  const confirmEl = document.getElementById('password2');
+  const pwToggle = document.getElementById('pwToggle');
+  const strengthFill = document.getElementById('strengthFill');
+  const strengthLabel = document.getElementById('strengthLabel');
+
+  pwToggle.addEventListener('click', () => {
+    const show = pwEl.type === 'password';
+    pwEl.type = show ? 'text' : 'password';
+    pwToggle.textContent = show ? 'hide' : 'show';
+  });
+
+  function scorePassword(pw) {
+    let score = 0;
+    if (pw.length >= 8) score++;
+    if (pw.length >= 12) score++;
+    if (/[A-Z]/.test(pw)) score++;
+    if (/[0-9]/.test(pw)) score++;
+    if (/[^A-Za-z0-9]/.test(pw)) score++;
+    return score;
+  }
+
+  pwEl.addEventListener('input', () => {
+    const score = scorePassword(pwEl.value);
+    const colors = ['', '#E24B4A', '#EF9F27', '#EF9F27', '#639922', '#1D9E75'];
+    const labels = ['', 'Weak', 'Fair', 'Fair', 'Good', 'Strong'];
+    const widths = ['0%', '20%', '40%', '60%', '80%', '100%'];
+    strengthFill.style.width = widths[score] || '0%';
+    strengthFill.style.background = colors[score] || 'transparent';
+    strengthLabel.textContent = pw.value ? labels[score] : '';
+  });
+
+  function showErr(id, show) {
+    const el = document.getElementById(id);
+    el.classList.toggle('show', show);
+  }
+
+  function setFieldError(input, hasError) {
+    input.classList.toggle('error', hasError);
+  }
+
+  form.addEventListener('submit', (e) => {
+    let valid = true;
+
+    if (!nameEl.value.trim()) {
+      showErr('nameErr', true); setFieldError(nameEl, true); valid = false;
+    } else { showErr('nameErr', false); setFieldError(nameEl, false); }
+
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailEl.value);
+    if (!emailOk) {
+      showErr('emailErr', true); setFieldError(emailEl, true); valid = false;
+    } else { showErr('emailErr', false); setFieldError(emailEl, false); }
+
+    if (pwEl.value.length < 8) {
+      showErr('pwErr', true); setFieldError(pwEl, true); valid = false;
+    } else { showErr('pwErr', false); setFieldError(pwEl, false); }
+
+    if (pwEl.value !== confirmEl.value) {
+      showErr('confirmErr', true); setFieldError(confirmEl, true); valid = false;
+    } else { showErr('confirmErr', false); setFieldError(confirmEl, false); }
+
+    if (!valid) e.preventDefault();
+  });
+</script>
+</body>
+</html>

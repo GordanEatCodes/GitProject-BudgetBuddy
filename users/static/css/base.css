@@ -1,0 +1,165 @@
+/* base.css — shared across profile.html and tenant_preferences.html */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #F7F5F0;
+  --card: #FFFFFF;
+  --text: #1A1A1A;
+  --muted: #6B6B6B;
+  --border: #E0DDD6;
+  --accent: #000000;
+  --accent-light: #EAF2ED;
+  --accent-mid: #c5deca;
+  --radius: 12px;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 32px 24px 64px;
+}
+
+.wrap { width: 100%; max-width: 480px; }
+
+/* ── Brand ── */
+.brand { text-align: center; margin-bottom: 28px; }
+.brand-name {
+  font-family: 'DM Serif Display', serif;
+  font-size: 26px;
+  color: var(--accent);
+}
+
+/* ── Progress stepper ── */
+.progress-dots {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 24px;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+    .dot.active { background: var(--accent); }
+
+ .step-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+      margin-top: -16px;
+      margin-bottom: 20px;
+      letter-spacing: 0.05em;
+    }
+
+/* ── Card ── */
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  padding: 32px;
+  margin-top: 24px;
+}
+
+/* ── Page / step header ── */
+.page-header {
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+.page-title { font-size: 20px; font-weight: 500; margin-bottom: 4px; }
+.page-sub   { font-size: 14px; color: var(--muted); line-height: 1.55; }
+
+/* ── Form elements ── */
+.field { margin-bottom: 18px; }
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+.opt { font-size: 11px; color: var(--muted); font-weight: 400; margin-left: 4px; }
+.field-hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+input[type="text"],
+input[type="tel"],
+select,
+textarea {
+  width: 100%;
+  padding: 11px 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #FAFAF8;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  appearance: none;
+}
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%236B6B6B' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+}
+textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(45,90,61,0.10);
+  background: #fff;
+}
+input[type="file"] { display: none; }
+
+/* ── Buttons ── */
+.btn-primary {
+  width: 100%; padding: 13px;
+  background: var(--accent); color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px; font-weight: 500;
+  border: none; border-radius: 8px; cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+}
+.btn-primary:hover  { opacity: 0.9; }
+.btn-primary:active { transform: scale(0.99); }
+
+.btn-secondary {
+  width: 100%; padding: 12px;
+  background: transparent; color: var(--muted);
+  font-family: 'DM Sans', sans-serif; font-size: 13px;
+  border: 1px solid var(--border); border-radius: 8px; cursor: pointer;
+  transition: all 0.15s; margin-top: 10px;
+}
+.btn-secondary:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-light);
+}
+
+.btn-outline-sm {
+  display: inline-block; padding: 7px 14px;
+  border: 1px solid var(--border); border-radius: 6px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 500;
+  cursor: pointer; background: #fff; color: var(--text);
+  transition: border-color 0.15s, background 0.15s;
+}
+.btn-outline-sm:hover { border-color: var(--accent); background: var(--accent-light); }
+
+.role-link {
+  display: block; text-align: center; margin-top: 14px;
+  font-size: 13px; color: var(--muted); text-decoration: none;
+}
+.role-link:hover { color: var(--text); text-decoration: underline; }
+

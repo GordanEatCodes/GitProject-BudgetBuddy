@@ -1,1 +1,39 @@
-print("Hello, World!")
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}"/>
+</head>
+<body>
+<div class="wrap">
+
+    <div class="brand">
+        <div class="brand-name">BudgetBuddy</div>
+        <div class="brand-tag">Define your budget, simplify your life</div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">Welcome back</div>
+        <div class="card-sub">Log in to your account</div>
+
+        {% if error_message %}
+            <div class="server-error show">{{ error_message }}</div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <input type="text" name="username" placeholder="Username or email" required/>
+            <input type="password" name="password" placeholder="Password" required/>
+            <button type="submit" class="btn-primary">Log in</button>
+        </form>
+
+        <div class="signup-link">
+            Don't have an account? <a href="{% url 'register' %}">Sign up</a>
+        </div>
+    </div>
+</div>

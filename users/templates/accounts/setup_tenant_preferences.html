@@ -1,0 +1,153 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Your preferences — BudgetBuddy</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{% static 'css/base.css' %}"/>
+  <link rel="stylesheet" href="{% static 'css/setup_tenant_preferences.css' %}"/>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="brand">
+    <div class="brand-name">BudgetBuddy</div>
+  </div>
+
+  <div class="progress-dots">
+    <div class="dot done"></div>
+    <div class="dot done"></div>
+    <div class="dot done "></div>
+    <div class="dot done"></div>
+    <div class="dot active"></div>
+  </div>
+
+  <div class="card">
+    <div class="page-header">
+      <div class="page-title">Your Living Preferences</div>
+      <div class="page-sub">Help us match you with compatible roommates and listings.</div>
+    </div>
+
+
+    <form action="{% url 'setup_tenant_preferences' %}" method="POST">
+      {% csrf_token %}
+
+      <!-- Gender -->
+      <div class="field">
+        <label>Gender</label>
+        <div class="chip-group" id="chips-gender">
+          <div class="chip" data-val="male"       onclick="pickChip(this,'gender')">Male</div>
+          <div class="chip" data-val="female"     onclick="pickChip(this,'gender')">Female</div>
+        </div>
+        <input type="hidden" name="gender" id="val-gender"/>
+      </div>
+
+      <!-- Sleep schedule -->
+      <div class="field">
+        <label>Sleep schedule</label>
+        <div class="chip-group" id="chips-sleep_schedule">
+          <div class="chip" data-val="early" onclick="pickChip(this,'sleep_schedule')">🌅 Before 10pm</div>
+          <div class="chip" data-val="late_night"  onclick="pickChip(this,'sleep_schedule')">🦉 After 10pm</div>
+          <div class="chip" data-val="flexible"   onclick="pickChip(this,'sleep_schedule')">😌 Flexible</div>
+        </div>
+        <input type="hidden" name="sleep_schedule" id="val-sleep_schedule"/>
+      </div>
+
+      <!-- Cleanliness scale -->
+      <div class="field">
+        <label>Cleanliness</label>
+        <div class="scale-widget" id="scale-cleanliness">
+          <div class="scale-btn"          data-val="1" onclick="pickScale(this,'cleanliness')">1</div>
+          <div class="scale-btn"          data-val="2" onclick="pickScale(this,'cleanliness')">2</div>
+          <div class="scale-btn selected" data-val="3" onclick="pickScale(this,'cleanliness')">3</div>
+          <div class="scale-btn"          data-val="4" onclick="pickScale(this,'cleanliness')">4</div>
+          <div class="scale-btn"          data-val="5" onclick="pickScale(this,'cleanliness')">5</div>
+          <span class="scale-label" id="lbl-cleanliness">Average</span>
+        </div>
+        <input type="hidden" name="cleanliness" id="val-cleanliness" value="3"/>
+      </div>
+
+      <!-- Noise tolerance scale -->
+      <div class="field">
+        <label>Noise tolerance</label>
+        <div class="scale-widget" id="scale-noise_tolerance">
+          <div class="scale-btn"          data-val="1" onclick="pickScale(this,'noise_tolerance')">1</div>
+          <div class="scale-btn"          data-val="2" onclick="pickScale(this,'noise_tolerance')">2</div>
+          <div class="scale-btn selected" data-val="3" onclick="pickScale(this,'noise_tolerance')">3</div>
+          <div class="scale-btn"          data-val="4" onclick="pickScale(this,'noise_tolerance')">4</div>
+          <div class="scale-btn"          data-val="5" onclick="pickScale(this,'noise_tolerance')">5</div>
+          <span class="scale-label" id="lbl-noise_tolerance">Moderate</span>
+        </div>
+        <input type="hidden" name="noise_tolerance" id="val-noise_tolerance" value="3"/>
+      </div>
+
+      <!-- Race -->
+      <div class="field">
+        <label for="race">Race <span class="opt">optional</span></label>
+        <select name="race" id="race">
+          <option value="malay">Malay</option>
+          <option value="chinese">Chinese</option>
+          <option value="indian">Indian</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <!-- Religion -->
+      <div class="field">
+        <label for="religion">Religion <span class="opt">optional</span></label>
+        <select name="religion" id="religion">
+          <option value="islam">Islam</option>
+          <option value="christianity">Christianity</option>
+          <option value="buddhism">Buddhism</option>
+          <option value="hinduism">Hinduism</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <!-- Study habits -->
+      <div class="field">
+        <label>Study habits</label>
+        <div class="chip-group" id="chips-study_habits">
+          <div class="chip" data-val="heavy"    onclick="pickChip(this,'study_habits')">📚 Heavy studier</div>
+          <div class="chip" data-val="moderate" onclick="pickChip(this,'study_habits')">🙂 Moderate</div>
+          <div class="chip" data-val="light"    onclick="pickChip(this,'study_habits')">🌴 Light / relaxed</div>
+        </div>
+        <input type="hidden" name="study_habits" id="val-study_habits"/>
+      </div>
+
+      <button type="submit" class="btn-primary">Done &rarr;</button>
+    </form>
+
+    <a href="{% url 'setup_profile' %}" class="role-link">← Back to profile</a>
+  </div>
+
+</div>
+<script>
+  /* ── Chip single-pick ── */
+  function pickChip(el, field) {
+    el.closest('.chip-group')
+      .querySelectorAll('.chip')
+      .forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('val-' + field).value = el.dataset.val;
+  }
+
+  /* ── Scale pick ── */
+  const cleanLabels = { 1:'Very messy', 2:'Relaxed', 3:'Average', 4:'Tidy', 5:'Spotless' };
+  const noiseLabels = { 1:'Very low',   2:'Low',     3:'Moderate', 4:'High', 5:'Very high' };
+
+  function pickScale(el, field) {
+    el.closest('.scale-widget')
+      .querySelectorAll('.scale-btn')
+      .forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+    const v = parseInt(el.dataset.val);
+    document.getElementById('val-' + field).value = v;
+    document.getElementById('lbl-' + field).textContent =
+      field === 'cleanliness' ? cleanLabels[v] : noiseLabels[v];
+  }
+</script>
+</body>
+</html>

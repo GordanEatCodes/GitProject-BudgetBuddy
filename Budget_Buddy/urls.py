@@ -16,7 +16,19 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.shortcuts import render
+from django.conf import settings
+from django.conf.urls.static import static
 
+def home(request):
+    return render(request, 'home.html')
+
+def contact(request):
+    return render(request, 'contact.html')
+
+def about(request):
+    return render(request, 'about.html')
+        
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('users.urls')),
