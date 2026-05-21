@@ -26,7 +26,7 @@ class UserProfile(models.Model):
     religion = models.CharField(max_length=30, blank=True)
     study_habits = models.CharField(max_length=20, blank=True)
 
-    Username       = models.CharField(max_length=60, blank=True)
+    username       = models.CharField(max_length=60, blank=True)
     phone_number   = models.CharField(max_length=20, blank=True)
     state          = models.CharField(max_length=30, blank=True)
     bio            = models.TextField(blank=True)
