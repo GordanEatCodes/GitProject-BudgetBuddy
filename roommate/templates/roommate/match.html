@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>🤝 Match Results for {{ current.title }}</h2>
+
+<hr>
+
+{% for post, score in matches %}
+
+<div class="card mb-3 p-3 shadow-sm">
+
+    <h4>{{ post.title }}</h4>
+
+    <p>{{ post.description }}</p>
+
+    <small>
+        📍 {{ post.location }} | 💰 RM {{ post.budget }}
+    </small>
+
+    <p class="text-muted mb-2 mt-2">
+        Posted on: {{ post.created_at|date:"d M Y, h:i A" }}
+    </p>
+
+    <span class="badge bg-success">
+        Match Score: {{ score }}
+    </span>
+
+</div>
+
+{% empty %}
+
+<p>No matches found.</p>
+
+{% endfor %}
+
+<a href="{% url 'roommate_list' %}" class="btn btn-secondary mt-3">
+    Back to Roommate List
+</a>
+
+{% endblock %}

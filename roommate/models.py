@@ -7,8 +7,7 @@ class RoommatePost(models.Model):
     location = models.CharField(max_length=100)
     budget = models.FloatField()
     contact = models.CharField(max_length=100)
-
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
