@@ -24,8 +24,25 @@ def add_roommate(request):
 
 
 def roommate_list(request):
-    posts = RoommatePost.objects.all()
-    return render(request, 'roommate/roommate_list.html', {'posts': posts})
+    posts = RoommatePost.objects.all().order_by('-created_at')
+
+    location = request.GET.get('location')
+    max_budget = request.GET.get('max_budget')
+
+    if location:
+        posts = posts.filter(location__icontains=location)
+
+    if max_budget:
+        try:
+            posts = posts.filter(budget__lte=float(max_budget))
+        except ValueError:
+            pass
+
+    return render(request, 'roommate/roommate_list.html', {
+        'posts': posts,
+        'location': location,
+        'max_budget': max_budget,
+    })
 
 
 def delete_roommate(request, id):

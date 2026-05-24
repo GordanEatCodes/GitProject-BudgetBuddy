@@ -4,6 +4,36 @@
 
 <h2>Roommate Posts</h2>
 
+<form method="GET" class="row g-2 mb-4">
+
+    <div class="col-md-5">
+        <input type="text" 
+               name="location" 
+               class="form-control" 
+               placeholder="Filter by location"
+               value="{{ location|default:'' }}">
+    </div>
+
+    <div class="col-md-4">
+        <input type="number" 
+               name="max_budget" 
+               class="form-control" 
+               placeholder="Max budget"
+               value="{{ max_budget|default:'' }}">
+    </div>
+
+    <div class="col-md-3">
+        <button type="submit" class="btn btn-primary">
+            Filter
+        </button>
+
+        <a href="{% url 'roommate_list' %}" class="btn btn-secondary">
+            Reset
+        </a>
+    </div>
+
+</form>
+
 {% for post in posts %}
     <div class="card mb-3 p-3 shadow-sm">
 
@@ -35,7 +65,7 @@
 
     </div>
 {% empty %}
-    <p>No posts yet</p>
+    <p>No posts found.</p>
 {% endfor %}
 
 {% endblock %}
