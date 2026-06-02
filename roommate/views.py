@@ -24,10 +24,11 @@ def add_roommate(request):
 
 
 def roommate_list(request):
-    posts = RoommatePost.objects.all().order_by('-created_at')
+    posts = RoommatePost.objects.all()
 
     location = request.GET.get('location')
     max_budget = request.GET.get('max_budget')
+    sort = request.GET.get('sort')
 
     if location:
         posts = posts.filter(location__icontains=location)
@@ -38,17 +39,37 @@ def roommate_list(request):
         except ValueError:
             pass
 
+    if sort == 'oldest':
+        posts = posts.order_by('created_at')
+    elif sort == 'low_budget':
+        posts = posts.order_by('budget')
+    elif sort == 'high_budget':
+        posts = posts.order_by('-budget')
+    else:
+        posts = posts.order_by('-created_at')  # default: newest first
+
     return render(request, 'roommate/roommate_list.html', {
         'posts': posts,
         'location': location,
         'max_budget': max_budget,
+        'sort': sort,
     })
 
+def roommate_detail(request, id):
+    post = get_object_or_404(RoommatePost, id=id)
+
+    return render(request, 'roommate/roommate_detail.html', {
+        'post': post
+    })
 
 def delete_roommate(request, id):
     post = get_object_or_404(RoommatePost, id=id)
-    post.delete()
-    return redirect('roommate_list')
+
+    if request.method == 'POST':
+        post.delete()
+        return redirect('roommate_list')
+
+    return render(request, 'roommate/confirm_delete.html', {'post': post})
 
 
 def edit_roommate(request, id):
