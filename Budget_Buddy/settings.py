@@ -12,14 +12,16 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
 
+
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
-SECRET_KEY = 'django-insecure-8=@j(+-t==c$f_ce&d-leou$#=!^zl(cunn$lnl4mr@@p-5xf('
-
-DEBUG = True
+DEBUG = os.environ.get('DEBUG') == 'True'
 
 ALLOWED_HOSTS = []
 
@@ -105,12 +107,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-import os
-
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER','nggordan115@gmail.com')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD','')
-
 LOGIN_URL = '/login/'
 
 STATIC_URL = '/static/'
@@ -123,8 +119,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'nggordan115@gmail.com'
-EMAIL_HOST_PASSWORD = ''
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = 'Budget Buddy <noreply@budgetbuddy.com>'
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'

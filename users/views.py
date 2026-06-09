@@ -1,4 +1,5 @@
 import random
+from urllib import request
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.shortcuts import redirect, render
@@ -8,6 +9,8 @@ from django.contrib.auth.decorators import login_required
 from Budget_Buddy.settings import EMAIL_HOST_USER
 from users.models import UserProfile
 from .forms import (
+    ForgotPasswordForm,
+    ResetPasswordForm,
     LoginForm,
     ProfileSetupForm,
     RegistrationForm, 
@@ -196,6 +199,70 @@ def login_view(request):
             form.add_error(None, 'Invalid credentials')
 
     return render(request, 'accounts/login.html', {'form': form}) 
+
+def forgot_password_view(request):
+    if request.method == 'POST': 
+        form = ForgotPasswordForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            otp = random.randint(100000, 999999)
+            request.session['password_reset_otp'] = otp
+            request.session['password_reset_email'] = email
+            print(f"DEBUG - Password reset OTP: {otp}")  # Debug OTP
+            send_mail(
+                subject='Your OTP Code for Budget Buddy Password Reset',
+                message=f'Your OTP code is: {otp}',
+                from_email=None,
+                recipient_list=[email],
+            )
+            return redirect('reset_password_otp')
+    else:
+        form = ForgotPasswordForm()
+    return render(request, 'accounts/forgot_password.html', {'form': form})
+        
+def reset_password_otp_view(request):
+    email = request.session.get('password_reset_email')
+    if not email:
+        return redirect('forgot_password')
+
+    if request.method == 'POST':
+        entered = request.POST.get('otp', '').strip()
+        saved = str(request.session.get('password_reset_otp',''))
+
+        print(f"DEBUG - Entered OTP: '{entered}'")  # Debug entered OTP
+        print(f"DEBUG - Saved OTP: '{saved}'")  # Debug saved OTP
+
+        if entered == saved:
+            return redirect('reset_password_new')
+        else:
+            return render(request, 'accounts/reset_password_otp.html', {
+                'email': email,
+                'error': 'Invalid OTP. Please try again.'
+            })
+    return render(request, 'accounts/reset_password_otp.html', {'email': email})
+
+def reset_password_new_view(request):
+    email = request.session.get('password_reset_email')
+    if not email:
+        return redirect('forgot_password')
+
+    if request.method == 'POST':
+        print(f"DEBUG - POST data: {request.POST}")  # Debug POST data
+        form = ResetPasswordForm(request.POST)
+        if form.is_valid():
+            password = form.cleaned_data['new_password1']
+            try:
+                user = User.objects.get(email=email)
+                user.set_password(password)
+                user.save()
+                for key in ['password_reset_otp', 'password_reset_email']:
+                    request.session.pop(key, None)
+                return redirect('login')
+            except User.DoesNotExist:
+                form.add_error(None, 'No account found with that email.')
+    else:
+        form = ResetPasswordForm()
+    return render(request, 'accounts/reset_password_new.html', {'form': form})
 
 
 def logout_view(request):

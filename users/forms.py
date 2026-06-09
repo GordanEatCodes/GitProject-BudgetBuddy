@@ -114,3 +114,29 @@ class LoginForm(forms.Form):
             return user.userprofile   # ← FIX: was user.UserProfile (capital U breaks the reverse relation)
         except Exception:
             return None
+        
+class ForgotPasswordForm(forms.Form):
+    email = forms.EmailField(label='Email', max_length=254, required=True)
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if not User.objects.filter(email=email).exists():
+            raise forms.ValidationError('No account found with this email address.')
+        return email
+    
+class ResetPasswordForm(forms.Form):
+    new_password1 = forms.CharField(label='New Password', widget=forms.PasswordInput, required=True, help_text=" Your password must be at least 8 characters long and contain a mix of letters and numbers.")
+    new_password2 = forms.CharField(label='Confirm New Password', widget=forms.PasswordInput, required=True, help_text=" Enter the same password again. ")
+
+    def clean(self):
+        cleaned = super().clean()
+        print(f"DEBUG - Cleaned data: {cleaned}")  # Debug cleaned data
+        pw1 = cleaned.get('new_password1')
+        pw2 = cleaned.get('new_password2')
+
+        if pw1 and pw2 and pw1 != pw2:
+            raise forms.ValidationError('Passwords do not match.')
+        if pw1 and len(pw1) < 8:
+            raise forms.ValidationError('Password must be at least 8 characters long.')
+
+        return cleaned
