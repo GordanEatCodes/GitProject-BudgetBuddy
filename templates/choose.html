@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choosing Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Georgia', serif;
+        }
+
+        /* ── page title ── */
+        .page-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .page-title h2 {
+            font-size: 1.4rem;
+            color: #7a6652;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            font-weight: 400;
+        }
+
+        .page-title h1 {
+            font-size: 3rem;
+            color: #3e2c1c;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .page-title .divider {
+            width: 80px;
+            height: 3px;
+            background-color: #c4a882;
+            margin: 12px auto 0;
+            border-radius: 2px;
+        }
+
+        /* ── card wrapper ── */
+        .split-container {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* ── shared card style ── */
+        .btn-split {
+            width: 300px;
+            height: 380px;
+            border-radius: 24px;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 36px 28px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-split::before {
+            content: '';
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            opacity: 0.15;
+        }
+
+        /* ── LEFT card — Room ── */
+        .left-room {
+            background-color: #e8d5be;
+            border: 2px solid #d4b896;
+            box-shadow: 6px 6px 20px rgba(180, 140, 100, 0.25);
+        }
+
+        .left-room::before {
+            background-color: #a0785a;
+        }
+
+        .left-room:hover {
+            transform: translateY(-8px);
+            box-shadow: 10px 14px 30px rgba(180, 140, 100, 0.4);
+        }
+
+        /* ── RIGHT card — Unit ── */
+        .right-unit {
+            background-color: #d6c4ac;
+            border: 2px solid #c0a080;
+            box-shadow: 6px 6px 20px rgba(150, 110, 70, 0.25);
+        }
+
+        .right-unit::before {
+            background-color: #7a5c40;
+        }
+
+        .right-unit:hover {
+            transform: translateY(-8px);
+            box-shadow: 10px 14px 30px rgba(150, 110, 70, 0.4);
+        }
+
+        /* ── icon ── */
+        .card-icon {
+            font-size: 3.5rem;
+            margin-bottom: 18px;
+        }
+
+        /* ── text inside cards ── */
+        .sub-text {
+            font-size: 0.85rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #7a6652;
+            margin-bottom: 6px;
+        }
+
+        .card-title {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: #3e2c1c;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+            line-height: 1;
+        }
+
+        .want-text {
+            font-size: 1rem;
+            color: #5c4433;
+            font-style: italic;
+            margin-bottom: 16px;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .description {
+            font-size: 0.82rem;
+            color: #7a6652;
+            text-align: center;
+            letter-spacing: 0.5px;
+            line-height: 1.6;
+        }
+
+        /* ── bottom tag ── */
+        .card-tag {
+            margin-top: 24px;
+            padding: 8px 22px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: #ffffff;
+            background-color: #a0785a;
+        }
+
+        .right-unit .card-tag {
+            background-color: #7a5c40;
+        }
+
+        /* ── responsive ── */
+        @media (max-width: 680px) {
+            .btn-split {
+                width: 85vw;
+                height: auto;
+                min-height: 300px;
+            }
+
+            .page-title h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="text-center w-100">
+
+        <!-- Page heading -->
+        <div class="page-title">
+            <h2>Welcome to</h2>
+            <h1>Budget Buddy</h1>
+            <div class="divider"></div>
+        </div>
+
+        <!-- Two cards -->
+        <div class="split-container">
+
+            <!-- ROOM card -->
+            <a href="{% url 'room_list' %}" class="btn-split left-room">
+                <div class="card-icon">🛏️</div>
+                <div class="sub-text">Looking for a</div>
+                <div class="card-title">ROOM</div>
+                <div class="want-text">You wanna rent<br>a <strong>Room</strong>?</div>
+                <div class="description">A single cozy space<br>in a shared house.</div>
+                <div class="card-tag">Explore Rooms →</div>
+            </a>
+
+            <!-- UNIT card -->
+            <a href="{% url 'unit_list' %}" class="btn-split right-unit">
+                <div class="card-icon">🏠</div>
+                <div class="sub-text">Looking for a</div>
+                <div class="card-title">UNIT</div>
+                <div class="want-text">You wanna rent<br>a <strong>Unit</strong>?</div>
+                <div class="description">An entire apartment<br>or house, all yours.</div>
+                <div class="card-tag">Explore Units →</div>
+            </a>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

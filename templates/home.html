@@ -33,8 +33,22 @@
           <h1 class="headline">Enter the world<br>where finding<br>roommates and house is easy</h1>
           <p class="subheadline">A centralized platform for university students<br>to find housing and connect with roommates.</p>
         </div>
+
+        <!-- BUTTONS -->
         <div class="buttons">
-          <a href=""><button class="btn-primary">RENT HOUSE</button></a>
+          {# ONE visible button, two destinations based on fake role #}
+          {% if is_owner %}
+            <!-- Owner mode: go to owner dashboard -->
+            <a href="{% url 'owner_dashboard' %}">
+              <button class="btn-primary">RENT HOUSE</button>
+            </a>
+          {% else %}
+            <!-- Renter mode: go to choose page -->
+            <a href="{% url 'choose' %}">
+              <button class="btn-primary">RENT HOUSE</button>
+            </a>
+          {% endif %}
+
           <a href=""><button class="btn-secondary">FIND ROOMMATES</button></a>
         </div>
       </div>
@@ -61,7 +75,12 @@
           </div>
           <div class="footer-col">
             <span class="footer-col-header">Features</span>
-            <a class="col-link" href="#">Rent House</a>
+            {# Optional: also switch footer Rent House link #}
+            {% if is_owner %}
+              <a class="col-link" href="{% url 'owner_dashboard' %}">Rent House</a>
+            {% else %}
+              <a class="col-link" href="{% url 'choose' %}">Rent House</a>
+            {% endif %}
             <a class="col-link" href="#">Find Roommates</a>
           </div>
         </nav>
