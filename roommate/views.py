@@ -100,6 +100,7 @@ def match_roommates(request, id):
 
     for post in all_posts:
         score = 0
+        max_score = 10
         reasons = []
 
         if current_user_post.location.lower() == post.location.lower():
@@ -124,13 +125,18 @@ def match_roommates(request, id):
 
         common_words = current_words & post_words
 
+        keyword_score = min(len(common_words), 4)
+        score += keyword_score
+
         if common_words:
-            score += len(common_words)
             reasons.append("Similar keywords: " + ", ".join(common_words))
         else:
             reasons.append("No similar description keywords")
 
-        results.append((post, score, reasons))
+
+        match_percentage = round((score / max_score) * 100)
+
+        results.append((post, score, match_percentage, reasons))
 
     results.sort(key=lambda x: x[1], reverse=True)
 

@@ -10,7 +10,7 @@
 
 <hr>
 
-{% for post, score, reasons in matches %}
+{% for post, score, match_percentage, reasons in matches %}
 
 <div class="card mb-3 p-3 shadow-sm">
 
@@ -26,9 +26,13 @@
         Posted on: {{ post.created_at|date:"d M Y, h:i A" }}
     </p>
 
-    <span class="badge bg-success mb-3">
-        Match Score: {{ score }}
+    <span class="badge bg-success mb-2">
+        Match: {{ match_percentage }}%
     </span>
+
+    <p class="text-muted mb-3">
+        Score: {{ score }}/10
+    </p>
 
     <h6>Why matched?</h6>
 
