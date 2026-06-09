@@ -10,11 +10,16 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+# BudgetBuddy/settings.py
 from pathlib import Path
 import os
 
 
+
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 
 SECRET_KEY = 'django-insecure-8=@j(+-t==c$f_ce&d-leou$#=!^zl(cunn$lnl4mr@@p-5xf('
@@ -33,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'users',
     'roommate',
+    'listing',
 ]
 
 
@@ -58,6 +64,8 @@ TEMPLATES = [
             BASE_DIR / 'users/templates',
             BASE_DIR / 'roommate/templates'
        ],
+        'DIRS': [BASE_DIR / 'templates'],
+        'APP_DIRS': [BASE_DIR / 'users/templates', BASE_DIR / 'listing/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -66,6 +74,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
             ],
         },
+    
     },
 ]
 
@@ -133,3 +142,10 @@ SESSION_SAVE_EVERY_REQUEST = True
 
 # REMEMBER TO SET EMAIL_HOST_PASSWORD IN ENVIRONMENT VARIABLES BEFORE DEPLOYING 
     
+
+# BudgetBuddy/settings.py
+from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
