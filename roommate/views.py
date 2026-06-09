@@ -100,21 +100,37 @@ def match_roommates(request, id):
 
     for post in all_posts:
         score = 0
+        reasons = []
 
         if current_user_post.location.lower() == post.location.lower():
             score += 3
+            reasons.append("Same location")
+        else:
+            reasons.append("Different location")
 
         budget_diff = abs(float(current_user_post.budget) - float(post.budget))
 
         if budget_diff <= 100:
             score += 3
+            reasons.append("Budget difference is within RM100")
         elif budget_diff <= 300:
             score += 1
+            reasons.append("Budget difference is within RM300")
+        else:
+            reasons.append("Budget difference is more than RM300")
 
-        common_words = set(current_user_post.description.lower().split()) & set(post.description.lower().split())
-        score += len(common_words)
+        current_words = set(current_user_post.description.lower().split())
+        post_words = set(post.description.lower().split())
 
-        results.append((post, score))
+        common_words = current_words & post_words
+
+        if common_words:
+            score += len(common_words)
+            reasons.append("Similar keywords: " + ", ".join(common_words))
+        else:
+            reasons.append("No similar description keywords")
+
+        results.append((post, score, reasons))
 
     results.sort(key=lambda x: x[1], reverse=True)
 
