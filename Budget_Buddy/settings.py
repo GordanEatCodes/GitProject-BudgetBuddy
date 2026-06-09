@@ -109,7 +109,7 @@ USE_TZ = True
 import os
 
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER','nggordan115@gmail.com')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD','mpfxuqoxyemeddjo')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD','')
 
 LOGIN_URL = '/login/'
 
@@ -124,11 +124,12 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'nggordan115@gmail.com'
-EMAIL_HOST_PASSWORD = 'mpfxuqoxyemeddjo'
+EMAIL_HOST_PASSWORD = ''
 DEFAULT_FROM_EMAIL = 'Budget Buddy <noreply@budgetbuddy.com>'
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 SESSION_COOKIE_AGE = 1800
 SESSION_SAVE_EVERY_REQUEST = True
 
-
+# REMEMBER TO SET EMAIL_HOST_PASSWORD IN ENVIRONMENT VARIABLES BEFORE DEPLOYING 
+    
