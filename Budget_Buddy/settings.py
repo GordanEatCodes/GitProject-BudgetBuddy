@@ -53,8 +53,12 @@ ROOT_URLCONF = 'Budget_Buddy.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
-        'APP_DIRS': [BASE_DIR / 'users/templates', BASE_DIR / 'roommate/templates'],
+        'DIRS': [
+            BASE_DIR / 'templates',
+            BASE_DIR / 'users/templates',
+            BASE_DIR / 'roommate/templates'
+       ],
+        'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
@@ -104,16 +108,27 @@ USE_TZ = True
 
 import os
 
-STATIC_URL = 'static/'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER','nggordan115@gmail.com')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD','mpfxuqoxyemeddjo')
+
+LOGIN_URL = '/login/'
+
+STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'nggordan115@gmail.com'
 EMAIL_HOST_PASSWORD = 'mpfxuqoxyemeddjo'
-DEFAULT_FROM_EMAIL = 'nggordan115@gmail.com'
+DEFAULT_FROM_EMAIL = 'Budget Buddy <noreply@budgetbuddy.com>'
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_AGE = 1800
+SESSION_SAVE_EVERY_REQUEST = True
+
+

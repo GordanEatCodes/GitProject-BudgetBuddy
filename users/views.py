@@ -2,9 +2,10 @@ import random
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.shortcuts import redirect, render
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 
+from Budget_Buddy.settings import EMAIL_HOST_USER
 from users.models import UserProfile
 from .forms import (
     LoginForm,
@@ -16,7 +17,23 @@ from .forms import (
 # Create your views here.
 def home(request):
     return render(request, 'home.html')
+
+@login_required
+def dashboard(request):
+    profile = request.user.userprofile
     
+    name = profile.username.strip()
+    if not name:
+        name = request.user.first_name.strip()
+    if not name:
+        name = request.user.username.split('@')[0].strip()
+    
+    print(f"DEBUG - profile.username raw: '{profile.username}'")
+    print(f"DEBUG - first_name raw: '{request.user.first_name}'")
+    print(f"DEBUG - final name: '{name}'")
+    
+    return render(request, 'dashboard.html', {'display_name': name})
+
 def register_view(request):
     if request.user.is_authenticated:
         return redirect('dashboard') 
@@ -26,11 +43,13 @@ def register_view(request):
         data = request.session.get('registration_data', {})
 
         if entered == saved:
-            user = User.objects.create_user(
-                username=data['fullname'], 
+            user = User.objects.create_user( 
+                username=data['email'],  # Use email as username for simplicity 
                 email=data['email'], 
                 password=data['password1']
             )
+            user.first_name = data['fullname']
+            user.save()
             login(request, user)
             del request.session['registration_otp']
             del request.session['registration_data']
@@ -56,7 +75,7 @@ def register_view(request):
             send_mail(
                 subject='Your OTP Code for Budget Buddy Registration',
                 message=f'Your OTP code is: {otp}',
-                from_email='gordan.ng.hungzhuen@student.mmu.edu.my',
+                from_email=None,  # Use default from_email from settings
                 recipient_list=[form.cleaned_data['email']],
             )
             print("DEBUG - Email sent")  # Debug email sent
@@ -78,19 +97,32 @@ def register_otp_view(request):
         entered = request.POST.get('otp', '').strip()
         saved = str(request.session.get('registration_otp',''))
 
+        print(f"DEBUG - Entered OTP: '{entered}'")  # Debug entered OTP
+        print(f"DEBUG - Saved OTP: '{saved}'")  # Debug saved OTP
+        print(f"DEBUG - session keys: {list(request.session.keys())}")
+
         if entered == saved:
+            if User.objects.filter(username=data['email']).exists():
+                return render(request, 'accounts/register_otp.html', {
+                    'email': data.get('email'),
+                    'error': 'An account with this email already exists.'
+                })
+            
             user = User.objects.create_user(
-                username=data['fullname'], 
+                username=data['email'],  # Use email as username for simplicity
                 email=data['email'], 
                 password=data['password1']
             )
+            user.first_name = data['fullname']
+            user.save()
             login(request, user)
+            
             try:
                 del request.session['registration_otp']
             except KeyError:
                 pass
             try:
-                del request.session['registration_data', None]
+                del request.session['registration_data']
             except KeyError:
                 pass
             return redirect('setup_role')
@@ -151,19 +183,21 @@ def setup_tenant_preferences_view(request):
 
 
 def login_view(request):
-    if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data['username']
-            email = form.cleaned_data['username'] 
-            password1 = form.cleaned_data['password1']
-            from django.contrib.auth import authenticate
-            user = authenticate(request, username=username, password=password1)
-            if user is not None:
-                login(request, user)
-                return redirect('home')
-    else:
-        form = LoginForm()
-    return render(request, 'dashboard.html', {'form': form})
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+
+    form = LoginForm(request.POST or None)
+    if request.method == 'POST' and form.is_valid():
+        user = form.authenticate_user()
+        if user is not None:
+            login(request, user)
+            return redirect('dashboard')
+        else:
+            form.add_error(None, 'Invalid credentials')
+
+    return render(request, 'accounts/login.html', {'form': form}) 
 
 
+def logout_view(request):
+    logout(request)
+    return redirect('home')

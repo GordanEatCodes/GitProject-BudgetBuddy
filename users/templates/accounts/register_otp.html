@@ -35,8 +35,8 @@
       <span class="email-highlight">{{ email }}</span>
     </div>
 
-    {% if otp_error %}
-      <div class="server-error show">{{ otp_error }}</div>
+    {% if error %}
+      <div class="server-error show">{{ error }}</div>
     {% endif %}
 
     <form method="POST" id="otpForm">

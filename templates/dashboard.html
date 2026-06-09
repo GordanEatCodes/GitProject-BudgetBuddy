@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
 </head>
 <body>
- 
+
   <div class="page-wrapper">
  
     <!-- ══ HEADER ══ -->
@@ -20,23 +20,28 @@
       <a class="logo-wrap" href="{% url 'dashboard' %}" data-name="Logo">
         <img alt="Budget Buddy Logo" src="{% static 'images/LOGO.png' %}" />
       </a>
+
+      <nav class="main-nav">
+        <span class="user-greeting">Hello, {{ display_name }}</span>
+        <a href="{% url 'logout' %}">Logout</a>
+      </nav>
     </header>
  
     <!-- ══ HERO ══ -->
     <section class="hero">
       <div class="hero-content">
         <div class="text-block">
-          <h1 class="headline">Enter the world<br>where finding<br>roommates and house is easy</h1>
+          <h1 class="headline">Enter the world<br>where finding<br>roommates and <br>house is easy</h1>
           <p class="subheadline">A centralized platform for university students<br>to find housing and connect with roommates.</p>
         </div>
         <div class="buttons">
           <a href=""><button class="btn-primary">RENT HOUSE</button></a>
-          <a href="roommate/roommate_list.html`"><button class="btn-secondary">FIND ROOMMATES</button></a>
+          <a href="{% url 'roommates' %}"><button class="btn-secondary">FIND ROOMMATES</button></a>
         </div>
       </div>
  
       <div class="hero-image" aria-hidden="true">
-        <img alt="" src="{% static 'images/Home.jpg' %}" />
+        <img alt="" src="{% static 'images/roommates02.jpg' %}" />
       </div>
     </section>
  

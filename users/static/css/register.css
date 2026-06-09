@@ -19,11 +19,11 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 24px;
+      padding: 48px 24px;
     }
     .wrap {
       width: 100%;
-      max-width: 420px;
+      max-width: 520px;
     }
     .brand {
       text-align: center;
@@ -44,7 +44,7 @@
       background: var(--card);
       border-radius: var(--radius);
       border: 1px solid var(--border);
-      padding: 32px;
+      padding: 44px;
     }
     .card-title {
       font-size: 20px;

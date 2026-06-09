@@ -87,6 +87,7 @@
       <div class="field">
         <label for="race">Race <span class="opt">optional</span></label>
         <select name="race" id="race">
+          <option value="">Please Select</option>
           <option value="malay">Malay</option>
           <option value="chinese">Chinese</option>
           <option value="indian">Indian</option>
@@ -98,10 +99,11 @@
       <div class="field">
         <label for="religion">Religion <span class="opt">optional</span></label>
         <select name="religion" id="religion">
+          <option value="">Please Select</option>
           <option value="islam">Islam</option>
-          <option value="christianity">Christianity</option>
           <option value="buddhism">Buddhism</option>
           <option value="hinduism">Hinduism</option>
+          <option value="christianity">Christianity</option>
           <option value="other">Other</option>
         </select>
       </div>
@@ -110,9 +112,9 @@
       <div class="field">
         <label>Study habits</label>
         <div class="chip-group" id="chips-study_habits">
-          <div class="chip" data-val="heavy"    onclick="pickChip(this,'study_habits')">📚 Heavy studier</div>
+          <div class="chip" data-val="heavy"    onclick="pickChip(this,'study_habits')">📚 Heavy</div>
           <div class="chip" data-val="moderate" onclick="pickChip(this,'study_habits')">🙂 Moderate</div>
-          <div class="chip" data-val="light"    onclick="pickChip(this,'study_habits')">🌴 Light / relaxed</div>
+          <div class="chip" data-val="light"    onclick="pickChip(this,'study_habits')">🌴 Relaxed</div>
         </div>
         <input type="hidden" name="study_habits" id="val-study_habits"/>
       </div>

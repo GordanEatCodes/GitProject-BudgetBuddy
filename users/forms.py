@@ -13,12 +13,12 @@ class RegistrationForm(UserCreationForm):
         model = User
         fields = ['fullname', 'email', 'password1', 'password2']
 
-        def save(self, commit=True):
-            user = super().save(commit=False)
-            user.email = self.cleaned_data['email']
-            if commit:
-                user.save()
-            return user
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.email = self.cleaned_data['email']
+        if commit:
+            user.save()
+        return user
         
     
 class RoleSelectForm(forms.ModelForm):
@@ -64,13 +64,6 @@ class TenantPreferenceForm(forms.ModelForm):
         ]
 
 class LoginForm(forms.Form):
-    """Login form that accepts username or email and password.
-
-    Methods:
-    - authenticate_user(): returns authenticated User or None
-    - get_user_profile(): returns related UserProfile or None
-    """
-
     username_or_email = forms.CharField(label='Username or Email', max_length=254, required=True)
     password = forms.CharField(label='Password', widget=forms.PasswordInput, required=True)
 
@@ -80,38 +73,44 @@ class LoginForm(forms.Form):
         password = cleaned.get('password')
 
         if username_or_email and password:
-            # Try to find user by username first, then by email
+            user = None
+
+            # 1. Try Django User.username
             try:
                 user = User.objects.get(username=username_or_email)
             except User.DoesNotExist:
+                pass
+
+            # 2. Try User.email
+            if user is None:
                 try:
                     user = User.objects.get(email=username_or_email)
                 except User.DoesNotExist:
-                    user = None
+                    pass
 
+            # 3. Try UserProfile.username  ← NEW: this is what was missing
             if user is None:
-                raise forms.ValidationError('Invalid username/email or password')
+                try:
+                    profile = UserProfile.objects.get(username=username_or_email)
+                    user = profile.user
+                except UserProfile.DoesNotExist:
+                    pass
 
-            # check password
-            if not user.check_password(password):
-                raise forms.ValidationError('Invalid username/email or password')
+            if user is None or not user.check_password(password):
+                raise forms.ValidationError('Invalid username/email or password.')
 
-            # attach the authenticated user to the form instance
             self.user = user
 
         return cleaned
 
     def authenticate_user(self):
-        """Return the authenticated User or None. Call after is_valid()."""
         return getattr(self, 'user', None)
 
     def get_user_profile(self):
-        """Return related UserProfile instance if available, else None."""
         user = self.authenticate_user()
         if not user:
             return None
         try:
-            return user.userprofile
+            return user.userprofile   # ← FIX: was user.UserProfile (capital U breaks the reverse relation)
         except Exception:
             return None
-

@@ -18,18 +18,25 @@
     </div>
 
     <div class="card">
-        <div class="card-header">Welcome back</div>
+        <a href="{% url 'home' %}" class="card-exit" title="Exit">&#x2715;</a>
+        <div class="card-header">Welcome Back</div>
         <div class="card-sub">Log in to your account</div>
 
-        {% if error_message %}
-            <div class="server-error show">{{ error_message }}</div>
+        {% if form.non_field_errors %}
+            <div class="error">{{ form.non_field_errors }}</div>
         {% endif %}
+
+        {% for field in form %}
+        {% if field.errors %}
+            <div class="error">{{ field.errors }}</div>
+        {% endif %}
+        {% endfor %}
 
     <form id="LoginForm" action="{% url 'login' %}" method="POST">
         {% csrf_token %}
 
         <div class = "field">
-        <input type="text" id="username" name="username" placeholder="Username or email" required/>
+        <input type="text" id="username" name="username_or_email" placeholder="Username or email" required/>
         </div>
 
         <div class = "field">

@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import RoommatePost
 
+def index(request):
+    return render(request, 'roommate/index.html')
 
 def add_roommate(request):
     if request.method == 'POST':
@@ -18,7 +20,7 @@ def add_roommate(request):
             contact=contact,
         )
 
-        return redirect('roommate_list')
+        return redirect('roommates')
 
     return render(request, 'roommate/add_roommate.html')
 
@@ -31,7 +33,7 @@ def roommate_list(request):
 def delete_roommate(request, id):
     post = get_object_or_404(RoommatePost, id=id)
     post.delete()
-    return redirect('roommate_list')
+    return redirect('roommates')
 
 
 def edit_roommate(request, id):
@@ -49,7 +51,7 @@ def edit_roommate(request, id):
         post.contact = request.POST.get('contact')
         post.save()
 
-        return redirect('roommate_list')
+        return redirect('roommates')
 
     return render(request, 'roommate/edit_roommate.html', {'post': post})
 

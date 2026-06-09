@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from django.shortcuts import render
+from users.views import dashboard
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -16,7 +17,8 @@ def about(request):
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home, name='home'),
-    path('dashboard/', lambda request: render(request, 'dashboard.html'), name='dashboard'),
+    path('home/', home, name='home'),
+    path('dashboard/', dashboard, name='dashboard'),
     path('contact/', contact, name='contact'),
     path('about/', about, name='about'),
     path('users/', include('users.urls')),
