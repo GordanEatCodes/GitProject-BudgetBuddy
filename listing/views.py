@@ -5,7 +5,8 @@ from django.db.models import Q
 from django.contrib.auth.models import User
 
 from .models import Room, Unit
-from .form import RoomForm
+from .form import RoomForm, UnitForm
+
 
 
 # ────────────── HOME（假角色切換用）──────────────
@@ -127,3 +128,51 @@ def room_create(request):
 
     # 💡 只有這裡改掉：把原本的 'room_form.html' 改成你的真實檔名 'room_create.html'
     return render(request, 'room_create.html', {'form': form})
+
+def unit_create(request):
+    """
+    房東新增 Unit 的表單頁
+    URL: /listing/owner/units/new/
+    與 room_create 類似，未登入時會自動指派第一個 User 為 owner。
+    """
+    if request.method == 'POST':
+        form = UnitForm(request.POST, request.FILES)
+        if form.is_valid():
+            unit = form.save(commit=False)
+
+            if request.user.is_authenticated:
+                unit.owner = request.user
+            else:
+                default_owner = User.objects.first()
+                if default_owner is None:
+                    raise ValueError("No User found in database. Please create at least one User.")
+                unit.owner = default_owner
+
+            unit.save()
+            return redirect('owner_dashboard')
+    else:
+        form = UnitForm()
+
+    return render(request, 'unit_form.html', {'form': form})
+
+def unit_create(request):
+    if request.method == 'POST':
+        form = UnitForm(request.POST, request.FILES)
+        if form.is_valid():
+            unit = form.save(commit=False)
+
+            if request.user.is_authenticated:
+                unit.owner = request.user
+            else:
+                from django.contrib.auth.models import User
+                default_owner = User.objects.first()
+                if default_owner is None:
+                    raise ValueError("No User found in database. Please create at least one User.")
+                unit.owner = default_owner
+
+            unit.save()
+            return redirect('owner_dashboard')
+    else:
+        form = UnitForm()
+
+    return render(request, 'unit_form.html', {'form': form})

@@ -1,19 +1,13 @@
 from django.contrib import admin
-
-# Register your models here.
-
-# listing/admin.py
-from django.contrib import admin
 from .models import Room, Unit
 
 @admin.register(Room)
 class RoomAdmin(admin.ModelAdmin):
-    list_display = ('title', 'owner', 'rent', 'location', 'available', 'created_at')
-    list_filter = ('available', 'has_internet', 'has_private_bathroom', 'near_station')
-    search_fields = ('title', 'location', 'owner__username')
+    # Only using 'title' ensures it won't crash, no matter what fields Room has
+    list_display = ('title',) 
 
 @admin.register(Unit)
 class UnitAdmin(admin.ModelAdmin):
-    list_display = ('title', 'owner', 'rent', 'location', 'bedrooms', 'bathrooms', 'available', 'created_at')
-    list_filter = ('available', 'furnished', 'has_internet', 'near_station', 'pet_friendly')
-    search_fields = ('title', 'location', 'owner__username')
+    list_display = ['title', 'owner', 'rent', 'state', 'unit_type', 'available', 'created_at']
+    list_filter = ['state', 'unit_type', 'available', 'has_wifi', 'pet_allowed']
+    search_fields = ['title', 'location_detail']
