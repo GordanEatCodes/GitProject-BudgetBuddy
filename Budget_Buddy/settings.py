@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+# BudgetBuddy/settings.py
 from pathlib import Path
 import os
 from dotenv import load_dotenv
@@ -20,6 +21,8 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 DEBUG = os.environ.get('DEBUG') == 'True'
 
@@ -35,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'users',
     'roommate',
+    'listing',
 ]
 
 
@@ -61,8 +65,9 @@ TEMPLATES = [
         'DIRS': [
             BASE_DIR / 'templates',
             BASE_DIR / 'users/templates',
-            BASE_DIR / 'roommate/templates'
-       ],
+            BASE_DIR / 'roommate/templates',
+            BASE_DIR / 'listing/templates',
+    ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

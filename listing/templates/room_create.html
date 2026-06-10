@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add Room</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+  <div class="container py-4">
+    <h2 class="mb-4 text-center">Add a Room</h2>
+
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+              {% csrf_token %}
+
+              <div class="mb-3">
+                <label class="form-label">Title</label>
+                {{ form.title }}
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Rent (per month)</label>
+                {{ form.rent }}
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Location</label>
+                {{ form.location }}
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Room details (e.g. 3 rooms, 2 toilets)</label>
+                {{ form.size }}
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Photo</label><br>
+                {{ form.image }}
+              </div>
+
+              <div class="form-check mb-2">
+                {{ form.has_internet }}
+                <label class="form-check-label">Wi‑Fi included</label>
+              </div>
+
+              <div class="form-check mb-2">
+                {{ form.has_private_bathroom }}
+                <label class="form-check-label">Private bathroom</label>
+              </div>
+
+              <div class="form-check mb-2">
+                {{ form.near_station }}
+                <label class="form-check-label">Near station</label>
+              </div>
+
+              <div class="form-check mb-3">
+                {{ form.available }}
+                <label class="form-check-label">Available now</label>
+              </div>
+
+              <button type="submit" class="btn btn-primary w-100">
+                Save Room
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div class="text-center mt-3">
+          <a href="{% url 'owner_dashboard' %}">Back to Owner Dashboard</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
