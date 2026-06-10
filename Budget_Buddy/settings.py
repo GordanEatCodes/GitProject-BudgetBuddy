@@ -38,6 +38,7 @@ INSTALLED_APPS = [
 ]
 
 
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -49,7 +50,9 @@ MIDDLEWARE = [
 ]
 
 
+
 ROOT_URLCONF = 'Budget_Buddy.urls'
+
 
 
 TEMPLATES = [
@@ -70,6 +73,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 
 WSGI_APPLICATION = 'Budget_Buddy.wsgi.application'
@@ -101,6 +105,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
+TIME_ZONE = 'Asia/Kuala_Lumpur'
 TIME_ZONE = 'Asia/Kuala_Lumpur'
 
 USE_I18N = True

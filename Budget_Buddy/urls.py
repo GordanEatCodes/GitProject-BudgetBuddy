@@ -13,7 +13,7 @@ def contact(request):
 
 def about(request):
     return render(request, 'about.html')
-        
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home, name='home'),

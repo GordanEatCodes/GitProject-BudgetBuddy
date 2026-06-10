@@ -1,8 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import RoommatePost
 
-def index(request):
-    return render(request, 'roommate/index.html')
 
 def add_roommate(request):
     if request.method == 'POST':
@@ -20,20 +18,58 @@ def add_roommate(request):
             contact=contact,
         )
 
-        return redirect('roommates')
+        return redirect('roommate_list')
 
     return render(request, 'roommate/add_roommate.html')
 
 
 def roommate_list(request):
     posts = RoommatePost.objects.all()
-    return render(request, 'roommate/roommate_list.html', {'posts': posts})
 
+    location = request.GET.get('location')
+    max_budget = request.GET.get('max_budget')
+    sort = request.GET.get('sort')
+
+    if location:
+        posts = posts.filter(location__icontains=location)
+
+    if max_budget:
+        try:
+            posts = posts.filter(budget__lte=float(max_budget))
+        except ValueError:
+            pass
+
+    if sort == 'oldest':
+        posts = posts.order_by('created_at')
+    elif sort == 'low_budget':
+        posts = posts.order_by('budget')
+    elif sort == 'high_budget':
+        posts = posts.order_by('-budget')
+    else:
+        posts = posts.order_by('-created_at')  # default: newest first
+
+    return render(request, 'roommate/roommate_list.html', {
+        'posts': posts,
+        'location': location,
+        'max_budget': max_budget,
+        'sort': sort,
+    })
+
+def roommate_detail(request, id):
+    post = get_object_or_404(RoommatePost, id=id)
+
+    return render(request, 'roommate/roommate_detail.html', {
+        'post': post
+    })
 
 def delete_roommate(request, id):
     post = get_object_or_404(RoommatePost, id=id)
-    post.delete()
-    return redirect('roommates')
+
+    if request.method == 'POST':
+        post.delete()
+        return redirect('roommate_list')
+
+    return render(request, 'roommate/confirm_delete.html', {'post': post})
 
 
 def edit_roommate(request, id):
@@ -51,7 +87,7 @@ def edit_roommate(request, id):
         post.contact = request.POST.get('contact')
         post.save()
 
-        return redirect('roommates')
+        return redirect('roommate_list')
 
     return render(request, 'roommate/edit_roommate.html', {'post': post})
 
@@ -64,21 +100,43 @@ def match_roommates(request, id):
 
     for post in all_posts:
         score = 0
+        max_score = 10
+        reasons = []
 
         if current_user_post.location.lower() == post.location.lower():
             score += 3
+            reasons.append("Same location")
+        else:
+            reasons.append("Different location")
 
         budget_diff = abs(float(current_user_post.budget) - float(post.budget))
 
         if budget_diff <= 100:
             score += 3
+            reasons.append("Budget difference is within RM100")
         elif budget_diff <= 300:
             score += 1
+            reasons.append("Budget difference is within RM300")
+        else:
+            reasons.append("Budget difference is more than RM300")
 
-        common_words = set(current_user_post.description.lower().split()) & set(post.description.lower().split())
-        score += len(common_words)
+        current_words = set(current_user_post.description.lower().split())
+        post_words = set(post.description.lower().split())
 
-        results.append((post, score))
+        common_words = current_words & post_words
+
+        keyword_score = min(len(common_words), 4)
+        score += keyword_score
+
+        if common_words:
+            reasons.append("Similar keywords: " + ", ".join(common_words))
+        else:
+            reasons.append("No similar description keywords")
+
+
+        match_percentage = round((score / max_score) * 100)
+
+        results.append((post, score, match_percentage, reasons))
 
     results.sort(key=lambda x: x[1], reverse=True)
 
