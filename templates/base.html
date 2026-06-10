@@ -1,49 +1,152 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Budget Buddy</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&display=swap" rel="stylesheet" />
+    <title>Budget Buddy</title>
 
-  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --main-bg: #f7f3ed;
+            --card-bg: #ffffff;
+            --cream: #f3e6d3;
+            --black: #000000;
+            --text-dark: #111111;
+            --text-muted: #6f6a63;
+            --border-soft: #ded7ce;
+        }
+
+        body {
+            background-color: var(--main-bg);
+            color: var(--text-dark);
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .navbar {
+            background-color: var(--main-bg) !important;
+            border-bottom: 1px solid var(--border-soft);
+            padding: 18px 45px;
+        }
+
+        .navbar-brand {
+            color: var(--black) !important;
+            font-weight: 700;
+            font-size: 24px;
+        }
+
+        .container {
+            margin-top: 35px;
+        }
+
+        h1, h2, h3, h4 {
+            color: var(--black);
+            font-weight: 700;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-soft);
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+        }
+
+        .form-control {
+            background-color: #fbfaf7;
+            border: 1px solid var(--border-soft);
+            border-radius: 10px;
+            padding: 12px;
+        }
+
+        .form-control:focus {
+            border-color: var(--black);
+            box-shadow: none;
+        }
+
+        .btn {
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+        .btn-primary,
+        .btn-success,
+        .btn-info {
+            background-color: var(--black) !important;
+            border-color: var(--black) !important;
+            color: white !important;
+        }
+
+        .btn-primary:hover,
+        .btn-success:hover,
+        .btn-info:hover {
+            background-color: #333333 !important;
+            border-color: #333333 !important;
+        }
+
+        .btn-warning {
+            background-color: var(--cream) !important;
+            border-color: var(--border-soft) !important;
+            color: var(--black) !important;
+        }
+
+        .btn-secondary {
+            background-color: white !important;
+            border-color: var(--border-soft) !important;
+            color: var(--black) !important;
+        }
+
+        .btn-danger {
+            background-color: #b94a48 !important;
+            border-color: #b94a48 !important;
+            color: white !important;
+        }
+
+        .text-muted {
+            color: var(--text-muted) !important;
+        }
+
+        small {
+            color: var(--text-muted);
+        }
+
+        .badge.bg-success {
+            background-color: var(--black) !important;
+        }
+
+        .page-footer {
+            background-color: var(--cream);
+            margin-top: 60px;
+            padding: 30px 45px;
+            border-top: 1px solid var(--border-soft);
+        }
+    </style>
 </head>
+
 <body>
-  <div class="page-wrapper">
-  
-    <!-- ══ HEADER ══ -->
-    <header>
-  
-    </header>
-<!-- ══ FOOTER ══ -->
-    <footer>
-      <div class="footer-inner">
- 
-        <div class="footer-brand">
-          <span class="footer-brand-name">Budget Buddy</span>
-          <p class="footer-tagline">A centralized platform for university students<br>to find housing and connect with roommates.</p>
+
+    <nav class="navbar d-flex justify-content-between align-items-center">
+        <a class="logo-wrap" href="{% url 'dashboard' %}" data-name="Logo">
+            <img alt="Budget Buddy Logo" src="{% static 'images/LOGO-bgremove.png' %}" height="40" />
+        </a>
+
+        <div>
+            <a class="btn btn-secondary me-2" href="{% url 'roommate_list' %}">Roommates</a>
+            <a class="btn btn-primary" href="{% url 'add_roommate' %}">+ Add</a>
         </div>
- 
-        <nav class="footer-nav">
-          <div class="footer-col">
-            <span class="footer-col-header">Company</span>
-            <a class="col-link" href="/about/">About Us</a>
-            <a class="col-link" href="/contact/">Contact Us</a>
-          </div>
-          <div class="footer-col">
-            <span class="footer-col-header">Features</span>
-            <a class="col-link" href="#">Rent House</a>
-            <a class="col-link" href="#">Find Roommates</a>
-          </div>
-        </nav>
- 
-      </div>
-    </footer>
- 
-  </div>
+    </nav>
+
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <div class="page-footer">
+        <strong>BudgetBuddy</strong>
+        <p class="text-muted mb-0">
+            A centralized platform for university students to find housing and connect with roommates.
+        </p>
+    </div>
+
 </body>
 </html>
-<!-- <END OF FOOTER HTML EDITION>  -->
-

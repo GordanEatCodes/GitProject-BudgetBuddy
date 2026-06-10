@@ -1,0 +1,123 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Verify your email — BudgetBuddy</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{% static 'css/base.css' %}"/>
+  <link rel="stylesheet" href="{% static 'css/register_otp.css' %}"/>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="brand">
+    <div class="brand-name">BudgetBuddy</div>
+    <div class="brand-tag">Define your budget, simplify your life</div>
+  </div>
+
+  <div class="progress-dots">
+    <div class="dot done"></div>
+    <div class="dot active"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+  <div class="step-label">STEP 2 OF 5 — VERIFY EMAIL</div>
+
+  <div class="card">
+
+    <div class="otp-icon">✉️</div>
+    <div class="card-title">Check your email</div>
+    <div class="card-sub">
+      We sent a 6-digit code to<br/>
+      <span class="email-highlight">{{ email }}</span>
+    </div>
+
+    {% if error %}
+      <div class="server-error show">{{ error }}</div>
+    {% endif %}
+
+    <form method="POST" id="otpForm">
+      {% csrf_token %}
+
+      <div class="otp-row">
+        <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" id="o1" autofocus/>
+        <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" id="o2"/>
+        <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" id="o3"/>
+        <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" id="o4"/>
+        <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" id="o5"/>
+        <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" id="o6"/>
+      </div>
+
+      <!-- hidden field Django reads -->
+      <input type="hidden" name="otp" id="otpHidden"/>
+
+      <div class="otp-error" id="otpErr">Please enter the full 6-digit code</div>
+
+      <button type="submit" class="btn-primary" id="verifyBtn">Verify email &rarr;</button>
+    </form>
+
+    <div class="resend-row">
+      Didn't get the code?
+      <a href="{% url 'register' %}" class="resend-link">Go back and resend</a>
+    </div>
+
+  </div>
+
+  <div class="link-row">
+    Already have an account? <a href="{% url 'login' %}">Sign in</a>
+  </div>
+
+</div>
+<script>
+  const boxes  = Array.from(document.querySelectorAll('.otp-box'));
+  const hidden = document.getElementById('otpHidden');
+  const form   = document.getElementById('otpForm');
+  const errEl  = document.getElementById('otpErr');
+
+  // auto-advance and auto-back
+  boxes.forEach((box, i) => {
+    box.addEventListener('input', () => {
+      box.value = box.value.replace(/[^0-9]/g, '');
+      if (box.value && i < boxes.length - 1) boxes[i + 1].focus();
+      syncHidden();
+    });
+    box.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && !box.value && i > 0) boxes[i - 1].focus();
+    });
+    // paste support
+    box.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const digits = (e.clipboardData.getData('text').match(/\d/g) || []).slice(0, 6);
+      digits.forEach((d, idx) => { if (boxes[idx]) boxes[idx].value = d; });
+      const next = Math.min(digits.length, boxes.length - 1);
+      boxes[next].focus();
+      syncHidden();
+    });
+  });
+
+  function syncHidden() {
+    hidden.value = boxes.map(b => b.value).join('');
+  }
+
+  form.addEventListener('submit', (e) => {
+    syncHidden();
+    if (hidden.value.length < 6) {
+      e.preventDefault();
+      errEl.classList.add('show');
+      boxes.forEach(b => b.classList.add('error'));
+    } else {
+      errEl.classList.remove('show');
+      boxes.forEach(b => b.classList.remove('error'));
+    }
+  });
+
+  // pre-fill boxes if OTP error and user needs to retry
+  window.addEventListener('DOMContentLoaded', () => {
+    boxes[0].focus();
+  });
+</script>
+</body>
+</html>

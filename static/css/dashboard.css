@@ -67,6 +67,16 @@
     nav.main-nav a:hover {
       opacity: 0.6;
     }
+
+    .user-greeting {
+      font-weight: 500;
+      font-size: 16px;
+      letter-spacing: -0.08px;
+      color: #000000 !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
  
     /* ════════════════════════════
        HERO

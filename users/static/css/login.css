@@ -1,0 +1,53 @@
+.card input {
+    width: 100%;
+    padding: 12px 16px;
+    margin-bottom: 0;
+    border: 1px solid #333;
+    border-radius: 8px;
+    color: #515151;
+    font-weight: 500;
+    font-size: 15px;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.card-header {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.card-sub {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.signup-link {
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 20px;
+    }
+
+.signup-link a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+.forgot-link {
+      text-align: right;
+      margin-top: 20px;
+      color: var(--muted);
+      font-size: 13px;
+      text-decoration: none;
+    }
+
+.forgot-link a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
