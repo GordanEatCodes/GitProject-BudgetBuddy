@@ -5,12 +5,7 @@ from users.views import dashboard
 from django.conf import settings
 from django.conf.urls.static import static
 from listing.views import home 
-
-def contact(request):
-    return render(request, 'contact.html')
-
-def about(request):
-    return render(request, 'about.html')
+from users.views import contact, about
 
 urlpatterns = [
     path('admin/', admin.site.urls),

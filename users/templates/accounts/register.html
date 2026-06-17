@@ -52,7 +52,7 @@
         <label for="password1">Password</label>
         <div class="pw-wrap">
           <input type="password" id="password1" name="password1" placeholder="At least 8 characters" autocomplete="new-password"/>
-          <button type="button" class="pw-toggle" id="pwToggle">show</button>
+          <button type="button" class="pw-toggle" id="pwToggle1">show</button>
         </div>
         <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
         <div class="strength-label" id="strengthLabel"></div>
@@ -63,6 +63,7 @@
         <label for="password2">Confirm password</label>
         <div class="pw-wrap">
           <input type="password" id="password2" name="password2" placeholder="Same password again" autocomplete="new-password"/>
+          <button type="button" class="pw-toggle" id="pwToggle2">show</button>
         </div>
         <div class="field-error" id="confirmErr">Passwords do not match</div>
       </div>
@@ -82,14 +83,21 @@
   const emailEl = document.getElementById('email');
   const pwEl = document.getElementById('password1');
   const confirmEl = document.getElementById('password2');
-  const pwToggle = document.getElementById('pwToggle');
+  const pwToggle1 = document.getElementById('pwToggle1');
+  const pwToggle2 = document.getElementById('pwToggle2');
   const strengthFill = document.getElementById('strengthFill');
   const strengthLabel = document.getElementById('strengthLabel');
 
-  pwToggle.addEventListener('click', () => {
+  pwToggle1.addEventListener('click', () => {
     const show = pwEl.type === 'password';
     pwEl.type = show ? 'text' : 'password';
-    pwToggle.textContent = show ? 'hide' : 'show';
+    pwToggle1.textContent = show ? 'hide' : 'show';
+  });
+
+  pwToggle2.addEventListener('click', () => {
+    const show = confirmEl.type === 'password';
+    confirmEl.type = show ? 'text' : 'password';
+    pwToggle2.textContent = show ? 'hide' : 'show';
   });
 
   function scorePassword(pw) {
@@ -108,7 +116,7 @@
       confirmEl.focus();
     }
   });
-  
+
   pwEl.addEventListener('input', () => {
     const score = scorePassword(pwEl.value);
     const colors = ['', '#E24B4A', '#EF9F27', '#EF9F27', '#639922', '#1D9E75'];

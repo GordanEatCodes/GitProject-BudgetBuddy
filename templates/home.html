@@ -58,18 +58,14 @@
         <nav class="footer-nav">
           <div class="footer-col">
             <span class="footer-col-header">Company</span>
-            <a class="col-link" href="/about/">About Us</a>
-            <a class="col-link" href="/contact/">Contact Us</a>
+            <a class="col-link" href="{% url 'about' %}">About Us</a>
+            <a class="col-link" href="{% url 'contact' %}">Contact Us</a>
           </div>
+
           <div class="footer-col">
             <span class="footer-col-header">Features</span>
-            {# Optional: also switch footer Rent House link #}
-            {% if is_owner %}
-              <a class="col-link" href="{% url 'owner_dashboard' %}">Rent House</a>
-            {% else %}
-              <a class="col-link" href="{% url 'choose' %}">Rent House</a>
-            {% endif %}
-            <a class="col-link" href="#">Find Roommates</a>
+              <a class="col-link" href="{% url 'register' %}">Rent House</a>
+              <a class="col-link" href="{% url 'register' %}">Find Roommates</a>
           </div>
         </nav>
  

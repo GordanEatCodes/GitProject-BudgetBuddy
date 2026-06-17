@@ -21,6 +21,12 @@ from .forms import (
 def home(request):
     return render(request, 'home.html')
 
+def about(request):
+    return render(request, 'about_us.html')
+
+def contact(request):
+    return render(request, 'contact.html')
+
 @login_required
 def dashboard(request):
     profile = request.user.userprofile
