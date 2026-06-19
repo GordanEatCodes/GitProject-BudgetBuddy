@@ -43,12 +43,12 @@
       margin-top: 20px;
       color: var(--muted);
       font-size: 13px;
-      text-decoration: underline;
+      text-decoration: none;
     }
 
 .forgot-link a {
       color: var(--accent);
-      text-decoration: underline;
+      text-decoration: none;
       font-weight: 500;
     }
 
