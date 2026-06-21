@@ -133,14 +133,21 @@ def match_roommates(request, id):
         else:
             reasons.append("No similar description keywords")
 
-
         match_percentage = round((score / max_score) * 100)
 
-        results.append((post, score, match_percentage, reasons))
+        results.append({
+            'post': post,
+            'score': score,
+            'match_percentage': match_percentage,
+            'reasons': reasons
+        })
 
-    results.sort(key=lambda x: x[1], reverse=True)
+    results.sort(key=lambda x: x['score'], reverse=True)
+
+    best_match = results[0] if results else None
 
     return render(request, 'roommate/match.html', {
         'current': current_user_post,
+        'best_match': best_match,
         'matches': results
     })
