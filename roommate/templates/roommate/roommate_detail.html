@@ -24,22 +24,88 @@
     <h5>Contact</h5>
     <p>📞 {{ post.contact }}</p>
 
+    <hr>
+
+    <h5>Lifestyle Preferences</h5>
+
+    <p>
+        <strong>Cleanliness:</strong> {{ post.get_cleanliness_display }}
+    </p>
+
+    <p>
+        <strong>Sleep Schedule:</strong> {{ post.get_sleep_schedule_display }}
+    </p>
+
+    <p>
+        <strong>Study Preference:</strong> {{ post.get_study_preference_display }}
+    </p>
+
+    <p>
+        <strong>Smoking:</strong> {{ post.get_smoking_display }}
+    </p>
+
+    <p>
+        <strong>Pets:</strong> {{ post.get_pets_display }}
+    </p>
+
+    <hr>
+
     <div class="mt-3">
+
         <a href="{% url 'match_roommates' post.id %}" class="btn btn-info">
             Match
         </a>
 
-        <a href="{% url 'edit_roommate' post.id %}" class="btn btn-warning">
-            Edit
-        </a>
+        {% if user.is_authenticated %}
 
-        <a href="{% url 'delete_roommate' post.id %}" class="btn btn-danger">
-            Delete
-        </a>
+            {% if post.created_by == user %}
+
+                <a href="{% url 'applications_received' %}" class="btn btn-primary">
+                    View Applications
+                </a>
+
+                <a href="{% url 'edit_roommate' post.id %}" class="btn btn-warning">
+                    Edit
+                </a>
+
+                <a href="{% url 'delete_roommate' post.id %}" class="btn btn-danger">
+                    Delete
+                </a>
+
+            {% else %}
+
+                {% if post.created_by %}
+
+                    <a href="{% url 'apply_roommate' post.id %}" class="btn btn-primary">
+                        Apply to be Roommate
+                    </a>
+
+                {% else %}
+
+                    <p class="text-muted mt-3">
+                        This is an old roommate post and cannot receive applications.
+                    </p>
+
+                {% endif %}
+
+            {% endif %}
+
+        {% else %}
+
+            <p class="text-muted mt-3">
+                Please login to apply for this roommate post.
+            </p>
+
+            <a href="/login/" class="btn btn-primary">
+                Login to Apply
+            </a>
+
+        {% endif %}
 
         <a href="{% url 'roommate_list' %}" class="btn btn-secondary">
             Back
         </a>
+
     </div>
 
 </div>

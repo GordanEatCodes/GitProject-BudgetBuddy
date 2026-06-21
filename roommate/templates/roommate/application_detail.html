@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="card p-4 shadow-sm mb-4">
+    <h2>Roommate Application Chat</h2>
+
+    <hr>
+
+    <h4>{{ application.roommate_post.title }}</h4>
+
+    <p>
+        <strong>Applicant:</strong> {{ application.applicant.username }}
+    </p>
+
+    <p>
+        <strong>Coordinator:</strong> {{ application.roommate_post.created_by.username }}
+    </p>
+
+    <p>
+        <strong>Status:</strong>
+
+        {% if application.status == 'accepted' %}
+            <span class="badge bg-success">Accepted</span>
+        {% elif application.status == 'rejected' %}
+            <span class="badge bg-danger">Rejected</span>
+        {% else %}
+            <span class="badge bg-warning text-dark">Pending</span>
+        {% endif %}
+    </p>
+</div>
+
+
+<div class="card p-4 shadow-sm mb-4">
+    <h4>Messages</h4>
+
+    <hr>
+
+    {% for msg in messages %}
+
+        {% if msg.sender == user %}
+            <div class="text-end mb-3">
+                <div class="d-inline-block p-3 rounded bg-dark text-white">
+                    <strong>You</strong>
+                    <p class="mb-1">{{ msg.message }}</p>
+                    <small>{{ msg.created_at|date:"d M Y, h:i A" }}</small>
+                </div>
+            </div>
+        {% else %}
+            <div class="text-start mb-3">
+                <div class="d-inline-block p-3 rounded bg-light border">
+                    <strong>{{ msg.sender.username }}</strong>
+                    <p class="mb-1">{{ msg.message }}</p>
+                    <small class="text-muted">{{ msg.created_at|date:"d M Y, h:i A" }}</small>
+                </div>
+            </div>
+        {% endif %}
+
+    {% empty %}
+
+        <p class="text-muted">
+            No messages yet.
+        </p>
+
+    {% endfor %}
+</div>
+
+
+<div class="card p-4 shadow-sm">
+    <h4>Send Message</h4>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <textarea 
+            name="message" 
+            class="form-control mb-3" 
+            rows="4"
+            placeholder="Type your message here..."></textarea>
+
+        <button type="submit" class="btn btn-primary">
+            Send Message
+        </button>
+
+        <a href="{% url 'roommate_list' %}" class="btn btn-secondary">
+            Back
+        </a>
+    </form>
+</div>
+
+{% endblock %}

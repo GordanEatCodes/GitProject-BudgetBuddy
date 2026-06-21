@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import RoommatePost
+from django.contrib.auth.decorators import login_required
+from .models import RoommatePost, RoommateApplication, RoommateMessage
 import string
 
 
@@ -20,6 +21,7 @@ def normalize_text(text):
     return text
 
 
+@login_required(login_url='/login/')
 def add_roommate(request):
     if request.method == 'POST':
         title = request.POST.get('title')
@@ -40,6 +42,9 @@ def add_roommate(request):
             study_preference=request.POST.get('study_preference', 'any'),
             smoking=request.POST.get('smoking', 'any'),
             pets=request.POST.get('pets', 'any'),
+
+            # Store who created this roommate post
+            created_by=request.user,
         )
 
         return redirect('roommate_list')
@@ -91,8 +96,13 @@ def roommate_detail(request, id):
     })
 
 
+@login_required(login_url='/login/')
 def delete_roommate(request, id):
     post = get_object_or_404(RoommatePost, id=id)
+
+    # Only creator can delete own post
+    if post.created_by != request.user:
+        return redirect('roommate_detail', id=post.id)
 
     if request.method == 'POST':
         post.delete()
@@ -101,8 +111,13 @@ def delete_roommate(request, id):
     return render(request, 'roommate/confirm_delete.html', {'post': post})
 
 
+@login_required(login_url='/login/')
 def edit_roommate(request, id):
     post = get_object_or_404(RoommatePost, id=id)
+
+    # Only creator can edit own post
+    if post.created_by != request.user:
+        return redirect('roommate_detail', id=post.id)
 
     if request.method == 'POST':
         post.title = request.POST.get('title')
@@ -243,4 +258,122 @@ def match_roommates(request, id):
         'current': current_user_post,
         'best_match': best_match,
         'matches': results
+    })
+
+
+@login_required(login_url='/login/')
+def apply_roommate(request, id):
+    post = get_object_or_404(RoommatePost, id=id)
+
+    # Old posts may not have creator, so application is not allowed
+    if post.created_by is None:
+        return redirect('roommate_detail', id=post.id)
+
+    # User cannot apply to own post
+    if post.created_by == request.user:
+        return redirect('roommate_detail', id=post.id)
+
+    # Prevent duplicate application
+    existing_application = RoommateApplication.objects.filter(
+        roommate_post=post,
+        applicant=request.user
+    ).first()
+
+    if existing_application:
+        return redirect('application_detail', application_id=existing_application.id)
+
+    if request.method == 'POST':
+        message = request.POST.get('message')
+
+        application = RoommateApplication.objects.create(
+            roommate_post=post,
+            applicant=request.user,
+            message=message,
+            status='pending'
+        )
+
+        # Save first message into chat
+        if message:
+            RoommateMessage.objects.create(
+                application=application,
+                sender=request.user,
+                message=message
+            )
+
+        return redirect('my_roommate_applications')
+
+    return render(request, 'roommate/apply_roommate.html', {
+        'post': post
+    })
+
+
+@login_required(login_url='/login/')
+def applications_received(request):
+    applications = RoommateApplication.objects.filter(
+        roommate_post__created_by=request.user
+    ).order_by('-created_at')
+
+    return render(request, 'roommate/applications_received.html', {
+        'applications': applications
+    })
+
+
+@login_required(login_url='/login/')
+def my_roommate_applications(request):
+    applications = RoommateApplication.objects.filter(
+        applicant=request.user
+    ).order_by('-created_at')
+
+    return render(request, 'roommate/my_applications.html', {
+        'applications': applications
+    })
+
+
+@login_required(login_url='/login/')
+def update_application_status(request, application_id, status):
+    application = get_object_or_404(RoommateApplication, id=application_id)
+
+    # Only post creator / coordinator can accept or reject
+    if application.roommate_post.created_by != request.user:
+        return redirect('roommate_list')
+
+    # Only allow valid statuses
+    if status not in ['pending', 'accepted', 'rejected']:
+        return redirect('applications_received')
+
+    if request.method == 'POST':
+        application.status = status
+        application.save()
+
+    return redirect('applications_received')
+
+
+@login_required(login_url='/login/')
+def application_detail(request, application_id):
+    application = get_object_or_404(RoommateApplication, id=application_id)
+
+    is_applicant = application.applicant == request.user
+    is_coordinator = application.roommate_post.created_by == request.user
+
+    # Only applicant or coordinator can view the chat page
+    if not is_applicant and not is_coordinator:
+        return redirect('roommate_list')
+
+    if request.method == 'POST':
+        message = request.POST.get('message')
+
+        if message:
+            RoommateMessage.objects.create(
+                application=application,
+                sender=request.user,
+                message=message
+            )
+
+        return redirect('application_detail', application_id=application.id)
+
+    chat_messages = application.messages.all()
+
+    return render(request, 'roommate/application_detail.html', {
+        'application': application,
+        'messages': chat_messages
     })

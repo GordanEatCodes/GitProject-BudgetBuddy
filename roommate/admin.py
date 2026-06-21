@@ -1,9 +1,6 @@
 from django.contrib import admin
-from .models import RoommatePost
+from .models import RoommatePost, RoommateApplication, RoommateMessage
 
-class RoommatePostAdmin(admin.ModelAdmin):
-    def save_model(self, request, obj, form, change):
-        obj.created_by = request.user
-        super().save_model(request, obj, form, change)
-
-admin.site.register(RoommatePost, RoommatePostAdmin)
+admin.site.register(RoommatePost)
+admin.site.register(RoommateApplication)
+admin.site.register(RoommateMessage)
