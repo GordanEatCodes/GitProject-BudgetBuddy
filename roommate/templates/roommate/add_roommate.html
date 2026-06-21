@@ -7,20 +7,67 @@
 <form method="POST" class="mt-3 p-4 border rounded shadow-sm bg-light">
     {% csrf_token %}
 
+    <label>Title</label>
     <input type="text" name="title" placeholder="Title"
-           class="form-control mb-2">
+           class="form-control mb-2" required>
 
+    <label>Description</label>
     <textarea name="description" placeholder="Description"
-              class="form-control mb-2"></textarea>
+              class="form-control mb-2" required></textarea>
 
+    <label>Location</label>
     <input type="text" name="location" placeholder="Location"
-           class="form-control mb-2">
+           class="form-control mb-2" required>
 
+    <label>Budget</label>
     <input type="number" name="budget" placeholder="Budget"
-           class="form-control mb-2">
+           class="form-control mb-2" min="0" required>
 
+    <label>Contact</label>
     <input type="text" name="contact" placeholder="Contact"
-           class="form-control mb-3">
+           class="form-control mb-3" required>
+
+    <hr>
+
+    <h5 class="mt-4">Lifestyle Preferences</h5>
+
+    <label>Cleanliness</label>
+    <select name="cleanliness" class="form-control mb-2">
+        <option value="any">Any</option>
+        <option value="very_clean">Very Clean</option>
+        <option value="normal">Normal</option>
+        <option value="messy">Messy</option>
+    </select>
+
+    <label>Sleep Schedule</label>
+    <select name="sleep_schedule" class="form-control mb-2">
+        <option value="any">Any</option>
+        <option value="early_sleep">Early Sleep</option>
+        <option value="late_sleep">Late Sleep</option>
+        <option value="flexible">Flexible</option>
+    </select>
+
+    <label>Study Preference</label>
+    <select name="study_preference" class="form-control mb-2">
+        <option value="any">Any</option>
+        <option value="quiet">Quiet Environment</option>
+        <option value="normal">Normal</option>
+        <option value="social">Social Environment</option>
+    </select>
+
+    <label>Smoking Preference</label>
+    <select name="smoking" class="form-control mb-2">
+        <option value="any">Any</option>
+        <option value="no_smoking">No Smoking</option>
+        <option value="smoking_ok">Smoking OK</option>
+    </select>
+
+    <label>Pet Preference</label>
+    <select name="pets" class="form-control mb-3">
+        <option value="any">Any</option>
+        <option value="no_pets">No Pets</option>
+        <option value="pets_ok">Pets OK</option>
+    </select>
 
     <button type="submit" class="btn btn-success">
         Save

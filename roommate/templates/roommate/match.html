@@ -5,13 +5,14 @@
 <h2>🤝 Match Results for {{ current.title }}</h2>
 
 <p class="text-muted">
-    Matches are ranked based on location, budget similarity, and description keywords.
+    Matches are calculated based on location, budget similarity, lifestyle preferences, and description keywords.
 </p>
 
 <hr>
 
 {% if best_match %}
 
+<!-- Best Recommended Match -->
 <div class="card mb-4 p-4 shadow-sm border border-dark">
 
     <h3>⭐ Best Recommended Match</h3>
@@ -33,7 +34,7 @@
     </span>
 
     <p class="text-muted mb-3">
-        Score: {{ best_match.score }}/10
+        {{ best_match.match_label }} | Score: {{ best_match.score }}/100
     </p>
 
     <h6>Why this is recommended?</h6>
@@ -49,6 +50,7 @@
     </a>
 
 </div>
+
 
 <h4>All Match Results</h4>
 
@@ -73,7 +75,7 @@
     </span>
 
     <p class="text-muted mb-3">
-        Score: {{ match.score }}/10
+        {{ match.match_label }} | Score: {{ match.score }}/100
     </p>
 
     <h6>Why matched?</h6>
@@ -96,9 +98,14 @@
 
 <div class="card p-4 text-center shadow-sm">
     <h5>No matches found.</h5>
+
     <p class="text-muted">
         There are no other roommate posts available for matching.
     </p>
+
+    <a href="{% url 'roommate_list' %}" class="btn btn-primary">
+        Back to Roommate List
+    </a>
 </div>
 
 {% endif %}

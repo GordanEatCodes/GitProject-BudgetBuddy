@@ -16,6 +16,12 @@ def add_roommate(request):
             location=location,
             budget=float(budget) if budget else 0,
             contact=contact,
+
+            cleanliness=request.POST.get('cleanliness', 'any'),
+            sleep_schedule=request.POST.get('sleep_schedule', 'any'),
+            study_preference=request.POST.get('study_preference', 'any'),
+            smoking=request.POST.get('smoking', 'any'),
+            pets=request.POST.get('pets', 'any'),
         )
 
         return redirect('roommate_list')
@@ -85,6 +91,13 @@ def edit_roommate(request, id):
             post.budget = float(budget)
 
         post.contact = request.POST.get('contact')
+
+        post.cleanliness = request.POST.get('cleanliness', 'any')
+        post.sleep_schedule = request.POST.get('sleep_schedule', 'any')
+        post.study_preference = request.POST.get('study_preference', 'any')
+        post.smoking = request.POST.get('smoking', 'any')
+        post.pets = request.POST.get('pets', 'any')
+
         post.save()
 
         return redirect('roommate_list')
@@ -98,51 +111,96 @@ def match_roommates(request, id):
 
     results = []
 
+    stop_words = {
+        "i", "am", "is", "are", "the", "and", "or", "a", "an",
+        "to", "for", "with", "in", "on", "of", "my", "me",
+        "looking", "roommate", "room", "student", "want", "need"
+    }
+
     for post in all_posts:
         score = 0
-        max_score = 10
         reasons = []
 
-        if current_user_post.location.lower() == post.location.lower():
-            score += 3
+        current_location = current_user_post.location.lower().strip()
+        post_location = post.location.lower().strip()
+
+        if current_location == post_location:
+            score += 25
             reasons.append("Same location")
+        elif current_location in post_location or post_location in current_location:
+            score += 15
+            reasons.append("Similar location")
         else:
             reasons.append("Different location")
 
         budget_diff = abs(float(current_user_post.budget) - float(post.budget))
 
         if budget_diff <= 100:
-            score += 3
+            score += 25
             reasons.append("Budget difference is within RM100")
+        elif budget_diff <= 200:
+            score += 18
+            reasons.append("Budget difference is within RM200")
         elif budget_diff <= 300:
-            score += 1
+            score += 10
             reasons.append("Budget difference is within RM300")
         else:
             reasons.append("Budget difference is more than RM300")
 
-        current_words = set(current_user_post.description.lower().split())
-        post_words = set(post.description.lower().split())
+        lifestyle_fields = [
+            ('cleanliness', 'Cleanliness preference'),
+            ('sleep_schedule', 'Sleep schedule'),
+            ('study_preference', 'Study preference'),
+            ('smoking', 'Smoking preference'),
+            ('pets', 'Pet preference'),
+        ]
+
+        for field_name, label in lifestyle_fields:
+            current_value = getattr(current_user_post, field_name, 'any')
+            post_value = getattr(post, field_name, 'any')
+
+            if current_value == post_value and current_value != 'any':
+                score += 7
+                reasons.append(f"{label} matched")
+            elif current_value == 'any' or post_value == 'any':
+                score += 3
+                reasons.append(f"{label} is flexible")
+            else:
+                reasons.append(f"{label} is different")
+
+        current_words = set(current_user_post.description.lower().split()) - stop_words
+        post_words = set(post.description.lower().split()) - stop_words
 
         common_words = current_words & post_words
+        keyword_score = min(len(common_words) * 3, 15)
 
-        keyword_score = min(len(common_words), 4)
         score += keyword_score
 
         if common_words:
             reasons.append("Similar keywords: " + ", ".join(common_words))
         else:
-            reasons.append("No similar description keywords")
+            reasons.append("No strong keyword similarity")
 
-        match_percentage = round((score / max_score) * 100)
+        match_percentage = min(score, 100)
+
+        if match_percentage >= 80:
+            match_label = "Excellent Match"
+        elif match_percentage >= 60:
+            match_label = "Good Match"
+        elif match_percentage >= 40:
+            match_label = "Fair Match"
+        else:
+            match_label = "Low Match"
 
         results.append({
             'post': post,
             'score': score,
             'match_percentage': match_percentage,
+            'match_label': match_label,
             'reasons': reasons
         })
 
-    results.sort(key=lambda x: x['score'], reverse=True)
+    results.sort(key=lambda x: x['match_percentage'], reverse=True)
 
     best_match = results[0] if results else None
 
