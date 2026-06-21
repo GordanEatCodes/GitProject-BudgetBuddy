@@ -29,9 +29,28 @@
         Posted on: {{ best_match.post.created_at|date:"d M Y, h:i A" }}
     </p>
 
-    <span class="badge bg-success mb-2">
-        Match: {{ best_match.match_percentage }}%
-    </span>
+    <h6 class="mt-3">Match Compatibility</h6>
+
+    <div class="progress mb-2" style="height: 25px;">
+        <div 
+            class="progress-bar match-progress
+            {% if best_match.match_percentage >= 80 %}
+                bg-success
+            {% elif best_match.match_percentage >= 60 %}
+                bg-info
+            {% elif best_match.match_percentage >= 40 %}
+                bg-warning
+            {% else %}
+                bg-danger
+            {% endif %}"
+            role="progressbar"
+            data-percentage="{{ best_match.match_percentage }}"
+            aria-valuenow="{{ best_match.match_percentage }}"
+            aria-valuemin="0"
+            aria-valuemax="100">
+            {{ best_match.match_percentage }}%
+        </div>
+    </div>
 
     <p class="text-muted mb-3">
         {{ best_match.match_label }} | Score: {{ best_match.score }}/100
@@ -70,9 +89,28 @@
         Posted on: {{ match.post.created_at|date:"d M Y, h:i A" }}
     </p>
 
-    <span class="badge bg-success mb-2">
-        Match: {{ match.match_percentage }}%
-    </span>
+    <h6 class="mt-3">Match Compatibility</h6>
+
+    <div class="progress mb-2" style="height: 22px;">
+        <div 
+            class="progress-bar match-progress
+            {% if match.match_percentage >= 80 %}
+                bg-success
+            {% elif match.match_percentage >= 60 %}
+                bg-info
+            {% elif match.match_percentage >= 40 %}
+                bg-warning
+            {% else %}
+                bg-danger
+            {% endif %}"
+            role="progressbar"
+            data-percentage="{{ match.match_percentage }}"
+            aria-valuenow="{{ match.match_percentage }}"
+            aria-valuemin="0"
+            aria-valuemax="100">
+            {{ match.match_percentage }}%
+        </div>
+    </div>
 
     <p class="text-muted mb-3">
         {{ match.match_label }} | Score: {{ match.score }}/100
@@ -113,5 +151,17 @@
 <a href="{% url 'roommate_list' %}" class="btn btn-secondary mt-3">
     Back to Roommate List
 </a>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const progressBars = document.querySelectorAll(".match-progress");
+
+        progressBars.forEach(function (bar) {
+            const percentage = bar.getAttribute("data-percentage");
+            bar.style.width = percentage + "%";
+        });
+    });
+</script>
 
 {% endblock %}
