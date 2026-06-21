@@ -1,5 +1,23 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import RoommatePost
+import string
+
+
+def normalize_text(text):
+    """
+    This function standardizes text before comparison.
+    Example:
+    'Cyberjaya.' -> 'cyberjaya'
+    '  QUIET, clean! ' -> 'quiet clean'
+    """
+    if not text:
+        return ""
+
+    text = text.lower().strip()
+    text = text.translate(str.maketrans('', '', string.punctuation))
+    text = " ".join(text.split())
+
+    return text
 
 
 def add_roommate(request):
@@ -36,15 +54,18 @@ def roommate_list(request):
     max_budget = request.GET.get('max_budget')
     sort = request.GET.get('sort')
 
+    # Filter by location
     if location:
         posts = posts.filter(location__icontains=location)
 
+    # Filter by maximum budget
     if max_budget:
         try:
             posts = posts.filter(budget__lte=float(max_budget))
         except ValueError:
             pass
 
+    # Sort function
     if sort == 'oldest':
         posts = posts.order_by('created_at')
     elif sort == 'low_budget':
@@ -52,7 +73,7 @@ def roommate_list(request):
     elif sort == 'high_budget':
         posts = posts.order_by('-budget')
     else:
-        posts = posts.order_by('-created_at')  # default: newest first
+        posts = posts.order_by('-created_at')
 
     return render(request, 'roommate/roommate_list.html', {
         'posts': posts,
@@ -61,12 +82,14 @@ def roommate_list(request):
         'sort': sort,
     })
 
+
 def roommate_detail(request, id):
     post = get_object_or_404(RoommatePost, id=id)
 
     return render(request, 'roommate/roommate_detail.html', {
         'post': post
     })
+
 
 def delete_roommate(request, id):
     post = get_object_or_404(RoommatePost, id=id)
@@ -121,18 +144,23 @@ def match_roommates(request, id):
         score = 0
         reasons = []
 
-        current_location = current_user_post.location.lower().strip()
-        post_location = post.location.lower().strip()
+        # 1. Location match - max 25
+        current_location = normalize_text(current_user_post.location)
+        post_location = normalize_text(post.location)
 
-        if current_location == post_location:
+        current_location_no_space = current_location.replace(" ", "")
+        post_location_no_space = post_location.replace(" ", "")
+
+        if current_location_no_space == post_location_no_space:
             score += 25
             reasons.append("Same location")
-        elif current_location in post_location or post_location in current_location:
+        elif current_location_no_space in post_location_no_space or post_location_no_space in current_location_no_space:
             score += 15
             reasons.append("Similar location")
         else:
             reasons.append("Different location")
 
+        # 2. Budget similarity - max 25
         budget_diff = abs(float(current_user_post.budget) - float(post.budget))
 
         if budget_diff <= 100:
@@ -147,6 +175,7 @@ def match_roommates(request, id):
         else:
             reasons.append("Budget difference is more than RM300")
 
+        # 3. Lifestyle preference matching - max 35
         lifestyle_fields = [
             ('cleanliness', 'Cleanliness preference'),
             ('sleep_schedule', 'Sleep schedule'),
@@ -168,8 +197,12 @@ def match_roommates(request, id):
             else:
                 reasons.append(f"{label} is different")
 
-        current_words = set(current_user_post.description.lower().split()) - stop_words
-        post_words = set(post.description.lower().split()) - stop_words
+        # 4. Description keyword similarity - max 15
+        current_description = normalize_text(current_user_post.description)
+        post_description = normalize_text(post.description)
+
+        current_words = set(current_description.split()) - stop_words
+        post_words = set(post_description.split()) - stop_words
 
         common_words = current_words & post_words
         keyword_score = min(len(common_words) * 3, 15)
@@ -181,8 +214,10 @@ def match_roommates(request, id):
         else:
             reasons.append("No strong keyword similarity")
 
+        # Make sure percentage does not exceed 100
         match_percentage = min(score, 100)
 
+        # Match label
         if match_percentage >= 80:
             match_label = "Excellent Match"
         elif match_percentage >= 60:
