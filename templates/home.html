@@ -36,9 +36,30 @@
 
         <!-- BUTTONS -->
         <div class="buttons">
-          <a href="{% url 'register' %}"><button class="btn-primary">RENT HOUSE</button></a>
-          <a href="{% url 'register' %}"><button class="btn-secondary">FIND ROOMMATES</button></a>
+          {% if request.user.is_authenticated %}
+            {# 已登入：依照角色分流到 listing app #}
+            {% if is_owner %}
+              <a href="{% url 'owner_dashboard' %}">
+                <button class="btn-primary">RENT HOUSE</button>
+              </a>
+            {% else %}
+              <a href="{% url 'choose' %}">
+                <button class="btn-primary">RENT HOUSE</button>
+              </a>
+            {% endif %}
+          {% else %}
+            {# 未登入：統一導向你朋友已經寫好的登入/註冊頁 #}
+            <a href="{% url 'login' %}">
+              <button class="btn-primary">RENT HOUSE</button>
+            </a>
+          {% endif %}
+
+          {# FIND ROOMMATES -> 讓你朋友處理，這裡只用他已經有的 URL #}
+          <a href="{% url 'register' %}">
+            <button class="btn-secondary">FIND ROOMMATES</button>
+          </a>
         </div>
+
       </div>
  
       <div class="hero-image" aria-hidden="true">
@@ -62,14 +83,17 @@
             <a class="col-link" href="/contact/">Contact Us</a>
           </div>
           <div class="footer-col">
-            <span class="footer-col-header">Features</span>
-            {# Optional: also switch footer Rent House link #}
-            {% if is_owner %}
-              <a class="col-link" href="{% url 'owner_dashboard' %}">Rent House</a>
+            {% if request.user.is_authenticated %}
+              {% if is_owner %}
+                <a class="col-link" href="{% url 'owner_dashboard' %}">Rent House</a>
+              {% else %}
+                <a class="col-link" href="{% url 'choose' %}">Rent House</a>
+              {% endif %}
             {% else %}
-              <a class="col-link" href="{% url 'choose' %}">Rent House</a>
+              <a class="col-link" href="{% url 'login' %}">Rent House</a>
             {% endif %}
-            <a class="col-link" href="#">Find Roommates</a>
+            <a class="col-link" href="{% url 'login' %}">Find Roommates</a>
+
           </div>
         </nav>
  

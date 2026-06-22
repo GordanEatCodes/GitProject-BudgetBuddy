@@ -22,6 +22,8 @@ urlpatterns = [
     path('users/', include('users.urls')),
     path('roommates/', include('roommate.urls')),
     path('listing/', include('listing.urls')),
+    path('accounts/', include('django.contrib.auth.urls')),
+
 ]
 
 # Serve media & static in development
