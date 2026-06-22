@@ -36,50 +36,53 @@ class RoommatePost(models.Model):
         ('pets_ok', 'Pets OK'),
     ]
 
+    POST_STATUS_CHOICES = [
+        ('open', 'Open'),
+        ('full', 'Full'),
+        ('closed', 'Closed'),
+    ]
+
     title = models.CharField(max_length=100)
     description = models.TextField()
     location = models.CharField(max_length=100)
     budget = models.FloatField()
     contact = models.CharField(max_length=100)
 
-    cleanliness = models.CharField(
+    # Optional unit / sharing details
+    unit_name = models.CharField(max_length=100, blank=True)
+    total_rent = models.FloatField(null=True, blank=True)
+    total_people = models.PositiveIntegerField(default=1)
+    needed_roommates = models.PositiveIntegerField(default=1)
+
+    post_status = models.CharField(
         max_length=20,
-        choices=CLEANLINESS_CHOICES,
-        default='any'
+        choices=POST_STATUS_CHOICES,
+        default='open'
     )
 
-    sleep_schedule = models.CharField(
-        max_length=20,
-        choices=SLEEP_CHOICES,
-        default='any'
-    )
+    cleanliness = models.CharField(max_length=20, choices=CLEANLINESS_CHOICES, default='any')
+    sleep_schedule = models.CharField(max_length=20, choices=SLEEP_CHOICES, default='any')
+    study_preference = models.CharField(max_length=20, choices=STUDY_CHOICES, default='any')
+    smoking = models.CharField(max_length=20, choices=SMOKING_CHOICES, default='any')
+    pets = models.CharField(max_length=20, choices=PET_CHOICES, default='any')
 
-    study_preference = models.CharField(
-        max_length=20,
-        choices=STUDY_CHOICES,
-        default='any'
-    )
-
-    smoking = models.CharField(
-        max_length=20,
-        choices=SMOKING_CHOICES,
-        default='any'
-    )
-
-    pets = models.CharField(
-        max_length=20,
-        choices=PET_CHOICES,
-        default='any'
-    )
-
-    created_by = models.ForeignKey(
-        User,
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE
-    )
-
+    created_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def accepted_roommates_count(self):
+        return self.applications.filter(status='accepted').count()
+
+    def remaining_roommates_needed(self):
+        remaining = self.needed_roommates - self.accepted_roommates_count()
+        return max(remaining, 0)
+
+    def save(self, *args, **kwargs):
+        # If total rent and total people are provided,
+        # automatically calculate budget per person.
+        if self.total_rent and self.total_people and self.total_people > 0:
+            self.budget = round(self.total_rent / self.total_people, 2)
+
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title
@@ -115,12 +118,7 @@ class RoommateApplication(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=['roommate_post', 'applicant'],
-                name='unique_roommate_application'
-            )
-        ]
+        unique_together = ('roommate_post', 'applicant')
 
     def __str__(self):
         return f"{self.applicant.username} applied for {self.roommate_post.title}"

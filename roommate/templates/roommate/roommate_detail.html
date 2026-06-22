@@ -18,11 +18,67 @@
     <h5>Location</h5>
     <p>📍 {{ post.location }}</p>
 
-    <h5>Budget</h5>
+    <h5>Budget Per Person</h5>
     <p>💰 RM {{ post.budget }}</p>
 
     <h5>Contact</h5>
     <p>📞 {{ post.contact }}</p>
+
+    <hr>
+
+    <h5>Unit / Sharing Details</h5>
+
+    {% if post.unit_name %}
+        <p>
+            <strong>Unit Name:</strong> {{ post.unit_name }}
+        </p>
+    {% else %}
+        <p class="text-muted">
+            No unit name provided.
+        </p>
+    {% endif %}
+
+    {% if post.total_rent %}
+        <p>
+            <strong>Total Rent:</strong> RM {{ post.total_rent }}
+        </p>
+
+        <p>
+            <strong>Total People Sharing:</strong> {{ post.total_people }}
+        </p>
+
+        <p>
+            <strong>Budget Per Person:</strong> RM {{ post.budget }}
+        </p>
+    {% else %}
+        <p class="text-muted">
+            Total rent was not provided. Budget is manually entered.
+        </p>
+    {% endif %}
+
+    <p>
+        <strong>Needed Roommates:</strong> {{ post.needed_roommates }}
+    </p>
+
+    <p>
+        <strong>Accepted Roommates:</strong> {{ post.accepted_roommates_count }}
+    </p>
+
+    <p>
+        <strong>Remaining Slots:</strong> {{ post.remaining_roommates_needed }}
+    </p>
+
+    <p>
+        <strong>Status:</strong>
+
+        {% if post.post_status == 'open' %}
+            <span class="badge bg-success">Open</span>
+        {% elif post.post_status == 'full' %}
+            <span class="badge bg-warning text-dark">Full</span>
+        {% else %}
+            <span class="badge bg-secondary">Closed</span>
+        {% endif %}
+    </p>
 
     <hr>
 
@@ -74,11 +130,23 @@
 
             {% else %}
 
-                {% if post.created_by %}
+                {% if post.post_status == 'open' and post.created_by %}
 
                     <a href="{% url 'apply_roommate' post.id %}" class="btn btn-primary">
                         Apply to be Roommate
                     </a>
+
+                {% elif post.post_status == 'full' %}
+
+                    <button class="btn btn-secondary" disabled>
+                        This post is full
+                    </button>
+
+                {% elif post.post_status == 'closed' %}
+
+                    <button class="btn btn-secondary" disabled>
+                        This post is closed
+                    </button>
 
                 {% else %}
 

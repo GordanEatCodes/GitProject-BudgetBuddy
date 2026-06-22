@@ -20,6 +20,32 @@ def normalize_text(text):
 
     return text
 
+def to_float(value):
+    try:
+        return float(value) if value else None
+    except ValueError:
+        return None
+
+
+def to_int(value, default=1):
+    try:
+        number = int(value)
+        return number if number > 0 else default
+    except (TypeError, ValueError):
+        return default
+
+
+def update_roommate_post_status(post):
+    accepted_count = post.applications.filter(status='accepted').count()
+
+    if post.post_status != 'closed':
+        if accepted_count >= post.needed_roommates:
+            post.post_status = 'full'
+        else:
+            post.post_status = 'open'
+
+        post.save()
+
 
 @login_required(login_url='/login/')
 def add_roommate(request):
@@ -37,20 +63,24 @@ def add_roommate(request):
             budget=float(budget) if budget else 0,
             contact=contact,
 
+            unit_name=request.POST.get('unit_name', ''),
+            total_rent=to_float(request.POST.get('total_rent')),
+            total_people=to_int(request.POST.get('total_people'), 1),
+            needed_roommates=to_int(request.POST.get('needed_roommates'), 1),
+            post_status='open',
+
             cleanliness=request.POST.get('cleanliness', 'any'),
             sleep_schedule=request.POST.get('sleep_schedule', 'any'),
             study_preference=request.POST.get('study_preference', 'any'),
             smoking=request.POST.get('smoking', 'any'),
             pets=request.POST.get('pets', 'any'),
 
-            # Store who created this roommate post
             created_by=request.user,
         )
 
         return redirect('roommate_list')
 
     return render(request, 'roommate/add_roommate.html')
-
 
 def roommate_list(request):
     posts = RoommatePost.objects.all()
@@ -115,7 +145,6 @@ def delete_roommate(request, id):
 def edit_roommate(request, id):
     post = get_object_or_404(RoommatePost, id=id)
 
-    # Only creator can edit own post
     if post.created_by != request.user:
         return redirect('roommate_detail', id=post.id)
 
@@ -130,6 +159,12 @@ def edit_roommate(request, id):
 
         post.contact = request.POST.get('contact')
 
+        post.unit_name = request.POST.get('unit_name', '')
+        post.total_rent = to_float(request.POST.get('total_rent'))
+        post.total_people = to_int(request.POST.get('total_people'), 1)
+        post.needed_roommates = to_int(request.POST.get('needed_roommates'), 1)
+        post.post_status = request.POST.get('post_status', 'open')
+
         post.cleanliness = request.POST.get('cleanliness', 'any')
         post.sleep_schedule = request.POST.get('sleep_schedule', 'any')
         post.study_preference = request.POST.get('study_preference', 'any')
@@ -142,10 +177,9 @@ def edit_roommate(request, id):
 
     return render(request, 'roommate/edit_roommate.html', {'post': post})
 
-
 def match_roommates(request, id):
     current_user_post = get_object_or_404(RoommatePost, id=id)
-    all_posts = RoommatePost.objects.exclude(id=id)
+    all_posts = RoommatePost.objects.exclude(id=id).filter(post_status='open')
 
     results = []
 
@@ -265,15 +299,15 @@ def match_roommates(request, id):
 def apply_roommate(request, id):
     post = get_object_or_404(RoommatePost, id=id)
 
-    # Old posts may not have creator, so application is not allowed
     if post.created_by is None:
         return redirect('roommate_detail', id=post.id)
 
-    # User cannot apply to own post
+    if post.post_status != 'open':
+        return redirect('roommate_detail', id=post.id)
+
     if post.created_by == request.user:
         return redirect('roommate_detail', id=post.id)
 
-    # Prevent duplicate application
     existing_application = RoommateApplication.objects.filter(
         roommate_post=post,
         applicant=request.user
@@ -292,7 +326,6 @@ def apply_roommate(request, id):
             status='pending'
         )
 
-        # Save first message into chat
         if message:
             RoommateMessage.objects.create(
                 application=application,
@@ -333,17 +366,17 @@ def my_roommate_applications(request):
 def update_application_status(request, application_id, status):
     application = get_object_or_404(RoommateApplication, id=application_id)
 
-    # Only post creator / coordinator can accept or reject
     if application.roommate_post.created_by != request.user:
         return redirect('roommate_list')
 
-    # Only allow valid statuses
     if status not in ['pending', 'accepted', 'rejected']:
         return redirect('applications_received')
 
     if request.method == 'POST':
         application.status = status
         application.save()
+
+        update_roommate_post_status(application.roommate_post)
 
     return redirect('applications_received')
 
