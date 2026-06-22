@@ -57,8 +57,12 @@
         <nav class="footer-nav">
           <div class="footer-col">
             <span class="footer-col-header">Company</span>
-            <a class="col-link" href="/about/">About Us</a>
-            <a class="col-link" href="/contact/">Contact Us</a>
+            <a class="col-link" href="{% url 'about_dash' %}">About Us</a>
+            {% if user.is_staff %}
+              <a class="col-link" href="{% url 'support:agent_inbox' %}">Contact Us</a>
+            {% else %}
+              <a class="col-link" href="{% url 'support:contact_dash' %}">Contact Us</a>
+            {% endif %}
           </div>
           <div class="footer-col">
             <span class="footer-col-header">Features</span>
