@@ -24,9 +24,6 @@ def home(request):
 def about(request):
     return render(request, 'about_us.html')
 
-def contact(request):
-    return render(request, 'contact.html')
-
 def about_dash(request):
     return render(request, 'about_us_dash.html')
 
@@ -277,3 +274,10 @@ def reset_password_new_view(request):
 def logout_view(request):
     logout(request)
     return redirect('home')
+
+def about(request):
+    return render(request, 'about_us.html')
+
+
+def contact(request):
+    return render(request, 'contact_us.html')

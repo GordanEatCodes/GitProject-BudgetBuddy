@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>Saved Roommate Posts</h2>
+
+<p class="text-muted">
+    These are the roommate posts you saved for later.
+</p>
+
+<hr>
+
+{% for favourite in favourites %}
+
+    <div class="card p-3 mb-3 shadow-sm">
+
+        <h4>{{ favourite.roommate_post.title }}</h4>
+
+        <p>{{ favourite.roommate_post.description }}</p>
+
+        <small>
+            📍 {{ favourite.roommate_post.location }} |
+            💰 RM {{ favourite.roommate_post.budget }} per person
+        </small>
+
+        <p class="mt-2">
+            {% if favourite.roommate_post.post_status == 'open' %}
+                <span class="badge bg-success">Open</span>
+            {% elif favourite.roommate_post.post_status == 'full' %}
+                <span class="badge bg-warning text-dark">Full</span>
+            {% else %}
+                <span class="badge bg-secondary">Closed</span>
+            {% endif %}
+        </p>
+
+        <p class="text-muted">
+            Saved on: {{ favourite.created_at|date:"d M Y, h:i A" }}
+        </p>
+
+        <a href="{% url 'roommate_detail' favourite.roommate_post.id %}" class="btn btn-sm btn-dark">
+            View Details
+        </a>
+
+        <a href="{% url 'match_roommates' favourite.roommate_post.id %}" class="btn btn-sm btn-info">
+            Match
+        </a>
+
+        <form method="POST" action="{% url 'toggle_favourite' favourite.roommate_post.id %}" class="d-inline">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.path }}">
+
+            <button type="submit" class="btn btn-sm btn-outline-danger">
+                Remove Saved
+            </button>
+        </form>
+
+    </div>
+
+{% empty %}
+
+    <div class="card p-4 text-center shadow-sm">
+        <h5>No saved posts yet.</h5>
+
+        <p class="text-muted">
+            Browse roommate posts and save the ones you are interested in.
+        </p>
+
+        <a href="{% url 'roommate_list' %}" class="btn btn-primary">
+            Browse Roommate Posts
+        </a>
+    </div>
+
+{% endfor %}
+
+<a href="{% url 'roommate_dashboard' %}" class="btn btn-secondary mt-3">
+    Back to Dashboard
+</a>
+
+<a href="{% url 'roommate_list' %}" class="btn btn-secondary mt-3">
+    Back to Roommate List
+</a>
+
+{% endblock %}
