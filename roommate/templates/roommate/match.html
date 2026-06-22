@@ -5,62 +5,163 @@
 <h2>🤝 Match Results for {{ current.title }}</h2>
 
 <p class="text-muted">
-    Matches are ranked based on location, budget similarity, and description keywords.
+    Matches are calculated based on location, budget similarity, lifestyle preferences, and description keywords.
 </p>
 
 <hr>
 
-{% for post, score, match_percentage, reasons in matches %}
+{% if best_match %}
 
-<div class="card mb-3 p-3 shadow-sm">
+<!-- Best Recommended Match -->
+<div class="card mb-4 p-4 shadow-sm border border-dark">
 
-    <h4>{{ post.title }}</h4>
+    <h3>⭐ Best Recommended Match</h3>
 
-    <p>{{ post.description }}</p>
+    <h4 class="mt-3">{{ best_match.post.title }}</h4>
+
+    <p>{{ best_match.post.description }}</p>
 
     <small>
-        📍 {{ post.location }} | 💰 RM {{ post.budget }}
+        📍 {{ best_match.post.location }} | 💰 RM {{ best_match.post.budget }}
     </small>
 
     <p class="text-muted mb-2 mt-2">
-        Posted on: {{ post.created_at|date:"d M Y, h:i A" }}
+        Posted on: {{ best_match.post.created_at|date:"d M Y, h:i A" }}
     </p>
 
-    <span class="badge bg-success mb-2">
-        Match: {{ match_percentage }}%
-    </span>
+    <h6 class="mt-3">Match Compatibility</h6>
+
+    <div class="progress mb-2" style="height: 25px;">
+        <div 
+            class="progress-bar match-progress
+            {% if best_match.match_percentage >= 80 %}
+                bg-success
+            {% elif best_match.match_percentage >= 60 %}
+                bg-info
+            {% elif best_match.match_percentage >= 40 %}
+                bg-warning
+            {% else %}
+                bg-danger
+            {% endif %}"
+            role="progressbar"
+            data-percentage="{{ best_match.match_percentage }}"
+            aria-valuenow="{{ best_match.match_percentage }}"
+            aria-valuemin="0"
+            aria-valuemax="100">
+            {{ best_match.match_percentage }}%
+        </div>
+    </div>
 
     <p class="text-muted mb-3">
-        Score: {{ score }}/10
+        {{ best_match.match_label }} | Score: {{ best_match.score }}/100
     </p>
 
-    <h6>Why matched?</h6>
+    <h6>Why this is recommended?</h6>
 
     <ul>
-        {% for reason in reasons %}
+        {% for reason in best_match.reasons %}
             <li>{{ reason }}</li>
         {% endfor %}
     </ul>
 
-    <a href="{% url 'roommate_detail' post.id %}" class="btn btn-sm btn-dark">
+    <a href="{% url 'roommate_detail' best_match.post.id %}" class="btn btn-sm btn-dark">
         View Details
     </a>
 
 </div>
 
-{% empty %}
 
-<div class="card p-4 text-center shadow-sm">
-    <h5>No matches found.</h5>
-    <p class="text-muted">
-        There are no other roommate posts available for matching.
+<h4>All Match Results</h4>
+
+{% for match in matches %}
+
+<div class="card mb-3 p-3 shadow-sm">
+
+    <h4>{{ match.post.title }}</h4>
+
+    <p>{{ match.post.description }}</p>
+
+    <small>
+        📍 {{ match.post.location }} | 💰 RM {{ match.post.budget }}
+    </small>
+
+    <p class="text-muted mb-2 mt-2">
+        Posted on: {{ match.post.created_at|date:"d M Y, h:i A" }}
     </p>
+
+    <h6 class="mt-3">Match Compatibility</h6>
+
+    <div class="progress mb-2" style="height: 22px;">
+        <div 
+            class="progress-bar match-progress
+            {% if match.match_percentage >= 80 %}
+                bg-success
+            {% elif match.match_percentage >= 60 %}
+                bg-info
+            {% elif match.match_percentage >= 40 %}
+                bg-warning
+            {% else %}
+                bg-danger
+            {% endif %}"
+            role="progressbar"
+            data-percentage="{{ match.match_percentage }}"
+            aria-valuenow="{{ match.match_percentage }}"
+            aria-valuemin="0"
+            aria-valuemax="100">
+            {{ match.match_percentage }}%
+        </div>
+    </div>
+
+    <p class="text-muted mb-3">
+        {{ match.match_label }} | Score: {{ match.score }}/100
+    </p>
+
+    <h6>Why matched?</h6>
+
+    <ul>
+        {% for reason in match.reasons %}
+            <li>{{ reason }}</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'roommate_detail' match.post.id %}" class="btn btn-sm btn-dark">
+        View Details
+    </a>
+
 </div>
 
 {% endfor %}
 
+{% else %}
+
+<div class="card p-4 text-center shadow-sm">
+    <h5>No matches found.</h5>
+
+    <p class="text-muted">
+        There are no other roommate posts available for matching.
+    </p>
+
+    <a href="{% url 'roommate_list' %}" class="btn btn-primary">
+        Back to Roommate List
+    </a>
+</div>
+
+{% endif %}
+
 <a href="{% url 'roommate_list' %}" class="btn btn-secondary mt-3">
     Back to Roommate List
 </a>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const progressBars = document.querySelectorAll(".match-progress");
+
+        progressBars.forEach(function (bar) {
+            const percentage = bar.getAttribute("data-percentage");
+            bar.style.width = percentage + "%";
+        });
+    });
+</script>
 
 {% endblock %}

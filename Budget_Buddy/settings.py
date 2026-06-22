@@ -12,15 +12,11 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# SECURITY WARNING: keep the secret key used in production secret!
-# For local testing, this fallback key is okay.
 SECRET_KEY = os.environ.get(
     'SECRET_KEY',
     'django-insecure-local-budgetbuddy-testing-key'
 )
 
-
-# During local integration testing, keep DEBUG = True
 DEBUG = True
 
 ALLOWED_HOSTS = [
@@ -39,8 +35,8 @@ INSTALLED_APPS = [
 
     # Project apps
     'users',
-    'roommate',
     'listing',
+    'roommate',
 ]
 
 
@@ -65,8 +61,8 @@ TEMPLATES = [
         'DIRS': [
             BASE_DIR / 'templates',
             BASE_DIR / 'users' / 'templates',
-            BASE_DIR / 'roommate' / 'templates',
             BASE_DIR / 'listing' / 'templates',
+            BASE_DIR / 'roommate' / 'templates',
         ],
 
         'APP_DIRS': True,
@@ -85,7 +81,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'Budget_Buddy.wsgi.application'
 
 
-# Database
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -94,7 +89,6 @@ DATABASES = {
 }
 
 
-# Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -111,7 +105,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Asia/Kuala_Lumpur'
@@ -121,11 +114,9 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Login
 LOGIN_URL = '/login/'
 
 
-# Static files
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
@@ -133,17 +124,14 @@ STATICFILES_DIRS = [
 ]
 
 
-# Media files for uploaded images
 MEDIA_URL = '/media/'
 
 MEDIA_ROOT = BASE_DIR / 'media'
 
 
-# Email
-# For local testing, use console backend.
-# It will print email content in terminal instead of sending real email.
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
@@ -153,7 +141,6 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 DEFAULT_FROM_EMAIL = 'Budget Buddy <noreply@budgetbuddy.com>'
 
 
-# Session
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
 SESSION_COOKIE_AGE = 1800
@@ -161,5 +148,4 @@ SESSION_COOKIE_AGE = 1800
 SESSION_SAVE_EVERY_REQUEST = True
 
 
-# Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

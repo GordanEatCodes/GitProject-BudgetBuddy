@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="card p-4 shadow-sm">
+    <h2>Apply to be Roommate</h2>
+
+    <hr>
+
+    <h4>{{ post.title }}</h4>
+
+    <p>{{ post.description }}</p>
+
+    <small>
+        📍 {{ post.location }} | 💰 RM {{ post.budget }}
+    </small>
+
+    <form method="POST" class="mt-4">
+        {% csrf_token %}
+
+        <label>Message to Coordinator</label>
+        <textarea 
+            name="message" 
+            class="form-control mb-3" 
+            rows="5"
+            placeholder="Example: Hi, I am interested to join this unit as a roommate."></textarea>
+
+        <button type="submit" class="btn btn-primary">
+            Submit Application
+        </button>
+
+        <a href="{% url 'roommate_detail' post.id %}" class="btn btn-secondary">
+            Cancel
+        </a>
+    </form>
+</div>
+
+{% endblock %}
