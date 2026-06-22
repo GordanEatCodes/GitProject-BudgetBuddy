@@ -39,7 +39,7 @@
     }
 
 .forgot-link {
-      text-align: right;
+      text-align: left;
       margin-top: 20px;
       color: var(--muted);
       font-size: 13px;
@@ -51,3 +51,18 @@
       text-decoration: none;
       font-weight: 500;
     }
+
+.pw-wrap { position: relative; }
+.pw-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 12px;
+    font-family: 'DM Sans', sans-serif;
+    padding: 2px 4px;
+}

@@ -35,9 +35,21 @@
           <p class="subheadline">A centralized platform for university students<br>to find housing and connect with roommates.</p>
         </div>
         <div class="buttons">
-          <a href="{% url 'choose' %}"><button class="btn-primary">RENT HOUSE</button></a>
-          <a href="{% url 'roommate_list' %}"><button class="btn-secondary">FIND ROOMMATES</button></a>
-        </div>
+  {% if is_owner %}
+    <a href="{% url 'owner_dashboard' %}">
+      <button class="btn-primary">RENT HOUSE</button>
+    </a>
+  {% else %}
+    <a href="{% url 'choose' %}">
+      <button class="btn-primary">RENT HOUSE</button>
+    </a>
+  {% endif %}
+
+  <a href="{% url 'roommate_list' %}">
+    <button class="btn-secondary">FIND ROOMMATES</button>
+  </a>
+</div>
+
       </div>
  
       <div class="hero-image" aria-hidden="true">

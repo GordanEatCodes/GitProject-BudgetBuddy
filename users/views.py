@@ -21,6 +21,12 @@ from .forms import (
 def home(request):
     return render(request, 'home.html')
 
+def about(request):
+    return render(request, 'about_us.html')
+
+def contact(request):
+    return render(request, 'contact.html')
+
 @login_required
 def dashboard(request):
     profile = request.user.userprofile
@@ -35,7 +41,13 @@ def dashboard(request):
     print(f"DEBUG - first_name raw: '{request.user.first_name}'")
     print(f"DEBUG - final name: '{name}'")
     
-    return render(request, 'dashboard.html', {'display_name': name})
+    is_owner = (profile.role == 'owner')
+    
+    return render(request, 'dashboard.html', {
+        'display_name': name,
+        'is_owner': is_owner,
+    })
+
 
 def register_view(request):
     if request.user.is_authenticated:

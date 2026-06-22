@@ -1,6 +1,6 @@
 # listing/views.py
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
@@ -180,7 +180,6 @@ def room_create(request):
 
 # ────────────── OWNER: CREATE UNIT ──────────────
 @login_required
-@login_required
 def unit_create(request):
     if not user_is_owner(request.user):
         return HttpResponseForbidden("You are not allowed to create unit listings.")
@@ -195,3 +194,12 @@ def unit_create(request):
     else:
         form = UnitForm()
     return render(request, 'unit_form.html', {'form': form})
+
+@login_required
+def room_detail(request, pk):
+    """
+    單一 Room 詳情頁
+    URL: /listing/rooms/<pk>/
+    """
+    room = get_object_or_404(Room, pk=pk)
+    return render(request, 'room_detail.html', {'room': room})

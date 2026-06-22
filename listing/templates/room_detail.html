@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ room.title }} - Details</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background-color: #f8f4ee; }
+    .bb-header {
+      background-color: #d2a679;
+      color: #fff;
+      padding: 16px 0;
+      margin-bottom: 24px;
+    }
+    .detail-card {
+      border-radius: 18px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      background-color: #fff;
+      overflow: hidden;
+    }
+    .detail-img {
+      max-height: 320px;
+      object-fit: cover;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div class="bb-header">
+    <div class="container d-flex justify-content-between align-items-center">
+      <h3 class="mb-0">{{ room.title }}</h3>
+      <button type="button" class="btn btn-light btn-sm" onclick="history.back()">× Close</button>
+    </div>
+  </div>
+
+  <div class="container pb-4">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="detail-card">
+          {% if room.image %}
+            <img src="{{ room.image.url }}" alt="Room photo" class="detail-img">
+          {% endif %}
+
+          <div class="p-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h4 class="mb-0">{{ room.title }}</h4>
+              <span class="fw-bold text-danger">RM {{ room.rent }}/month</span>
+            </div>
+
+            <p class="text-muted mb-2">
+              {{ room.location }}
+            </p>
+
+            {% if room.size %}
+              <p class="mb-2">
+                <strong>Size:</strong> {{ room.size }}
+              </p>
+            {% endif %}
+
+            <hr>
+
+            <h6 class="fw-bold">Features</h6>
+            <div class="mb-3">
+              {% if room.has_internet %}
+                <span class="badge bg-light text-dark border me-1">Wi‑Fi included</span>
+              {% endif %}
+              {% if room.has_private_bathroom %}
+                <span class="badge bg-light text-dark border me-1">Private bathroom</span>
+              {% else %}
+                <span class="badge bg-light text-dark border me-1">Shared bathroom</span>
+              {% endif %}
+              {% if room.near_station %}
+                <span class="badge bg-success text-light me-1">Near station</span>
+              {% else %}
+                <span class="badge bg-light text-dark border me-1">Not near station</span>
+              {% endif %}
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              {% if room.available %}
+                <span class="badge bg-success">Available</span>
+              {% else %}
+                <span class="badge bg-secondary">Not available</span>
+              {% endif %}
+            </div>
+
+          </div>
+        </div>
+
+        <div class="text-center mt-3">
+          <a href="javascript:history.back()">← Back</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -85,10 +85,11 @@
           </div>
 
           <div class="card-footer bg-transparent border-0 pb-3 px-3">
-            <a href="#" class="btn btn-outline-dark card-footer-btn">
+            <a href="{% url 'room_detail' room.id %}" class="btn btn-outline-dark card-footer-btn">
               More detail
             </a>
           </div>
+
         </div>
       </div>
       {% empty %}
