@@ -1,16 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import RoommatePost, RoommateApplication, RoommateMessage
+from .models import RoommatePost, RoommateApplication, RoommateMessage, RoommateFavourite
 import string
 
 
 def normalize_text(text):
-    """
-    This function standardizes text before comparison.
-    Example:
-    'Cyberjaya.' -> 'cyberjaya'
-    '  QUIET, clean! ' -> 'quiet clean'
-    """
     if not text:
         return ""
 
@@ -109,19 +103,37 @@ def roommate_list(request):
     else:
         posts = posts.order_by('-created_at')
 
+    saved_post_ids = []
+
+    if request.user.is_authenticated:
+        saved_post_ids = list(
+            RoommateFavourite.objects.filter(user=request.user)
+            .values_list('roommate_post_id', flat=True)
+        )
+
     return render(request, 'roommate/roommate_list.html', {
         'posts': posts,
         'location': location,
         'max_budget': max_budget,
         'sort': sort,
+        'saved_post_ids': saved_post_ids,
     })
 
 
 def roommate_detail(request, id):
     post = get_object_or_404(RoommatePost, id=id)
 
+    is_saved = False
+
+    if request.user.is_authenticated:
+        is_saved = RoommateFavourite.objects.filter(
+            user=request.user,
+            roommate_post=post
+        ).exists()
+
     return render(request, 'roommate/roommate_detail.html', {
-        'post': post
+        'post': post,
+        'is_saved': is_saved,
     })
 
 
@@ -178,8 +190,6 @@ def edit_roommate(request, id):
 
 def match_roommates(request, id):
     current_user_post = get_object_or_404(RoommatePost, id=id)
-
-    # Only recommend open posts
     all_posts = RoommatePost.objects.exclude(id=id).filter(post_status='open')
 
     results = []
@@ -194,7 +204,6 @@ def match_roommates(request, id):
         score = 0
         reasons = []
 
-        # 1. Location match - max 25
         current_location = normalize_text(current_user_post.location)
         post_location = normalize_text(post.location)
 
@@ -210,7 +219,6 @@ def match_roommates(request, id):
         else:
             reasons.append("Different location")
 
-        # 2. Budget similarity - max 25
         budget_diff = abs(float(current_user_post.budget) - float(post.budget))
 
         if budget_diff <= 100:
@@ -225,7 +233,6 @@ def match_roommates(request, id):
         else:
             reasons.append("Budget difference is more than RM300")
 
-        # 3. Lifestyle preference matching - max 35
         lifestyle_fields = [
             ('cleanliness', 'Cleanliness preference'),
             ('sleep_schedule', 'Sleep schedule'),
@@ -247,7 +254,6 @@ def match_roommates(request, id):
             else:
                 reasons.append(f"{label} is different")
 
-        # 4. Description keyword similarity - max 15
         current_description = normalize_text(current_user_post.description)
         post_description = normalize_text(post.description)
 
@@ -301,11 +307,9 @@ def apply_roommate(request, id):
     if post.created_by is None:
         return redirect('roommate_detail', id=post.id)
 
-    # Only open post can receive applications
     if post.post_status != 'open':
         return redirect('roommate_detail', id=post.id)
 
-    # User cannot apply to own post
     if post.created_by == request.user:
         return redirect('roommate_detail', id=post.id)
 
@@ -377,10 +381,26 @@ def update_application_status(request, application_id, status):
         application.status = status
         application.save()
 
-        # Update post status after accept/reject
         update_roommate_post_status(application.roommate_post)
 
     return redirect('applications_received')
+
+
+@login_required(login_url='/login/')
+def cancel_accepted_application(request, application_id):
+    application = get_object_or_404(RoommateApplication, id=application_id)
+
+    if application.applicant != request.user:
+        return redirect('roommate_list')
+
+    if request.method == 'POST':
+        if application.status == 'accepted':
+            application.status = 'pending'
+            application.save()
+
+            update_roommate_post_status(application.roommate_post)
+
+    return redirect('my_roommate_applications')
 
 
 @login_required(login_url='/login/')
@@ -417,7 +437,6 @@ def application_detail(request, application_id):
 def close_roommate_post(request, id):
     post = get_object_or_404(RoommatePost, id=id)
 
-    # Only creator can close own post
     if post.created_by != request.user:
         return redirect('roommate_detail', id=post.id)
 
@@ -432,7 +451,6 @@ def close_roommate_post(request, id):
 def reopen_roommate_post(request, id):
     post = get_object_or_404(RoommatePost, id=id)
 
-    # Only creator can reopen own post
     if post.created_by != request.user:
         return redirect('roommate_detail', id=post.id)
 
@@ -448,6 +466,7 @@ def reopen_roommate_post(request, id):
 
     return redirect('roommate_detail', id=post.id)
 
+
 @login_required(login_url='/login/')
 def roommate_dashboard(request):
     user_posts = RoommatePost.objects.filter(
@@ -460,6 +479,10 @@ def roommate_dashboard(request):
 
     my_applications = RoommateApplication.objects.filter(
         applicant=request.user
+    ).order_by('-created_at')[:5]
+
+    saved_posts = RoommateFavourite.objects.filter(
+        user=request.user
     ).order_by('-created_at')[:5]
 
     total_posts = user_posts.count()
@@ -475,12 +498,52 @@ def roommate_dashboard(request):
         status='pending'
     ).count()
 
+    saved_posts_count = RoommateFavourite.objects.filter(
+        user=request.user
+    ).count()
+
     return render(request, 'roommate/roommate_dashboard.html', {
         'user_posts': user_posts,
         'received_applications': received_applications,
         'my_applications': my_applications,
+        'saved_posts': saved_posts,
         'total_posts': total_posts,
         'open_posts_count': open_posts_count,
         'pending_received_count': pending_received_count,
         'pending_my_applications_count': pending_my_applications_count,
+        'saved_posts_count': saved_posts_count,
+    })
+
+
+@login_required(login_url='/login/')
+def toggle_favourite(request, id):
+    post = get_object_or_404(RoommatePost, id=id)
+
+    if request.method == 'POST':
+        favourite = RoommateFavourite.objects.filter(
+            user=request.user,
+            roommate_post=post
+        ).first()
+
+        if favourite:
+            favourite.delete()
+        else:
+            RoommateFavourite.objects.create(
+                user=request.user,
+                roommate_post=post
+            )
+
+    next_url = request.POST.get('next', 'roommate_list')
+
+    return redirect(next_url)
+
+
+@login_required(login_url='/login/')
+def saved_roommate_posts(request):
+    favourites = RoommateFavourite.objects.filter(
+        user=request.user
+    ).order_by('-created_at')
+
+    return render(request, 'roommate/saved_roommate_posts.html', {
+        'favourites': favourites
     })

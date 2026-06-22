@@ -48,7 +48,6 @@ class RoommatePost(models.Model):
     budget = models.FloatField()
     contact = models.CharField(max_length=100)
 
-    # Optional unit / sharing details
     unit_name = models.CharField(max_length=100, blank=True)
     total_rent = models.FloatField(null=True, blank=True)
     total_people = models.PositiveIntegerField(default=1)
@@ -77,8 +76,6 @@ class RoommatePost(models.Model):
         return max(remaining, 0)
 
     def save(self, *args, **kwargs):
-        # If total rent and total people are provided,
-        # automatically calculate budget per person.
         if self.total_rent and self.total_people and self.total_people > 0:
             self.budget = round(self.total_rent / self.total_people, 2)
 
@@ -145,3 +142,25 @@ class RoommateMessage(models.Model):
 
     def __str__(self):
         return f"Message from {self.sender.username}"
+
+
+class RoommateFavourite(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='roommate_favourites'
+    )
+
+    roommate_post = models.ForeignKey(
+        RoommatePost,
+        on_delete=models.CASCADE,
+        related_name='favourites'
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'roommate_post')
+
+    def __str__(self):
+        return f"{self.user.username} saved {self.roommate_post.title}"

@@ -114,6 +114,21 @@
 
         {% if user.is_authenticated %}
 
+            <form method="POST" action="{% url 'toggle_favourite' post.id %}" class="d-inline">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
+
+                {% if is_saved %}
+                    <button type="submit" class="btn btn-outline-danger">
+                        Remove Saved
+                    </button>
+                {% else %}
+                    <button type="submit" class="btn btn-outline-primary">
+                        Save Post
+                    </button>
+                {% endif %}
+            </form>
+
             {% if post.created_by == user %}
 
                 <a href="{% url 'applications_received' %}" class="btn btn-primary">
@@ -187,11 +202,11 @@
         {% else %}
 
             <p class="text-muted mt-3">
-                Please login to apply for this roommate post.
+                Please login to apply or save this roommate post.
             </p>
 
             <a href="/login/" class="btn btn-primary">
-                Login to Apply
+                Login
             </a>
 
         {% endif %}

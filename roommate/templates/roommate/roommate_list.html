@@ -17,6 +17,10 @@
                 My Dashboard
             </a>
 
+            <a href="{% url 'saved_roommate_posts' %}" class="btn btn-secondary">
+                Saved Posts
+            </a>
+
             <a href="{% url 'add_roommate' %}" class="btn btn-primary">
                 + Add Roommate Post
             </a>
@@ -109,11 +113,19 @@
                 </p>
             </div>
 
-            {% if user.is_authenticated and post.created_by == user %}
-                <span class="badge bg-dark">
-                    Your Post
-                </span>
-            {% endif %}
+            <div>
+                {% if user.is_authenticated and post.created_by == user %}
+                    <span class="badge bg-dark">
+                        Your Post
+                    </span>
+                {% endif %}
+
+                {% if user.is_authenticated and post.id in saved_post_ids %}
+                    <span class="badge bg-info text-dark">
+                        Saved
+                    </span>
+                {% endif %}
+            </div>
 
         </div>
 
@@ -168,8 +180,22 @@
                 Match
             </a>
 
-
             {% if user.is_authenticated %}
+
+                <form method="POST" action="{% url 'toggle_favourite' post.id %}" class="d-inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.path }}">
+
+                    {% if post.id in saved_post_ids %}
+                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                            Remove Saved
+                        </button>
+                    {% else %}
+                        <button type="submit" class="btn btn-sm btn-outline-primary">
+                            Save
+                        </button>
+                    {% endif %}
+                </form>
 
                 {% if post.created_by == user %}
 

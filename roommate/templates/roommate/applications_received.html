@@ -44,6 +44,7 @@
     </a>
 
     {% if app.status == 'pending' %}
+
         <form method="POST" action="{% url 'update_application_status' app.id 'accepted' %}" class="d-inline">
             {% csrf_token %}
             <button type="submit" class="btn btn-sm btn-success">
@@ -57,7 +58,27 @@
                 Reject
             </button>
         </form>
+
+    {% elif app.status == 'accepted' %}
+
+        <form method="POST" action="{% url 'update_application_status' app.id 'pending' %}" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-warning">
+                Undo Accept
+            </button>
+        </form>
+
+    {% elif app.status == 'rejected' %}
+
+        <form method="POST" action="{% url 'update_application_status' app.id 'pending' %}" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-warning">
+                Set Back to Pending
+            </button>
+        </form>
+
     {% endif %}
+
 </div>
 
 {% empty %}
@@ -70,6 +91,10 @@
 </div>
 
 {% endfor %}
+
+<a href="{% url 'roommate_dashboard' %}" class="btn btn-secondary mt-3">
+    Back to Dashboard
+</a>
 
 <a href="{% url 'roommate_list' %}" class="btn btn-secondary mt-3">
     Back to Roommate List
