@@ -14,4 +14,7 @@ urlpatterns = [
     path('my-applications/', views.my_roommate_applications, name='my_roommate_applications'),
     path('application/<int:application_id>/', views.application_detail, name='application_detail'),
     path('application/<int:application_id>/<str:status>/', views.update_application_status, name='update_application_status'),
+
+    path('close/<int:id>/', views.close_roommate_post, name='close_roommate_post'),
+    path('reopen/<int:id>/', views.reopen_roommate_post, name='reopen_roommate_post'),
 ]

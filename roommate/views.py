@@ -20,6 +20,7 @@ def normalize_text(text):
 
     return text
 
+
 def to_float(value):
     try:
         return float(value) if value else None
@@ -82,6 +83,7 @@ def add_roommate(request):
 
     return render(request, 'roommate/add_roommate.html')
 
+
 def roommate_list(request):
     posts = RoommatePost.objects.all()
 
@@ -89,18 +91,15 @@ def roommate_list(request):
     max_budget = request.GET.get('max_budget')
     sort = request.GET.get('sort')
 
-    # Filter by location
     if location:
         posts = posts.filter(location__icontains=location)
 
-    # Filter by maximum budget
     if max_budget:
         try:
             posts = posts.filter(budget__lte=float(max_budget))
         except ValueError:
             pass
 
-    # Sort function
     if sort == 'oldest':
         posts = posts.order_by('created_at')
     elif sort == 'low_budget':
@@ -130,7 +129,6 @@ def roommate_detail(request, id):
 def delete_roommate(request, id):
     post = get_object_or_404(RoommatePost, id=id)
 
-    # Only creator can delete own post
     if post.created_by != request.user:
         return redirect('roommate_detail', id=post.id)
 
@@ -177,8 +175,11 @@ def edit_roommate(request, id):
 
     return render(request, 'roommate/edit_roommate.html', {'post': post})
 
+
 def match_roommates(request, id):
     current_user_post = get_object_or_404(RoommatePost, id=id)
+
+    # Only recommend open posts
     all_posts = RoommatePost.objects.exclude(id=id).filter(post_status='open')
 
     results = []
@@ -263,10 +264,8 @@ def match_roommates(request, id):
         else:
             reasons.append("No strong keyword similarity")
 
-        # Make sure percentage does not exceed 100
         match_percentage = min(score, 100)
 
-        # Match label
         if match_percentage >= 80:
             match_label = "Excellent Match"
         elif match_percentage >= 60:
@@ -302,9 +301,11 @@ def apply_roommate(request, id):
     if post.created_by is None:
         return redirect('roommate_detail', id=post.id)
 
+    # Only open post can receive applications
     if post.post_status != 'open':
         return redirect('roommate_detail', id=post.id)
 
+    # User cannot apply to own post
     if post.created_by == request.user:
         return redirect('roommate_detail', id=post.id)
 
@@ -376,6 +377,7 @@ def update_application_status(request, application_id, status):
         application.status = status
         application.save()
 
+        # Update post status after accept/reject
         update_roommate_post_status(application.roommate_post)
 
     return redirect('applications_received')
@@ -388,7 +390,6 @@ def application_detail(request, application_id):
     is_applicant = application.applicant == request.user
     is_coordinator = application.roommate_post.created_by == request.user
 
-    # Only applicant or coordinator can view the chat page
     if not is_applicant and not is_coordinator:
         return redirect('roommate_list')
 
@@ -410,3 +411,39 @@ def application_detail(request, application_id):
         'application': application,
         'messages': chat_messages
     })
+
+
+@login_required(login_url='/login/')
+def close_roommate_post(request, id):
+    post = get_object_or_404(RoommatePost, id=id)
+
+    # Only creator can close own post
+    if post.created_by != request.user:
+        return redirect('roommate_detail', id=post.id)
+
+    if request.method == 'POST':
+        post.post_status = 'closed'
+        post.save()
+
+    return redirect('roommate_detail', id=post.id)
+
+
+@login_required(login_url='/login/')
+def reopen_roommate_post(request, id):
+    post = get_object_or_404(RoommatePost, id=id)
+
+    # Only creator can reopen own post
+    if post.created_by != request.user:
+        return redirect('roommate_detail', id=post.id)
+
+    if request.method == 'POST':
+        accepted_count = post.applications.filter(status='accepted').count()
+
+        if accepted_count >= post.needed_roommates:
+            post.post_status = 'full'
+        else:
+            post.post_status = 'open'
+
+        post.save()
+
+    return redirect('roommate_detail', id=post.id)

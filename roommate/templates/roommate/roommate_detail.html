@@ -128,6 +128,32 @@
                     Delete
                 </a>
 
+                {% if post.post_status == 'open' %}
+
+                    <form method="POST" action="{% url 'close_roommate_post' post.id %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-secondary">
+                            Close Post
+                        </button>
+                    </form>
+
+                {% elif post.post_status == 'closed' %}
+
+                    <form method="POST" action="{% url 'reopen_roommate_post' post.id %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success">
+                            Reopen Post
+                        </button>
+                    </form>
+
+                {% elif post.post_status == 'full' %}
+
+                    <button class="btn btn-warning" disabled>
+                        Post is Full
+                    </button>
+
+                {% endif %}
+
             {% else %}
 
                 {% if post.post_status == 'open' and post.created_by %}
