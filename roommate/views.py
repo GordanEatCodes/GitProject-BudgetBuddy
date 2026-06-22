@@ -447,3 +447,40 @@ def reopen_roommate_post(request, id):
         post.save()
 
     return redirect('roommate_detail', id=post.id)
+
+@login_required(login_url='/login/')
+def roommate_dashboard(request):
+    user_posts = RoommatePost.objects.filter(
+        created_by=request.user
+    ).order_by('-created_at')
+
+    received_applications = RoommateApplication.objects.filter(
+        roommate_post__created_by=request.user
+    ).order_by('-created_at')[:5]
+
+    my_applications = RoommateApplication.objects.filter(
+        applicant=request.user
+    ).order_by('-created_at')[:5]
+
+    total_posts = user_posts.count()
+    open_posts_count = user_posts.filter(post_status='open').count()
+
+    pending_received_count = RoommateApplication.objects.filter(
+        roommate_post__created_by=request.user,
+        status='pending'
+    ).count()
+
+    pending_my_applications_count = RoommateApplication.objects.filter(
+        applicant=request.user,
+        status='pending'
+    ).count()
+
+    return render(request, 'roommate/roommate_dashboard.html', {
+        'user_posts': user_posts,
+        'received_applications': received_applications,
+        'my_applications': my_applications,
+        'total_posts': total_posts,
+        'open_posts_count': open_posts_count,
+        'pending_received_count': pending_received_count,
+        'pending_my_applications_count': pending_my_applications_count,
+    })
