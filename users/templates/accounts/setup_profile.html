@@ -37,8 +37,8 @@
       {% csrf_token %}
 
       <div class="field">
-        <label for="Username">Username</label>
-        <input type="text" id="Username" name="username"
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username"
                placeholder="How should we call you?" autocomplete="nickname"/>
         <div class="field-hint">Shown to other users — not your legal name</div>
       </div>
@@ -52,18 +52,21 @@
         <div class="field" style="margin-bottom:0;">
           <label for="state">State</label>
           <select id="state" name="state">
-            <option value="" disabled selected>Select state</option>
+            <option value="" disabled selected>Select State</option>
             <option>Selangor</option>
             <option>Johor</option>
             <option>Penang</option>
             <option>Perak</option>
             <option>Kedah</option>
             <option>Kelantan</option>
+            <option>Kuala Lumpur</option>
+            <option>Labuan</option>
             <option>Terengganu</option>
             <option>Pahang</option>
             <option>Negeri Sembilan</option>
             <option>Melaka</option>
             <option>Perlis</option>
+            <option>Putrajaya</option>
             <option>Sabah</option>
             <option>Sarawak</option>
           </select>

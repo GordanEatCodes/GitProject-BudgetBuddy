@@ -30,9 +30,11 @@
     <section class="hero">
       <div class="hero-content">
         <div class="text-block">
-          <h1 class="headline">Enter the world<br>where finding<br>roommates and house is easy</h1>
+          <h1 class="headline">Enter the world<br>where finding<br>roommates and <br>house is easy</h1>
           <p class="subheadline">A centralized platform for university students<br>to find housing and connect with roommates.</p>
         </div>
+
+        <!-- BUTTONS -->
         <div class="buttons">
           <a href="{% url 'register' %}"><button class="btn-primary">RENT HOUSE</button></a>
           <a href="{% url 'register' %}"><button class="btn-secondary">FIND ROOMMATES</button></a>
@@ -56,13 +58,14 @@
         <nav class="footer-nav">
           <div class="footer-col">
             <span class="footer-col-header">Company</span>
-            <a class="col-link" href="/about/">About Us</a>
-            <a class="col-link" href="/contact/">Contact Us</a>
+            <a class="col-link" href="{% url 'about' %}">About Us</a>
+            <a class="col-link" href="{% url 'contact' %}">Contact Us</a>
           </div>
+
           <div class="footer-col">
             <span class="footer-col-header">Features</span>
-            <a class="col-link" href="#">Rent House</a>
-            <a class="col-link" href="#">Find Roommates</a>
+              <a class="col-link" href="{% url 'register' %}">Rent House</a>
+              <a class="col-link" href="{% url 'register' %}">Find Roommates</a>
           </div>
         </nav>
  
