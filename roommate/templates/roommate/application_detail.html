@@ -2,90 +2,376 @@
 
 {% block content %}
 
-<div class="card p-4 shadow-sm mb-4">
-    <h2>Roommate Application Chat</h2>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Application Details & Messages</h2>
+        <p class="text-muted mb-0">
+            View application status and communicate between coordinator and applicant.
+        </p>
+    </div>
 
-    <hr>
+    <div>
+        <a href="{% url 'roommate_dashboard' %}" class="btn btn-secondary">
+            My Dashboard
+        </a>
 
-    <h4>{{ application.roommate_post.title }}</h4>
-
-    <p>
-        <strong>Applicant:</strong> {{ application.applicant.username }}
-    </p>
-
-    <p>
-        <strong>Coordinator:</strong> {{ application.roommate_post.created_by.username }}
-    </p>
-
-    <p>
-        <strong>Status:</strong>
-
-        {% if application.status == 'accepted' %}
-            <span class="badge bg-success">Accepted</span>
-        {% elif application.status == 'rejected' %}
-            <span class="badge bg-danger">Rejected</span>
+        {% if user == application.roommate_post.created_by %}
+            <a href="{% url 'applications_received' %}" class="btn btn-secondary">
+                Applications Received
+            </a>
         {% else %}
-            <span class="badge bg-warning text-dark">Pending</span>
+            <a href="{% url 'my_roommate_applications' %}" class="btn btn-secondary">
+                My Applications
+            </a>
         {% endif %}
-    </p>
+    </div>
 </div>
 
 
-<div class="card p-4 shadow-sm mb-4">
+<div class="alert alert-info shadow-sm">
+    <strong>How to use this page:</strong>
+    Check the application status, review the roommate post, and use the message section to discuss rental or roommate details.
+</div>
+
+
+<div class="card p-4 mb-4 shadow-sm">
+
+    <div class="d-flex justify-content-between align-items-start">
+
+        <div>
+            <h3 class="mb-1">{{ application.roommate_post.title }}</h3>
+
+            <p class="text-muted mb-0">
+                Application for roommate post
+            </p>
+        </div>
+
+        <div class="text-end">
+            {% if application.status == 'accepted' %}
+                <span class="badge bg-success fs-6">Accepted</span>
+            {% elif application.status == 'rejected' %}
+                <span class="badge bg-danger fs-6">Rejected</span>
+            {% else %}
+                <span class="badge bg-warning text-dark fs-6">Pending</span>
+            {% endif %}
+
+            <br>
+
+            <small class="text-muted">
+                Applied on:<br>
+                {{ application.created_at|date:"d M Y, h:i A" }}
+            </small>
+        </div>
+
+    </div>
+
+    <hr>
+
+    <div class="row">
+
+        <div class="col-md-4 mb-3">
+            <div class="border rounded p-3 h-100">
+                <strong>Coordinator</strong>
+
+                <p class="text-muted mb-0 mt-2">
+                    {% if application.roommate_post.created_by %}
+                        {{ application.roommate_post.created_by.username }}
+                    {% else %}
+                        Unknown
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="border rounded p-3 h-100">
+                <strong>Applicant</strong>
+
+                <p class="text-muted mb-0 mt-2">
+                    {{ application.applicant.username }}
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="border rounded p-3 h-100">
+                <strong>Post Status</strong>
+
+                <p class="mb-0 mt-2">
+                    {% if application.roommate_post.post_status == 'open' %}
+                        <span class="badge bg-success">Open</span>
+                    {% elif application.roommate_post.post_status == 'full' %}
+                        <span class="badge bg-warning text-dark">Full</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Closed</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="card p-4 mb-4 shadow-sm">
+
+    <h4>Roommate Post Summary</h4>
+
+    <p class="text-muted">
+        Quick overview of the roommate post linked to this application.
+    </p>
+
+    <div class="row">
+
+        <div class="col-md-4 mb-3">
+            <div class="border rounded p-3 h-100">
+                <strong>Location</strong>
+                <p class="text-muted mb-0 mt-2">
+                    📍 {{ application.roommate_post.location }}
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="border rounded p-3 h-100">
+                <strong>Budget Per Person</strong>
+                <p class="text-muted mb-0 mt-2">
+                    💰 RM {{ application.roommate_post.budget }}
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="border rounded p-3 h-100">
+                <strong>Remaining Slots</strong>
+                <p class="text-muted mb-0 mt-2">
+                    {{ application.roommate_post.remaining_roommates_needed }}
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="alert alert-light border mb-0">
+        <strong>Description:</strong>
+        <br>
+        {{ application.roommate_post.description }}
+    </div>
+
+    <div class="mt-3">
+        <a href="{% url 'roommate_detail' application.roommate_post.id %}" class="btn btn-sm btn-dark">
+            View Full Post
+        </a>
+
+        <a href="{% url 'match_roommates' application.roommate_post.id %}" class="btn btn-sm btn-info">
+            Check Match
+        </a>
+    </div>
+
+</div>
+
+
+<div class="card p-4 mb-4 shadow-sm">
+
+    <h4>Application Message</h4>
+
+    <p class="text-muted">
+        This is the first message sent by the applicant when applying.
+    </p>
+
+    {% if application.message %}
+
+        <div class="alert alert-light border mb-0">
+            {{ application.message }}
+        </div>
+
+    {% else %}
+
+        <div class="alert alert-light border mb-0 text-muted">
+            No application message was provided.
+        </div>
+
+    {% endif %}
+
+</div>
+
+
+<div class="card p-4 mb-4 shadow-sm">
+
+    <h4>Application Status Control</h4>
+
+    <p class="text-muted">
+        Manage or understand the current application status.
+    </p>
+
+    <div class="alert alert-light border">
+
+        {% if application.status == 'pending' %}
+            This application is currently pending. The coordinator can accept or reject it.
+        {% elif application.status == 'accepted' %}
+            This application has been accepted. The coordinator can undo the acceptance, or the applicant can cancel acceptance.
+        {% elif application.status == 'rejected' %}
+            This application was rejected. The coordinator can set it back to pending if needed.
+        {% endif %}
+
+    </div>
+
+
+    <div class="d-flex flex-wrap gap-2">
+
+        {% if user == application.roommate_post.created_by %}
+
+            {% if application.status == 'pending' %}
+
+                <form method="POST" action="{% url 'update_application_status' application.id 'accepted' %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success">
+                        Accept Applicant
+                    </button>
+                </form>
+
+                <form method="POST" action="{% url 'update_application_status' application.id 'rejected' %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        Reject Applicant
+                    </button>
+                </form>
+
+            {% elif application.status == 'accepted' %}
+
+                <form method="POST" action="{% url 'update_application_status' application.id 'pending' %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-warning">
+                        Undo Accept
+                    </button>
+                </form>
+
+            {% elif application.status == 'rejected' %}
+
+                <form method="POST" action="{% url 'update_application_status' application.id 'pending' %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-warning">
+                        Set Back to Pending
+                    </button>
+                </form>
+
+            {% endif %}
+
+        {% endif %}
+
+
+        {% if user == application.applicant and application.status == 'accepted' %}
+
+            <form method="POST" action="{% url 'cancel_accepted_application' application.id %}" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-warning">
+                    Cancel Acceptance
+                </button>
+            </form>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<div class="card p-4 mb-4 shadow-sm">
+
     <h4>Messages</h4>
+
+    <p class="text-muted">
+        Use this message section to discuss roommate, rental, or unit details.
+    </p>
 
     <hr>
 
     {% for msg in messages %}
 
         {% if msg.sender == user %}
-            <div class="text-end mb-3">
-                <div class="d-inline-block p-3 rounded bg-dark text-white">
+
+            <div class="d-flex justify-content-end mb-3">
+                <div class="border rounded p-3 bg-light" style="max-width: 75%;">
                     <strong>You</strong>
-                    <p class="mb-1">{{ msg.message }}</p>
-                    <small>{{ msg.created_at|date:"d M Y, h:i A" }}</small>
+
+                    <p class="mb-1 mt-2">
+                        {{ msg.message }}
+                    </p>
+
+                    <small class="text-muted">
+                        {{ msg.created_at|date:"d M Y, h:i A" }}
+                    </small>
                 </div>
             </div>
+
         {% else %}
-            <div class="text-start mb-3">
-                <div class="d-inline-block p-3 rounded bg-light border">
+
+            <div class="d-flex justify-content-start mb-3">
+                <div class="border rounded p-3 bg-white" style="max-width: 75%;">
                     <strong>{{ msg.sender.username }}</strong>
-                    <p class="mb-1">{{ msg.message }}</p>
-                    <small class="text-muted">{{ msg.created_at|date:"d M Y, h:i A" }}</small>
+
+                    <p class="mb-1 mt-2">
+                        {{ msg.message }}
+                    </p>
+
+                    <small class="text-muted">
+                        {{ msg.created_at|date:"d M Y, h:i A" }}
+                    </small>
                 </div>
             </div>
+
         {% endif %}
 
     {% empty %}
 
-        <p class="text-muted">
-            No messages yet.
-        </p>
+        <div class="alert alert-light border text-muted">
+            No messages yet. Send the first message below.
+        </div>
 
     {% endfor %}
-</div>
 
 
-<div class="card p-4 shadow-sm">
-    <h4>Send Message</h4>
+    <hr>
 
     <form method="POST">
         {% csrf_token %}
+
+        <label class="form-label">
+            Send Message
+        </label>
 
         <textarea 
             name="message" 
             class="form-control mb-3" 
             rows="4"
-            placeholder="Type your message here..."></textarea>
+            placeholder="Type your message here..."
+            required></textarea>
 
         <button type="submit" class="btn btn-primary">
             Send Message
         </button>
-
-        <a href="{% url 'roommate_list' %}" class="btn btn-secondary">
-            Back
-        </a>
     </form>
+
+</div>
+
+
+<div class="mb-4">
+
+    {% if user == application.roommate_post.created_by %}
+        <a href="{% url 'applications_received' %}" class="btn btn-secondary">
+            Back to Applications Received
+        </a>
+    {% else %}
+        <a href="{% url 'my_roommate_applications' %}" class="btn btn-secondary">
+            Back to My Applications
+        </a>
+    {% endif %}
+
+    <a href="{% url 'roommate_dashboard' %}" class="btn btn-secondary">
+        Back to Dashboard
+    </a>
+
 </div>
 
 {% endblock %}

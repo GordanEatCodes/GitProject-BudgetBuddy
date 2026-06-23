@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+
 from .models import RoommatePost, RoommateApplication, RoommateMessage, RoommateFavourite
+from users.models import UserProfile
+
 import string
 
 
@@ -30,6 +33,86 @@ def to_int(value, default=1):
         return default
 
 
+def get_user_profile_preferences(user):
+    """
+    Get preferences from users.UserProfile and convert them
+    into RoommatePost field values.
+
+    UserProfile:
+    - state -> location
+    - phone_number -> contact
+    - cleanliness integer -> cleanliness choice
+    - sleep_schedule -> sleep_schedule choice
+    - study_habits / noise_tolerance -> study_preference choice
+    """
+
+    preferences = {
+        'location': '',
+        'contact': '',
+        'cleanliness': 'any',
+        'sleep_schedule': 'any',
+        'study_preference': 'any',
+        'smoking': 'any',
+        'pets': 'any',
+    }
+
+    if not user.is_authenticated:
+        return preferences
+
+    try:
+        profile = user.userprofile
+    except UserProfile.DoesNotExist:
+        return preferences
+
+    # Auto-fill location and contact from user profile
+    preferences['location'] = profile.state or ''
+    preferences['contact'] = profile.phone_number or ''
+
+    # Convert cleanliness score into RoommatePost choices
+    cleanliness_score = profile.cleanliness or 3
+
+    if cleanliness_score >= 4:
+        preferences['cleanliness'] = 'very_clean'
+    elif cleanliness_score == 3:
+        preferences['cleanliness'] = 'normal'
+    elif cleanliness_score <= 2:
+        preferences['cleanliness'] = 'messy'
+
+    # Convert sleep schedule into RoommatePost choices
+    sleep_schedule = (profile.sleep_schedule or '').lower().replace(' ', '_').replace('-', '_')
+
+    if 'early' in sleep_schedule:
+        preferences['sleep_schedule'] = 'early_sleep'
+    elif 'late' in sleep_schedule:
+        preferences['sleep_schedule'] = 'late_sleep'
+    elif 'flex' in sleep_schedule:
+        preferences['sleep_schedule'] = 'flexible'
+    elif sleep_schedule in ['early_sleep', 'late_sleep', 'flexible']:
+        preferences['sleep_schedule'] = sleep_schedule
+
+    # Convert study habits into RoommatePost choices
+    study_habits = (profile.study_habits or '').lower().replace(' ', '_').replace('-', '_')
+
+    if 'quiet' in study_habits:
+        preferences['study_preference'] = 'quiet'
+    elif 'social' in study_habits or 'group' in study_habits:
+        preferences['study_preference'] = 'social'
+    elif 'normal' in study_habits:
+        preferences['study_preference'] = 'normal'
+    else:
+        # If study_habits is empty, use noise_tolerance as backup
+        noise_score = profile.noise_tolerance or 3
+
+        if noise_score <= 2:
+            preferences['study_preference'] = 'quiet'
+        elif noise_score >= 4:
+            preferences['study_preference'] = 'social'
+        else:
+            preferences['study_preference'] = 'normal'
+
+    return preferences
+
+
 def update_roommate_post_status(post):
     accepted_count = post.applications.filter(status='accepted').count()
 
@@ -44,6 +127,8 @@ def update_roommate_post_status(post):
 
 @login_required(login_url='/login/')
 def add_roommate(request):
+    profile_preferences = get_user_profile_preferences(request.user)
+
     if request.method == 'POST':
         title = request.POST.get('title')
         description = request.POST.get('description')
@@ -64,9 +149,9 @@ def add_roommate(request):
             needed_roommates=to_int(request.POST.get('needed_roommates'), 1),
             post_status='open',
 
-            cleanliness=request.POST.get('cleanliness', 'any'),
-            sleep_schedule=request.POST.get('sleep_schedule', 'any'),
-            study_preference=request.POST.get('study_preference', 'any'),
+            cleanliness=request.POST.get('cleanliness', profile_preferences['cleanliness']),
+            sleep_schedule=request.POST.get('sleep_schedule', profile_preferences['sleep_schedule']),
+            study_preference=request.POST.get('study_preference', profile_preferences['study_preference']),
             smoking=request.POST.get('smoking', 'any'),
             pets=request.POST.get('pets', 'any'),
 
@@ -75,7 +160,9 @@ def add_roommate(request):
 
         return redirect('roommate_list')
 
-    return render(request, 'roommate/add_roommate.html')
+    return render(request, 'roommate/add_roommate.html', {
+        'profile_preferences': profile_preferences
+    })
 
 
 def roommate_list(request):
@@ -148,7 +235,9 @@ def delete_roommate(request, id):
         post.delete()
         return redirect('roommate_list')
 
-    return render(request, 'roommate/confirm_delete.html', {'post': post})
+    return render(request, 'roommate/confirm_delete.html', {
+        'post': post
+    })
 
 
 @login_required(login_url='/login/')
@@ -185,11 +274,15 @@ def edit_roommate(request, id):
 
         return redirect('roommate_list')
 
-    return render(request, 'roommate/edit_roommate.html', {'post': post})
+    return render(request, 'roommate/edit_roommate.html', {
+        'post': post
+    })
 
 
 def match_roommates(request, id):
     current_user_post = get_object_or_404(RoommatePost, id=id)
+
+    # Only recommend open posts
     all_posts = RoommatePost.objects.exclude(id=id).filter(post_status='open')
 
     results = []
@@ -204,6 +297,7 @@ def match_roommates(request, id):
         score = 0
         reasons = []
 
+        # 1. Location match - max 25
         current_location = normalize_text(current_user_post.location)
         post_location = normalize_text(post.location)
 
@@ -219,6 +313,7 @@ def match_roommates(request, id):
         else:
             reasons.append("Different location")
 
+        # 2. Budget similarity - max 25
         budget_diff = abs(float(current_user_post.budget) - float(post.budget))
 
         if budget_diff <= 100:
@@ -233,6 +328,7 @@ def match_roommates(request, id):
         else:
             reasons.append("Budget difference is more than RM300")
 
+        # 3. Lifestyle preference matching - max 35
         lifestyle_fields = [
             ('cleanliness', 'Cleanliness preference'),
             ('sleep_schedule', 'Sleep schedule'),
@@ -254,6 +350,7 @@ def match_roommates(request, id):
             else:
                 reasons.append(f"{label} is different")
 
+        # 4. Description keyword similarity - max 15
         current_description = normalize_text(current_user_post.description)
         post_description = normalize_text(post.description)
 
@@ -486,7 +583,10 @@ def roommate_dashboard(request):
     ).order_by('-created_at')[:5]
 
     total_posts = user_posts.count()
-    open_posts_count = user_posts.filter(post_status='open').count()
+
+    open_posts_count = user_posts.filter(
+        post_status='open'
+    ).count()
 
     pending_received_count = RoommateApplication.objects.filter(
         roommate_post__created_by=request.user,

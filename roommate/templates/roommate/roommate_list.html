@@ -2,31 +2,27 @@
 
 {% block content %}
 
-<div class="d-flex justify-content-between align-items-center mb-3">
+<div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h2>Roommate Posts</h2>
+        <h2 class="mb-1">Roommate Posts</h2>
         <p class="text-muted mb-0">
-            Browse roommate posts, check availability, and find suitable matches.
+            Browse roommate posts, save interesting posts, apply to become a roommate, or check matching percentage.
         </p>
     </div>
 
     <div>
         {% if user.is_authenticated %}
 
-            <a href="{% url 'roommate_dashboard' %}" class="btn btn-secondary">
+            <a href="{% url 'roommate_dashboard' %}" class="btn btn-secondary me-2">
                 My Dashboard
             </a>
 
-            <a href="{% url 'saved_roommate_posts' %}" class="btn btn-secondary">
+            <a href="{% url 'saved_roommate_posts' %}" class="btn btn-secondary me-2">
                 Saved Posts
             </a>
 
             <a href="{% url 'add_roommate' %}" class="btn btn-primary">
-                + Add Roommate Post
-            </a>
-
-            <a href="{% url 'my_roommate_applications' %}" class="btn btn-secondary">
-                My Applications
+                + Create Post
             </a>
 
         {% else %}
@@ -40,69 +36,120 @@
 </div>
 
 
-<form method="GET" class="row g-2 mb-4">
+<div class="alert alert-info shadow-sm">
+    <strong>How to use this page:</strong>
+    Find a suitable roommate post, check the details, use Match to compare compatibility, then save or apply to the post.
+</div>
 
-    <div class="col-md-4">
-        <input type="text"
-               name="location"
-               class="form-control"
-               placeholder="Filter by location"
-               value="{{ location|default:'' }}">
+
+<div class="card p-4 mb-4 shadow-sm">
+
+    <h4 class="mb-2">Find Roommate Posts</h4>
+
+    <p class="text-muted">
+        Use the filters below to search for roommate posts that match your location and budget.
+    </p>
+
+    <form method="GET" class="row g-3">
+
+        <div class="col-md-4">
+            <label class="form-label">Location</label>
+            <input type="text"
+                   name="location"
+                   class="form-control"
+                   placeholder="Example: Cyberjaya"
+                   value="{{ location|default:'' }}">
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Maximum Budget</label>
+            <input type="number"
+                   name="max_budget"
+                   class="form-control"
+                   placeholder="Example: 700"
+                   value="{{ max_budget|default:'' }}">
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Sort Posts</label>
+            <select name="sort" class="form-control">
+                <option value="">Newest first</option>
+
+                <option value="newest" {% if sort == 'newest' %}selected{% endif %}>
+                    Newest first
+                </option>
+
+                <option value="oldest" {% if sort == 'oldest' %}selected{% endif %}>
+                    Oldest first
+                </option>
+
+                <option value="low_budget" {% if sort == 'low_budget' %}selected{% endif %}>
+                    Lowest budget
+                </option>
+
+                <option value="high_budget" {% if sort == 'high_budget' %}selected{% endif %}>
+                    Highest budget
+                </option>
+            </select>
+        </div>
+
+        <div class="col-md-2 d-flex align-items-end">
+            <div>
+                <button type="submit" class="btn btn-primary">
+                    Apply Filter
+                </button>
+
+                <a href="{% url 'roommate_list' %}" class="btn btn-secondary">
+                    Reset
+                </a>
+            </div>
+        </div>
+
+    </form>
+
+</div>
+
+
+<div class="card p-3 mb-4 shadow-sm">
+    <h5>Status Guide</h5>
+
+    <div class="d-flex flex-wrap gap-2 mt-2">
+
+        <span class="badge bg-success">
+            Open
+        </span>
+        <span class="text-muted me-3">
+            Can still receive applications
+        </span>
+
+        <span class="badge bg-warning text-dark">
+            Full
+        </span>
+        <span class="text-muted me-3">
+            Enough roommates accepted
+        </span>
+
+        <span class="badge bg-secondary">
+            Closed
+        </span>
+        <span class="text-muted">
+            Post creator has closed the post
+        </span>
+
     </div>
-
-    <div class="col-md-3">
-        <input type="number"
-               name="max_budget"
-               class="form-control"
-               placeholder="Max budget"
-               value="{{ max_budget|default:'' }}">
-    </div>
-
-    <div class="col-md-3">
-        <select name="sort" class="form-control">
-            <option value="">Sort by newest</option>
-
-            <option value="newest" {% if sort == 'newest' %}selected{% endif %}>
-                Newest first
-            </option>
-
-            <option value="oldest" {% if sort == 'oldest' %}selected{% endif %}>
-                Oldest first
-            </option>
-
-            <option value="low_budget" {% if sort == 'low_budget' %}selected{% endif %}>
-                Lowest budget
-            </option>
-
-            <option value="high_budget" {% if sort == 'high_budget' %}selected{% endif %}>
-                Highest budget
-            </option>
-        </select>
-    </div>
-
-    <div class="col-md-2">
-        <button type="submit" class="btn btn-primary">
-            Apply
-        </button>
-
-        <a href="{% url 'roommate_list' %}" class="btn btn-secondary">
-            Reset
-        </a>
-    </div>
-
-</form>
+</div>
 
 
 {% for post in posts %}
 
-    <div class="card mb-3 p-3 shadow-sm">
+    <div class="card mb-4 p-4 shadow-sm">
 
         <div class="d-flex justify-content-between align-items-start">
 
             <div>
-                <h4>{{ post.title }}</h4>
+                <h3 class="mb-2">{{ post.title }}</h3>
 
-                <p class="mb-2">
+                <div class="mb-2">
                     {% if post.post_status == 'open' %}
                         <span class="badge bg-success">Open</span>
                     {% elif post.post_status == 'full' %}
@@ -110,75 +157,103 @@
                     {% else %}
                         <span class="badge bg-secondary">Closed</span>
                     {% endif %}
-                </p>
+
+                    {% if user.is_authenticated and post.created_by == user %}
+                        <span class="badge bg-dark">
+                            Your Post
+                        </span>
+                    {% endif %}
+
+                    {% if user.is_authenticated and post.id in saved_post_ids %}
+                        <span class="badge bg-info text-dark">
+                            Saved
+                        </span>
+                    {% endif %}
+                </div>
             </div>
 
-            <div>
-                {% if user.is_authenticated and post.created_by == user %}
-                    <span class="badge bg-dark">
-                        Your Post
-                    </span>
-                {% endif %}
-
-                {% if user.is_authenticated and post.id in saved_post_ids %}
-                    <span class="badge bg-info text-dark">
-                        Saved
-                    </span>
-                {% endif %}
+            <div class="text-end">
+                <small class="text-muted">
+                    Posted on<br>
+                    {{ post.created_at|date:"d M Y, h:i A" }}
+                </small>
             </div>
 
         </div>
 
 
-        <p>{{ post.description }}</p>
+        <p class="mt-2">
+            {{ post.description }}
+        </p>
 
-        <small>
-            📍 {{ post.location }} | 💰 RM {{ post.budget }} per person
-        </small>
+
+        <div class="row mt-3">
+
+            <div class="col-md-4 mb-2">
+                <div class="border rounded p-3 h-100">
+                    <strong>Location</strong>
+                    <p class="text-muted mb-0">
+                        📍 {{ post.location }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-2">
+                <div class="border rounded p-3 h-100">
+                    <strong>Budget Per Person</strong>
+                    <p class="text-muted mb-0">
+                        💰 RM {{ post.budget }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-2">
+                <div class="border rounded p-3 h-100">
+                    <strong>Roommate Slots</strong>
+                    <p class="text-muted mb-0">
+                        Needed {{ post.needed_roommates }} |
+                        Accepted {{ post.accepted_roommates_count }} |
+                        Remaining {{ post.remaining_roommates_needed }}
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
 
         {% if post.unit_name or post.total_rent %}
-            <div class="mt-2">
+
+            <div class="alert alert-light border mt-3 mb-0">
+
+                <strong>Unit / Sharing Details</strong>
+
+                <br>
 
                 {% if post.unit_name %}
-                    <small>
-                        🏠 Unit: {{ post.unit_name }}
-                    </small>
+                    🏠 Unit: {{ post.unit_name }}
                     <br>
                 {% endif %}
 
                 {% if post.total_rent %}
-                    <small>
-                        Total Rent: RM {{ post.total_rent }} |
-                        People Sharing: {{ post.total_people }}
-                    </small>
-                    <br>
+                    Total Rent: RM {{ post.total_rent }} |
+                    People Sharing: {{ post.total_people }}
                 {% endif %}
 
             </div>
+
         {% endif %}
 
-        <div class="mt-2">
-            <small>
-                Needed Roommates: {{ post.needed_roommates }} |
-                Accepted: {{ post.accepted_roommates_count }} |
-                Remaining: {{ post.remaining_roommates_needed }}
-            </small>
-        </div>
 
-        <p class="text-muted mb-2 mt-2">
-            Posted on: {{ post.created_at|date:"d M Y, h:i A" }}
-        </p>
-
-
-        <div class="mt-2">
+        <div class="mt-4 d-flex flex-wrap gap-2">
 
             <a href="{% url 'roommate_detail' post.id %}" class="btn btn-sm btn-dark">
                 View Details
             </a>
 
             <a href="{% url 'match_roommates' post.id %}" class="btn btn-sm btn-info">
-                Match
+                Check Match
             </a>
+
 
             {% if user.is_authenticated %}
 
@@ -192,10 +267,11 @@
                         </button>
                     {% else %}
                         <button type="submit" class="btn btn-sm btn-outline-primary">
-                            Save
+                            Save Post
                         </button>
                     {% endif %}
                 </form>
+
 
                 {% if post.created_by == user %}
 
@@ -216,19 +292,19 @@
                     {% if post.post_status == 'open' and post.created_by %}
 
                         <a href="{% url 'apply_roommate' post.id %}" class="btn btn-sm btn-primary">
-                            Apply
+                            Apply to be Roommate
                         </a>
 
                     {% elif post.post_status == 'full' %}
 
                         <button class="btn btn-sm btn-secondary" disabled>
-                            Full
+                            This Post is Full
                         </button>
 
                     {% elif post.post_status == 'closed' %}
 
                         <button class="btn btn-sm btn-secondary" disabled>
-                            Closed
+                            This Post is Closed
                         </button>
 
                     {% endif %}
@@ -238,7 +314,7 @@
             {% else %}
 
                 <a href="/login/" class="btn btn-sm btn-primary">
-                    Login to Apply
+                    Login to Save or Apply
                 </a>
 
             {% endif %}
@@ -249,21 +325,21 @@
 
 {% empty %}
 
-    <div class="card p-4 text-center shadow-sm">
-        <h5>No roommate posts found.</h5>
+    <div class="card p-5 text-center shadow-sm">
+        <h4>No roommate posts found.</h4>
 
         <p class="text-muted">
-            Try changing your filter or add a new roommate post.
+            Try changing your filters or create a new roommate post.
         </p>
 
         {% if user.is_authenticated %}
 
-            <a href="{% url 'roommate_dashboard' %}" class="btn btn-secondary">
-                My Dashboard
+            <a href="{% url 'add_roommate' %}" class="btn btn-primary">
+                + Create Roommate Post
             </a>
 
-            <a href="{% url 'add_roommate' %}" class="btn btn-primary">
-                + Add Roommate Post
+            <a href="{% url 'roommate_dashboard' %}" class="btn btn-secondary">
+                Back to Dashboard
             </a>
 
         {% else %}
