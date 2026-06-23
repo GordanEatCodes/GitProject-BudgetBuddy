@@ -2,22 +2,23 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-
+from listing.views import home 
+from users.views import dashboard
+from users.views import about 
+from users.views import about_dash
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-
-    # User system / homepage / login / register / dashboard
-    path('', include('users.urls')),
-
-    # Rental / listing module
-    path('listing/', include('listing.urls')),
-
-    # Extra rental URL, in case your teammate uses /rentals/
-    path('rentals/', include('listing.urls')),
-
-    # Roommate module
+    path('', home, name='home'),
+    path('home/', home, name='home'),
+    path('dashboard/', dashboard, name='dashboard'),
+    path('about/', about, name='about'),
+    path('about_dash/',about_dash, name='about_dash'),
+    path('users/', include('users.urls')),
     path('roommates/', include('roommate.urls')),
+    path('listing/', include('listing.urls')),
+    path('support/', include('support.urls')),
+    path('rentals/', include('listing.urls'))
 ]
 
 

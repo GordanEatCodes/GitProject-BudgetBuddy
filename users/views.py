@@ -24,8 +24,8 @@ def home(request):
 def about(request):
     return render(request, 'about_us.html')
 
-def contact(request):
-    return render(request, 'contact.html')
+def about_dash(request):
+    return render(request, 'about_us_dash.html')
 
 @login_required
 def dashboard(request):
