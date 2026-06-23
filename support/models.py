@@ -24,6 +24,13 @@ class ChatSession(models.Model):
         owner = self.user.username if self.user else (self.guest_name or f"guest-{(self.guest_id or '')[:8]}")
         return f"Chat #{self.pk} with {owner}"
 
+    @property
+    def display_name(self):
+        if self.user:
+            return self.user.email or self.user.username 
+        if self.guest_name:
+            return self.guest_name
+        return f"Guest #{(self.guest_id or 'unknown')[:8].upper()}"
 
 class ChatMessage(models.Model):
     SENDER_VISITOR = 'visitor'

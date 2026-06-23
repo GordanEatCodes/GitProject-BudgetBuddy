@@ -192,11 +192,11 @@
       {% for chat in unassigned %}
         <div class="chat-item">
           <div class="chat-avatar">
-            {% if chat.user %}{{ chat.user.username|slice:":1"|upper }}{% else %}?{% endif %}
+            {{ chat.display_name|slice:":1"|upper }}
           </div>
           <div class="chat-info">
             <div class="chat-name">
-              {% if chat.user %}{{ chat.user.username }}{% else %}Guest visitor{% endif %}
+              {{ chat.display_name}}
             </div>
             <div class="chat-meta">
               Chat #{{ chat.id }} &middot; {{ chat.last_message_at|date:"d M, H:i" }}
@@ -224,11 +224,11 @@
       {% for chat in my_chats %}
         <div class="chat-item">
           <div class="chat-avatar">
-            {% if chat.user %}{{ chat.user.username|slice:":1"|upper }}{% else %}?{% endif %}
+            {{ chat.display_name|slice:":1"|upper }}
           </div>
           <div class="chat-info">
             <div class="chat-name">
-              {% if chat.user %}{{ chat.user.username }}{% else %}Guest visitor{% endif %}
+              {{ chat.display_name }}
               <span class="agent-tag">Claimed</span>
             </div>
             <div class="chat-meta">

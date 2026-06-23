@@ -247,7 +247,7 @@
       </div>
       <div class="header-info">
         <div class="header-name">
-          {% if chat_session.user %}{{ chat_session.user.username }}{% else %}Guest visitor{% endif %}
+          {% if chat_session.user %}{{ chat_session.user.username }}{% else %}{{chat_session.display_name}}{% endif %}
         </div>
         <div class="header-meta">Chat #{{ chat_session.id }} &middot; {{ chat_session.last_message_at|date:"d M, H:i" }}</div>
       </div>
