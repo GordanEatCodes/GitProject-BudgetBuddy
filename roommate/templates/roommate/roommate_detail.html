@@ -2,114 +2,326 @@
 
 {% block content %}
 
-<div class="card p-4 shadow-sm">
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Roommate Post Details</h2>
+        <p class="text-muted mb-0">
+            Review the roommate post, check lifestyle preferences, save the post, apply, or check matching percentage.
+        </p>
+    </div>
 
-    <h2>{{ post.title }}</h2>
+    <div>
+        <a href="{% url 'roommate_list' %}" class="btn btn-secondary">
+            Back to Posts
+        </a>
+
+        {% if user.is_authenticated %}
+            <a href="{% url 'roommate_dashboard' %}" class="btn btn-secondary">
+                My Dashboard
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+
+<div class="alert alert-info shadow-sm">
+    <strong>How to use this page:</strong>
+    Check the post details carefully. If the post suits you, you can save it, check your match percentage, or apply to become a roommate.
+</div>
+
+
+<div class="card p-4 shadow-sm mb-4">
+
+    <div class="d-flex justify-content-between align-items-start">
+
+        <div>
+            <h2 class="mb-2">{{ post.title }}</h2>
+
+            <p class="text-muted mb-2">
+                Posted on: {{ post.created_at|date:"d M Y, h:i A" }}
+            </p>
+
+            {% if post.created_by %}
+                <p class="text-muted mb-0">
+                    Posted by: {{ post.created_by.username }}
+                </p>
+            {% else %}
+                <p class="text-muted mb-0">
+                    Posted by: Unknown
+                </p>
+            {% endif %}
+        </div>
+
+        <div class="text-end">
+
+            {% if post.post_status == 'open' %}
+                <span class="badge bg-success fs-6">
+                    Open
+                </span>
+            {% elif post.post_status == 'full' %}
+                <span class="badge bg-warning text-dark fs-6">
+                    Full
+                </span>
+            {% else %}
+                <span class="badge bg-secondary fs-6">
+                    Closed
+                </span>
+            {% endif %}
+
+            {% if user.is_authenticated and post.created_by == user %}
+                <br>
+                <span class="badge bg-dark mt-2">
+                    Your Post
+                </span>
+            {% endif %}
+
+            {% if user.is_authenticated and is_saved %}
+                <br>
+                <span class="badge bg-info text-dark mt-2">
+                    Saved
+                </span>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    <hr>
+
+    <h4>Description</h4>
+
+    <p>
+        {{ post.description }}
+    </p>
+
+</div>
+
+
+<div class="row mb-4">
+
+    <div class="col-md-4 mb-3">
+        <div class="card p-3 shadow-sm h-100">
+            <h5>Location</h5>
+            <p class="text-muted mb-0">
+                📍 {{ post.location }}
+            </p>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="card p-3 shadow-sm h-100">
+            <h5>Budget Per Person</h5>
+            <p class="text-muted mb-0">
+                💰 RM {{ post.budget }}
+            </p>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="card p-3 shadow-sm h-100">
+            <h5>Contact</h5>
+            <p class="text-muted mb-0">
+                📞 {{ post.contact }}
+            </p>
+        </div>
+    </div>
+
+</div>
+
+
+<div class="card p-4 shadow-sm mb-4">
+
+    <h4>Roommate Slot Status</h4>
 
     <p class="text-muted">
-        Posted on: {{ post.created_at|date:"d M Y, h:i A" }}
+        This shows how many roommates are still needed for this post.
     </p>
 
-    <hr>
+    <div class="row">
 
-    <h5>Description</h5>
-    <p>{{ post.description }}</p>
+        <div class="col-md-4 mb-3">
+            <div class="border rounded p-3 h-100">
+                <strong>Needed Roommates</strong>
+                <h4 class="mt-2 mb-0">
+                    {{ post.needed_roommates }}
+                </h4>
+            </div>
+        </div>
 
-    <h5>Location</h5>
-    <p>📍 {{ post.location }}</p>
+        <div class="col-md-4 mb-3">
+            <div class="border rounded p-3 h-100">
+                <strong>Accepted Roommates</strong>
+                <h4 class="mt-2 mb-0">
+                    {{ post.accepted_roommates_count }}
+                </h4>
+            </div>
+        </div>
 
-    <h5>Budget Per Person</h5>
-    <p>💰 RM {{ post.budget }}</p>
+        <div class="col-md-4 mb-3">
+            <div class="border rounded p-3 h-100">
+                <strong>Remaining Slots</strong>
+                <h4 class="mt-2 mb-0">
+                    {{ post.remaining_roommates_needed }}
+                </h4>
+            </div>
+        </div>
 
-    <h5>Contact</h5>
-    <p>📞 {{ post.contact }}</p>
+    </div>
 
-    <hr>
-
-    <h5>Unit / Sharing Details</h5>
-
-    {% if post.unit_name %}
-        <p>
-            <strong>Unit Name:</strong> {{ post.unit_name }}
-        </p>
-    {% else %}
-        <p class="text-muted">
-            No unit name provided.
-        </p>
-    {% endif %}
-
-    {% if post.total_rent %}
-        <p>
-            <strong>Total Rent:</strong> RM {{ post.total_rent }}
-        </p>
-
-        <p>
-            <strong>Total People Sharing:</strong> {{ post.total_people }}
-        </p>
-
-        <p>
-            <strong>Budget Per Person:</strong> RM {{ post.budget }}
-        </p>
-    {% else %}
-        <p class="text-muted">
-            Total rent was not provided. Budget is manually entered.
-        </p>
-    {% endif %}
-
-    <p>
-        <strong>Needed Roommates:</strong> {{ post.needed_roommates }}
-    </p>
-
-    <p>
-        <strong>Accepted Roommates:</strong> {{ post.accepted_roommates_count }}
-    </p>
-
-    <p>
-        <strong>Remaining Slots:</strong> {{ post.remaining_roommates_needed }}
-    </p>
-
-    <p>
-        <strong>Status:</strong>
-
+    <div class="alert alert-light border mb-0">
         {% if post.post_status == 'open' %}
-            <span class="badge bg-success">Open</span>
+            This post is still open and can receive applications.
         {% elif post.post_status == 'full' %}
-            <span class="badge bg-warning text-dark">Full</span>
+            This post is already full because enough roommates have been accepted.
         {% else %}
-            <span class="badge bg-secondary">Closed</span>
+            This post has been closed by the creator and cannot receive new applications.
         {% endif %}
+    </div>
+
+</div>
+
+
+<div class="card p-4 shadow-sm mb-4">
+
+    <h4>Unit / Sharing Details</h4>
+
+    <p class="text-muted">
+        These details explain the unit and rent sharing information.
     </p>
 
-    <hr>
+    {% if post.unit_name or post.total_rent %}
 
-    <h5>Lifestyle Preferences</h5>
+        <div class="row">
 
-    <p>
-        <strong>Cleanliness:</strong> {{ post.get_cleanliness_display }}
+            <div class="col-md-3 mb-3">
+                <div class="border rounded p-3 h-100">
+                    <strong>Unit Name</strong>
+                    <p class="text-muted mb-0 mt-2">
+                        {% if post.unit_name %}
+                            {{ post.unit_name }}
+                        {% else %}
+                            Not provided
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <div class="border rounded p-3 h-100">
+                    <strong>Total Rent</strong>
+                    <p class="text-muted mb-0 mt-2">
+                        {% if post.total_rent %}
+                            RM {{ post.total_rent }}
+                        {% else %}
+                            Not provided
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <div class="border rounded p-3 h-100">
+                    <strong>Total People Sharing</strong>
+                    <p class="text-muted mb-0 mt-2">
+                        {{ post.total_people }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <div class="border rounded p-3 h-100">
+                    <strong>Budget Per Person</strong>
+                    <p class="text-muted mb-0 mt-2">
+                        RM {{ post.budget }}
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+    {% else %}
+
+        <div class="alert alert-light border mb-0">
+            No unit sharing details were provided. The budget was entered manually by the post creator.
+        </div>
+
+    {% endif %}
+
+</div>
+
+
+<div class="card p-4 shadow-sm mb-4">
+
+    <h4>Lifestyle Preferences</h4>
+
+    <p class="text-muted">
+        Use these preferences to decide whether the roommate is suitable for you.
     </p>
 
-    <p>
-        <strong>Sleep Schedule:</strong> {{ post.get_sleep_schedule_display }}
+    <div class="row">
+
+        <div class="col-md-4 mb-3">
+            <div class="border rounded p-3 h-100">
+                <strong>Cleanliness</strong>
+                <p class="text-muted mb-0 mt-2">
+                    {{ post.get_cleanliness_display }}
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="border rounded p-3 h-100">
+                <strong>Sleep Schedule</strong>
+                <p class="text-muted mb-0 mt-2">
+                    {{ post.get_sleep_schedule_display }}
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="border rounded p-3 h-100">
+                <strong>Study Preference</strong>
+                <p class="text-muted mb-0 mt-2">
+                    {{ post.get_study_preference_display }}
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="border rounded p-3 h-100">
+                <strong>Smoking</strong>
+                <p class="text-muted mb-0 mt-2">
+                    {{ post.get_smoking_display }}
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="border rounded p-3 h-100">
+                <strong>Pets</strong>
+                <p class="text-muted mb-0 mt-2">
+                    {{ post.get_pets_display }}
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="card p-4 shadow-sm mb-4">
+
+    <h4>Actions</h4>
+
+    <p class="text-muted">
+        Choose what you want to do with this roommate post.
     </p>
 
-    <p>
-        <strong>Study Preference:</strong> {{ post.get_study_preference_display }}
-    </p>
-
-    <p>
-        <strong>Smoking:</strong> {{ post.get_smoking_display }}
-    </p>
-
-    <p>
-        <strong>Pets:</strong> {{ post.get_pets_display }}
-    </p>
-
-    <hr>
-
-    <div class="mt-3">
+    <div class="d-flex flex-wrap gap-2">
 
         <a href="{% url 'match_roommates' post.id %}" class="btn btn-info">
-            Match
+            Check Match
         </a>
 
         {% if user.is_authenticated %}
@@ -129,6 +341,7 @@
                 {% endif %}
             </form>
 
+
             {% if post.created_by == user %}
 
                 <a href="{% url 'applications_received' %}" class="btn btn-primary">
@@ -136,11 +349,11 @@
                 </a>
 
                 <a href="{% url 'edit_roommate' post.id %}" class="btn btn-warning">
-                    Edit
+                    Edit Post
                 </a>
 
                 <a href="{% url 'delete_roommate' post.id %}" class="btn btn-danger">
-                    Delete
+                    Delete Post
                 </a>
 
                 {% if post.post_status == 'open' %}
@@ -191,9 +404,9 @@
 
                 {% else %}
 
-                    <p class="text-muted mt-3">
-                        This is an old roommate post and cannot receive applications.
-                    </p>
+                    <button class="btn btn-secondary" disabled>
+                        Cannot Apply
+                    </button>
 
                 {% endif %}
 
@@ -201,18 +414,14 @@
 
         {% else %}
 
-            <p class="text-muted mt-3">
-                Please login to apply or save this roommate post.
-            </p>
-
             <a href="/login/" class="btn btn-primary">
-                Login
+                Login to Save or Apply
             </a>
 
         {% endif %}
 
         <a href="{% url 'roommate_list' %}" class="btn btn-secondary">
-            Back
+            Back to Roommate List
         </a>
 
     </div>
