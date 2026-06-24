@@ -4,9 +4,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
-
+from django.contrib import messages
+from django.core.mail import send_mail
+from django.conf import settings
+from django.utils import timezone
 from users.models import UserProfile
-from .models import Room, Unit
+from .models import Room, Unit, RoomRequest, UnitRequest
 from .form import RoomForm, UnitForm
 
 
@@ -154,10 +157,31 @@ def owner_dashboard(request):
     if not user_is_owner(request.user):
         return HttpResponseForbidden("You are not allowed to access this page.")
 
+    # 這個 owner 自己的房源
     rooms = Room.objects.filter(owner=request.user).order_by('-created_at')
     units = Unit.objects.filter(owner=request.user).order_by('-created_at')
 
-    return render(request, 'owner.html', {'rooms': rooms, 'units': units})
+    # 這個 owner 房間的所有 requests
+    room_requests = RoomRequest.objects.filter(
+        room__owner=request.user
+    ).select_related('room', 'tenant').order_by('-created_at')
+
+    # 這個 owner 單位的所有 requests
+    unit_requests = UnitRequest.objects.filter(
+        unit__owner=request.user
+    ).select_related('unit', 'tenant').order_by('-created_at')
+
+    # Debug 輸出，看實際抓到多少筆
+    print("DEBUG room_requests count:", room_requests.count())
+    print("DEBUG unit_requests count:", unit_requests.count())
+
+    context = {
+        'rooms': rooms,
+        'units': units,
+        'room_requests': room_requests,
+        'unit_requests': unit_requests,
+    }
+    return render(request, 'owner.html', context)
 
 
 # ────────────── OWNER: CREATE ROOM ──────────────
@@ -175,8 +199,8 @@ def room_create(request):
             return redirect('owner_dashboard')
     else:
         form = RoomForm()
-    return render(request, 'room_form.html', {'form': form})
 
+    return render(request, 'room_form.html', {'form': form})
 
 # ────────────── OWNER: CREATE UNIT ──────────────
 @login_required
@@ -195,11 +219,152 @@ def unit_create(request):
         form = UnitForm()
     return render(request, 'unit_form.html', {'form': form})
 
+
 @login_required
 def room_detail(request, pk):
     """
-    單一 Room 詳情頁
+    單一 Room 詳情頁 + 處理租房請求
     URL: /listing/rooms/<pk>/
     """
     room = get_object_or_404(Room, pk=pk)
-    return render(request, 'room_detail.html', {'room': room})
+
+    # 找出目前使用者對這個 room 的最新 request（如果有）
+    current_request = None
+    if request.user.is_authenticated:
+        current_request = RoomRequest.objects.filter(
+            room=room,
+            tenant=request.user
+        ).order_by('-created_at').first()
+
+    if request.method == 'POST':
+        # 如果已經有 pending 或 accepted，就不要再重複送
+        if current_request and current_request.status in ['pending', 'accepted']:
+            return redirect('room_detail', pk=room.pk)
+
+        # 建立一筆新的 pending request（不需要 message）
+        RoomRequest.objects.create(
+            room=room,
+            tenant=request.user,
+            status='pending'
+        )
+        return redirect('room_detail', pk=room.pk)
+
+    context = {
+        'room': room,
+        'current_request': current_request,
+    }
+    return render(request, 'room_detail.html', context)
+
+
+
+@login_required
+def unit_detail(request, pk):
+    """
+    單一 Unit 詳情頁 + 處理租房請求
+    URL: /listing/units/<pk>/
+    """
+    unit = get_object_or_404(Unit, pk=pk)
+
+    # 找出目前使用者對這個 unit 的最新 request（如果有）
+    current_request = None
+    if request.user.is_authenticated:
+        current_request = UnitRequest.objects.filter(
+            unit=unit,
+            tenant=request.user
+        ).order_by('-created_at').first()
+
+    if request.method == 'POST':
+        # 如果已經有 pending 或 accepted，就不要再重複送
+        if current_request and current_request.status in ['pending', 'accepted']:
+            return redirect('unit_detail', pk=unit.pk)
+
+        UnitRequest.objects.create(
+            unit=unit,
+            tenant=request.user,
+            status='pending'
+        )
+        return redirect('unit_detail', pk=unit.pk)
+
+    context = {
+        'unit': unit,
+        'current_request': current_request,
+    }
+    return render(request, 'unit_detail.html', context)
+
+
+@login_required
+def room_request_action(request, request_id, action):
+    """
+    房東對 RoomRequest 做 accept / reject
+    URL: /listing/owner/requests/<id>/<action>/
+    """
+    if not user_is_owner(request.user):
+        return HttpResponseForbidden("You are not allowed to perform this action.")
+
+    req = get_object_or_404(RoomRequest, pk=request_id, room__owner=request.user)
+
+    if request.method == 'POST':
+        if action not in ['accept', 'reject']:
+            return HttpResponseForbidden("Invalid action.")
+
+        if action == 'accept':
+            req.status = 'accepted'
+        elif action == 'reject':
+            req.status = 'rejected'
+
+        req.decision_at = timezone.now()
+        req.save()
+        return redirect('owner_dashboard')
+
+    return HttpResponseForbidden("Invalid request method.")
+
+@login_required
+def unit_request_action(request, request_id, action):
+    """
+    房東對 UnitRequest 做 accept / reject
+    URL: /listing/owner/unit-requests/<id>/<action>/
+    """
+    if not user_is_owner(request.user):
+        return HttpResponseForbidden("You are not allowed to perform this action.")
+
+    req = get_object_or_404(UnitRequest, pk=request_id, unit__owner=request.user)
+
+    if request.method == 'POST':
+        if action not in ['accept', 'reject']:
+            return HttpResponseForbidden("Invalid action.")
+
+        if action == 'accept':
+            req.status = 'accepted'
+        elif action == 'reject':
+            req.status = 'rejected'
+
+        req.decision_at = timezone.now()
+        req.save()
+        return redirect('owner_dashboard')
+
+    return HttpResponseForbidden("Invalid request method.")
+
+
+
+@login_required
+def my_room_requests(request):
+    """
+    租客自己的租房請求列表（Rooms + Units）
+    URL: /listing/my-requests/rooms/
+    """
+    room_requests_qs = RoomRequest.objects.filter(
+        tenant=request.user
+    ).select_related('room').order_by('-created_at')
+
+    unit_requests_qs = UnitRequest.objects.filter(
+        tenant=request.user
+    ).select_related('unit').order_by('-created_at')
+
+    context = {
+        'room_requests': room_requests_qs,
+        'unit_requests': unit_requests_qs,
+    }
+    return render(request, 'my_room_requests.html', context)
+
+
+

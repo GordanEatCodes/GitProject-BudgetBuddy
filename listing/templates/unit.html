@@ -7,9 +7,9 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <style>
-    body { background-color: #ffffff; }              /* main = white */
+    body { background-color: #ffffff; }
     .unit-card {
-      background-color: #f4e1c6;                    /* milk-tea brown box */
+      background-color: #f4e1c6;
       border-radius: 20px;
       border: 1px solid #e0c6a4;
       overflow: hidden;
@@ -24,6 +24,7 @@
     .unit-img {
       height: 220px;
       object-fit: cover;
+      width: 100%;
     }
     .unit-title { font-weight: 700; color: #4b3323; }
     .unit-price { color: #b03b2f; font-weight: 700; font-size: 1.1rem; }
@@ -55,8 +56,29 @@
   </style>
 </head>
 <body>
+  <button
+    type="button"
+    onclick="window.history.back()"
+    style="
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      border: none;
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 9999;
+    "
+    aria-label="Close">
+    ×
+  </button>
+
   <div class="container py-4">
-    <!-- Top band with second main color -->
+    <!-- Top band with color + search (你可以之後擴充 filter) -->
     <div class="mb-4 p-3 rounded-3" style="background-color:#d2a679;">
       <h2 class="mb-3 text-white">Find a Unit</h2>
 
@@ -65,7 +87,7 @@
           type="text"
           name="q"
           class="form-control"
-          placeholder="Search by location, title, bedrooms..."
+          placeholder="Search by title, city, size..."
           value="{{ query|default:'' }}"
         >
         <button class="btn btn-dark" type="submit">
@@ -85,10 +107,10 @@
       <div class="col">
         <div class="unit-card h-100">
           {% if unit.image %}
-            <img src="{{ unit.image.url }}" class="card-img-top unit-img" alt="Unit photo">
+            <img src="{{ unit.image.url }}" class="unit-img" alt="Unit photo">
           {% endif %}
 
-          <div class="card-body">
+          <div class="p-3">
             <div class="d-flex justify-content-between align-items-start mb-2">
               <h5 class="unit-title mb-0">{{ unit.title }}</h5>
 
@@ -101,9 +123,9 @@
               {% endif %}
             </div>
 
-            <p class="unit-price mb-1">RMS{{ unit.rent }}/month</p>
+            <p class="unit-price mb-1">RM {{ unit.rent }}/month</p>
             <p class="unit-location mb-2">
-              <i class="bi bi-geo-alt me-1"></i>{{ unit.location }}
+              <i class="bi bi-geo-alt me-1"></i>{{ unit.state }} · {{ unit.location_detail }}
             </p>
 
             <div class="badge-group">
@@ -114,27 +136,27 @@
                 <span class="badge-char">Size: {{ unit.size }}</span>
               {% endif %}
               {% if unit.furnished %}
-                <span class="badge-char">Furnished</span>
+                <!-- 如果有 furnished 之類欄位，這裏可以顯示，沒有就刪掉 -->
               {% endif %}
-              {% if unit.has_internet %}
-                <span class="badge-char">Wi‑Fi included</span>
+              {% if unit.has_aircond %}
+                <span class="badge-char">Aircond</span>
               {% endif %}
-              {% if unit.pet_friendly %}
-                <span class="badge-char">Pet friendly</span>
+              {% if unit.has_wifi %}
+                <span class="badge-char">Wi‑Fi</span>
               {% endif %}
-
-              {% if unit.near_station %}
+              {% if unit.cooking_allowed %}
+                <span class="badge-char">Cooking allowed</span>
+              {% endif %}
+              {% if unit.near_mrt or unit.near_lrt or unit.near_ktm %}
                 <span class="badge-char badge-char-success">
-                  <i class="bi bi-check-circle-fill me-1"></i>Near station
+                  <i class="bi bi-train-front-fill me-1"></i>Near train
                 </span>
-              {% else %}
-                <span class="badge-char">Near station</span>
               {% endif %}
             </div>
           </div>
 
           <div class="card-footer bg-transparent border-0 pb-3 px-3">
-            <a href="#" class="btn btn-outline-dark card-footer-btn">
+            <a href="{% url 'unit_detail' unit.id %}" class="btn btn-outline-dark card-footer-btn">
               More detail
             </a>
           </div>

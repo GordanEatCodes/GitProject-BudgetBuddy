@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{{ room.title }} - Details</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/basiclightbox@5/dist/basicLightbox.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/basiclightbox@5/dist/basicLightbox.umd.js"></script>
   <style>
     body { background-color: #f8f4ee; }
     .bb-header {
@@ -24,7 +26,13 @@
       object-fit: cover;
       width: 100%;
     }
+    .section-title {
+      font-weight: 600;
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
+    }
   </style>
+  
 </head>
 <body>
   <div class="bb-header">
@@ -34,13 +42,28 @@
     </div>
   </div>
 
-  <div class="container pb-4">
+  <div class="container py-4">
     <div class="row justify-content-center">
-      <div class="col-md-8">
+      <div class="col-md-8 my-2">
         <div class="detail-card">
+
           {% if room.image %}
-            <img src="{{ room.image.url }}" alt="Room photo" class="detail-img">
-          {% endif %}
+  <img src="{{ room.image.url }}" alt="Room photo" class="detail-img js-main-image">
+{% endif %}
+
+{% if room.images.all %}
+  <div class="p-3 pt-2">
+    <div class="row g-2">
+      {% for img in room.images.all %}
+        <div class="col-3">
+          <img src="{{ img.image.url }}" alt="Room extra photo" class="thumb-img js-thumb-image">
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endif %}
+
+
 
           <div class="p-4">
             <div class="d-flex justify-content-between align-items-center mb-2">
@@ -49,41 +72,123 @@
             </div>
 
             <p class="text-muted mb-2">
-              {{ room.location }}
+              {{ room.state }}{% if room.city %} · {{ room.city }}{% endif %}{% if room.location_detail %} · {{ room.location_detail }}{% endif %}
+            </p>
+
+            <!-- Room Details -->
+            <div class="section-title">Room Details</div>
+            <p class="mb-1">
+              <strong>Unit type:</strong> {{ room.unit_type }}
+            </p>
+            <p class="mb-1">
+              <strong>Room type:</strong> {{ room.get_room_type_display }}
+            </p>
+            <p class="mb-1">
+              <strong>Floor level:</strong> {{ room.floor_level }}
+            </p>
+            <p class="mb-3">
+              <strong>Bathroom:</strong>
+              {% if room.bathroom_type == 'private' %}Private{% else %}Shared{% endif %}
             </p>
 
             {% if room.size %}
-              <p class="mb-2">
+              <p class="mb-3">
                 <strong>Size:</strong> {{ room.size }}
               </p>
             {% endif %}
 
-            <hr>
-
-            <h6 class="fw-bold">Features</h6>
+            <!-- Amenities -->
+            <div class="section-title">Amenities / Nearby</div>
             <div class="mb-3">
-              {% if room.has_internet %}
-                <span class="badge bg-light text-dark border me-1">Wi‑Fi included</span>
-              {% endif %}
-              {% if room.has_private_bathroom %}
-                <span class="badge bg-light text-dark border me-1">Private bathroom</span>
-              {% else %}
-                <span class="badge bg-light text-dark border me-1">Shared bathroom</span>
-              {% endif %}
-              {% if room.near_station %}
-                <span class="badge bg-success text-light me-1">Near station</span>
-              {% else %}
-                <span class="badge bg-light text-dark border me-1">Not near station</span>
+              {% if room.near_mrt %}<span class="badge bg-light text-dark border me-1">Near MRT</span>{% endif %}
+              {% if room.near_lrt %}<span class="badge bg-light text-dark border me-1">Near LRT</span>{% endif %}
+              {% if room.near_ktm %}<span class="badge bg-light text-dark border me-1">Near KTM</span>{% endif %}
+              {% if room.near_bus_stop %}<span class="badge bg-light text-dark border me-1">Near bus stop</span>{% endif %}
+              {% if room.near_train %}<span class="badge bg-light text-dark border me-1">Near train</span>{% endif %}
+              {% if room.security_24h %}<span class="badge bg-light text-dark border me-1">24h security</span>{% endif %}
+              {% if room.swimming_pool %}<span class="badge bg-light text-dark border me-1">Swimming pool</span>{% endif %}
+              {% if room.gym_room %}<span class="badge bg-light text-dark border me-1">Gym</span>{% endif %}
+              {% if room.covered_carpark %}<span class="badge bg-light text-dark border me-1">Covered car park</span>{% endif %}
+              {% if room.extra_parking %}<span class="badge bg-light text-dark border me-1">Extra parking</span>{% endif %}
+              {% if room.oku_friendly %}<span class="badge bg-light text-dark border me-1">OKU friendly</span>{% endif %}
+              {% if room.multi_purpose_hall %}<span class="badge bg-light text-dark border me-1">Multi-purpose hall</span>{% endif %}
+              {% if room.playground %}<span class="badge bg-light text-dark border me-1">Playground</span>{% endif %}
+              {% if room.has_surau %}<span class="badge bg-light text-dark border me-1">Surau</span>{% endif %}
+              {% if room.near_mini_market %}<span class="badge bg-light text-dark border me-1">Near mini market</span>{% endif %}
+              {% if room.co_living %}<span class="badge bg-light text-dark border me-1">Co-living</span>{% endif %}
+              {% if not room.near_mrt and not room.near_lrt and not room.near_ktm and not room.near_bus_stop and not room.near_train and not room.security_24h and not room.swimming_pool and not room.gym_room and not room.covered_carpark and not room.extra_parking and not room.oku_friendly and not room.multi_purpose_hall and not room.playground and not room.has_surau and not room.near_mini_market and not room.co_living %}
+                <span class="text-muted">No special amenities listed.</span>
               {% endif %}
             </div>
 
+            <!-- Utilities -->
+            <div class="section-title">Utilities</div>
+            <div class="mb-3">
+              {% if room.has_aircond %}<span class="badge bg-light text-dark border me-1">Air-conditioning</span>{% endif %}
+              {% if room.has_washing_machine %}<span class="badge bg-light text-dark border me-1">Washing machine</span>{% endif %}
+              {% if room.has_wifi %}<span class="badge bg-light text-dark border me-1">Wi‑Fi</span>{% endif %}
+              {% if room.cooking_allowed %}<span class="badge bg-light text-dark border me-1">Cooking allowed</span>{% endif %}
+              {% if room.has_tv %}<span class="badge bg-light text-dark border me-1">TV</span>{% endif %}
+              {% if room.shared_bathroom %}<span class="badge bg-light text-dark border me-1">Shared bathroom</span>{% endif %}
+              {% if room.private_bathroom %}<span class="badge bg-light text-dark border me-1">Private bathroom</span>{% endif %}
+              {% if room.has_shower %}<span class="badge bg-light text-dark border me-1">Shower</span>{% endif %}
+              {% if not room.has_aircond and not room.has_washing_machine and not room.has_wifi and not room.cooking_allowed and not room.has_tv and not room.shared_bathroom and not room.private_bathroom and not room.has_shower %}
+                <span class="text-muted">No utilities listed.</span>
+              {% endif %}
+            </div>
+
+            <!-- Preferences -->
+            <div class="section-title">Preferences</div>
+            <div class="mb-3">
+              {% if room.prefer_zero_deposit %}<span class="badge bg-light text-dark border me-1">Prefer zero deposit</span>{% endif %}
+              {% if room.prefer_move_in_immediately %}<span class="badge bg-light text-dark border me-1">Prefer move-in immediately</span>{% endif %}
+              {% if room.prefer_pet_allowed %}<span class="badge bg-light text-dark border me-1">Prefer pet allowed</span>{% endif %}
+              {% if room.prefer_muslim_friendly %}<span class="badge bg-light text-dark border me-1">Prefer muslim friendly</span>{% endif %}
+              {% if room.prefer_smoking_allowed %}<span class="badge bg-light text-dark border me-1">Prefer smoking allowed</span>{% endif %}
+              {% if not room.prefer_zero_deposit and not room.prefer_move_in_immediately and not room.prefer_pet_allowed and not room.prefer_muslim_friendly and not room.prefer_smoking_allowed %}
+                <span class="text-muted">No specific preferences listed.</span>
+              {% endif %}
+            </div>
+
+            <!-- Availability + Request button -->
             <div class="d-flex justify-content-between align-items-center mt-3">
               {% if room.available %}
                 <span class="badge bg-success">Available</span>
               {% else %}
                 <span class="badge bg-secondary">Not available</span>
               {% endif %}
+
+              {% if room.available %}
+                {% if current_request %}
+                  {% if current_request.status == 'pending' %}
+                    <button class="btn btn-warning btn-sm" disabled>Request Pending</button>
+                  {% elif current_request.status == 'accepted' %}
+                    <button class="btn btn-success btn-sm" disabled>Request Accepted</button>
+                  {% elif current_request.status == 'rejected' %}
+                    <button class="btn btn-outline-danger btn-sm" disabled>Request Rejected</button>
+                  {% endif %}
+                {% else %}
+                  <form method="post" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary btn-sm">
+                      Request to Rent
+                    </button>
+                  </form>
+                {% endif %}
+              {% endif %}
             </div>
+
+            <!-- Contact -->
+            <h6 class="fw-bold mt-3">Contact</h6>
+            <p class="mb-1">
+              Owner: {{ room.owner.userprofile.username|default:room.owner.username }}
+            </p>
+            {% if room.owner.email %}
+              <p class="mb-1">Email: {{ room.owner.email }}</p>
+            {% endif %}
+            {% if room.owner.userprofile.phone_number %}
+              <p class="mb-1">Phone: {{ room.owner.userprofile.phone_number }}</p>
+            {% endif %}
 
           </div>
         </div>

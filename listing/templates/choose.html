@@ -189,44 +189,78 @@
             }
         }
     </style>
+
+    <button
+    type="button"
+    onclick="window.history.back()"
+    style="
+        position: fixed;
+        top: 12px;
+        right: 12px;
+        border: none;
+        background: rgba(0,0,0,0.6);
+        color: #fff;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        font-weight: bold;
+        cursor: pointer;
+        z-index: 9999;
+    "
+    aria-label="Close">
+    ×
+    </button>
+
 </head>
 
 <body>
-    <div class="text-center w-100">
+  <div class="text-center w-100">
 
-        <!-- Page heading -->
-        <div class="page-title">
-            <h2>Welcome to</h2>
-            <h1>Budget Buddy</h1>
-            <div class="divider"></div>
-        </div>
-
-        <!-- Two cards -->
-        <div class="split-container">
-
-            <!-- ROOM card -->
-            <a href="{% url 'room_list' %}" class="btn-split left-room">
-                <div class="card-icon">🛏️</div>
-                <div class="sub-text">Looking for a</div>
-                <div class="card-title">ROOM</div>
-                <div class="want-text">You wanna rent<br>a <strong>Room</strong>?</div>
-                <div class="description">A single cozy space<br>in a shared house.</div>
-                <div class="card-tag">Explore Rooms →</div>
-            </a>
-
-            <!-- UNIT card -->
-            <a href="{% url 'unit_list' %}" class="btn-split right-unit">
-                <div class="card-icon">🏠</div>
-                <div class="sub-text">Looking for a</div>
-                <div class="card-title">UNIT</div>
-                <div class="want-text">You wanna rent<br>a <strong>Unit</strong>?</div>
-                <div class="description">An entire apartment<br>or house, all yours.</div>
-                <div class="card-tag">Explore Units →</div>
-            </a>
-
-        </div>
+    <!-- Page heading -->
+    <div class="page-title">
+      <h2>Welcome to</h2>
+      <h1>Budget Buddy</h1>
+      <div class="divider"></div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Two cards -->
+    <div class="split-container">
+
+      <!-- ROOM card -->
+      <a href="{% url 'room_list' %}" class="btn-split left-room">
+        <div class="card-icon">🛏️</div>
+        <div class="sub-text">Looking for a</div>
+        <div class="card-title">ROOM</div>
+        <div class="want-text">You wanna rent<br>a <strong>Room</strong>?</div>
+        <div class="description">A single cozy space<br>in a shared house.</div>
+        <div class="card-tag">Explore Rooms →</div>
+      </a>
+
+      <!-- UNIT card -->
+      <a href="{% url 'unit_list' %}" class="btn-split right-unit">
+        <div class="card-icon">🏠</div>
+        <div class="sub-text">Looking for a</div>
+        <div class="card-title">UNIT</div>
+        <div class="want-text">You wanna rent<br>a <strong>Unit</strong>?</div>
+        <div class="description">An entire apartment<br>or house, all yours.</div>
+        <div class="card-tag">Explore Units →</div>
+      </a>
+
+    </div>
+
+    
+    <!-- My Requests button -->
+    <div class="mt-4">
+      <a href="{% url 'my_room_requests' %}">
+        <button class="btn btn-outline-dark px-4" style="border-radius: 999px;">
+          My Requests
+        </button>
+      </a>
+    </div>
+
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

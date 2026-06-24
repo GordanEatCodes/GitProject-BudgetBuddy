@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Add Room</title>
+  <title>List a Room</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body { background-color: #f8f4ee; }
@@ -22,184 +22,169 @@
       margin-top: 1rem;
       margin-bottom: 0.5rem;
     }
+    .help-text {
+      font-size: 0.8rem;
+      color: #7a6652;
+    }
   </style>
 </head>
 <body>
-
-  <button
-  type="button"
-  onclick="window.history.back()"
-  style="
-    position: fixed;
-    top: 12px;
-    right: 12px;
-    border: none;
-    background: rgba(0,0,0,0.6);
-    color: #fff;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    font-weight: bold;
-    cursor: pointer;
-    z-index: 9999;
-  "
-  aria-label="Close">
-  ×
-</button>
-
-
   <div class="bb-header">
-    <div class="container">
-      <h3 class="mb-0">Add a Room</h3>
+    <div class="container d-flex justify-content-between align-items-center">
+      <h3 class="mb-0">List a Room</h3>
+      <button type="button" class="btn btn-light btn-sm" onclick="history.back()">× Close</button>
     </div>
   </div>
 
-  <div class="container pb-4">
+  <div class="container py-4">
     <div class="row justify-content-center">
-      <div class="col-md-7">
+      <div class="col-md-8 my-3">
         <div class="card">
           <div class="card-body">
+            ...
+
             <form method="post" enctype="multipart/form-data">
+              
               {% csrf_token %}
+
+              {# 顯示表單錯誤（如果有） #}
+              {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                  {{ form.non_field_errors }}
+                </div>
+              {% endif %}
+              {% for field in form %}
+                {% for error in field.errors %}
+                  <div class="alert alert-danger">
+                    {{ field.label }}: {{ error }}
+                  </div>
+                {% endfor %}
+              {% endfor %}
 
               <!-- Basic info -->
               <div class="mb-3">
                 <label class="form-label">Title</label>
                 {{ form.title }}
+                <div class="help-text">
+                  Example: Cozy master room near university
+                </div>
               </div>
 
-              <div class="mb-3">
+              <div class="mb-3" style="max-width: 280px;">
                 <label class="form-label">Rent (RM / month)</label>
                 {{ form.rent }}
               </div>
 
-              <div class="mb-3">
-                <label class="form-label">State</label>
-                {{ form.state }}
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label">Location detail (city / area / address)</label>
-                {{ form.location_detail }}
-              </div>
-
+              <!-- Location -->
+              <div class="section-title">Location</div>
               <div class="row">
-                <div class="col-md-6 mb-3">
+                <div class="col-md-4 mb-3">
+                  <label class="form-label">State</label>
+                  {{ form.state }}
+                </div>
+                <div class="col-md-8 mb-3">
+                  <label class="form-label">City / Area</label>
+                  {{ form.city }}
+                  <div class="help-text">
+                    Example: Putrajaya, Shah Alam, Kajang
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Location detail (building / street)</label>
+                {{ form.location_detail }}
+                <div class="help-text">
+                  Apartment name, block, street or any extra direction
+                </div>
+              </div>
+
+              <!-- Room details -->
+              <div class="section-title">Room Details</div>
+              <div class="row">
+                <div class="col-md-4 mb-3">
                   <label class="form-label">Unit type</label>
                   {{ form.unit_type }}
                 </div>
-                <div class="col-md-6 mb-3">
+                <div class="col-md-4 mb-3">
+                  <label class="form-label">Room type</label>
+                  {{ form.room_type }}
+                </div>
+                <div class="col-md-4 mb-3">
                   <label class="form-label">Floor level</label>
                   {{ form.floor_level }}
                 </div>
               </div>
 
-              <!-- Bathroom type -->
-              <div class="mb-3">
-                <label class="form-label">Bathroom type</label>
-                {{ form.bathroom_type }}
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Bathroom type</label>
+                  {{ form.bathroom_type }}
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Size (sqft)</label>
+                  {{ form.size }}
+                </div>
               </div>
 
-              <!-- Strategies / Nearby -->
-              <div class="mb-2 section-title">Strategies / Nearby</div>
+              <!-- Amenities -->
+              <div class="section-title">Amenities / Nearby</div>
               <div class="row">
                 <div class="col-md-6">
-                  <div class="form-check">
-                    {{ form.near_mrt }} <label class="form-check-label">Near MRT</label>
-                  </div>
-                  <div class="form-check">
-                    {{ form.near_lrt }} <label class="form-check-label">Near LRT</label>
-                  </div>
-                  <div class="form-check">
-                    {{ form.near_ktm }} <label class="form-check-label">Near KTM</label>
-                  </div>
-                  <div class="form-check">
-                    {{ form.near_bus_stop }} <label class="form-check-label">Near bus stop</label>
-                  </div>
-                  <div class="form-check">
-                    {{ form.near_brt }} <label class="form-check-label">Near BRT</label>
-                  </div>
+                  <div class="form-check">{{ form.near_mrt }} <label class="form-check-label">Near MRT</label></div>
+                  <div class="form-check">{{ form.near_lrt }} <label class="form-check-label">Near LRT</label></div>
+                  <div class="form-check">{{ form.near_ktm }} <label class="form-check-label">Near KTM</label></div>
+                  <div class="form-check">{{ form.near_bus_stop }} <label class="form-check-label">Near bus stop</label></div>
+                  <div class="form-check">{{ form.near_train }} <label class="form-check-label">Near train station</label></div>
+                  <div class="form-check">{{ form.co_living }} <label class="form-check-label">Co-living</label></div>
+                  <div class="form-check">{{ form.has_surau }} <label class="form-check-label">Near mosque / surau</label></div>
+                  <div class="form-check">{{ form.near_mini_market }} <label class="form-check-label">Near mini market</label></div>
                 </div>
                 <div class="col-md-6">
-                  <div class="form-check">
-                    {{ form.security_24h }} <label class="form-check-label">24h security</label>
-                  </div>
-                  <div class="form-check">
-                    {{ form.swimming_pool }} <label class="form-check-label">Swimming pool</label>
-                  </div>
-                  <div class="form-check">
-                    {{ form.gym_room }} <label class="form-check-label">Gym room</label>
-                  </div>
-                  <div class="form-check">
-                    {{ form.covered_carpark }} <label class="form-check-label">Covered carpark</label>
-                  </div>
-                  <div class="form-check">
-                    {{ form.near_mall }} <label class="form-check-label">Near shopping mall</label>
-                  </div>
-                  <div class="form-check">
-                    {{ form.near_shop_lots }} <label class="form-check-label">Near shop lots</label>
-                  </div>
-                  <div class="form-check">
-                    {{ form.near_convenience_store }} <label class="form-check-label">Near convenience store</label>
-                  </div>
+                  <div class="form-check">{{ form.security_24h }} <label class="form-check-label">24h security</label></div>
+                  <div class="form-check">{{ form.swimming_pool }} <label class="form-check-label">Have swimming pool</label></div>
+                  <div class="form-check">{{ form.gym_room }} <label class="form-check-label">Have gymnasium</label></div>
+                  <div class="form-check">{{ form.covered_carpark }} <label class="form-check-label">Covered car park</label></div>
+                  <div class="form-check">{{ form.extra_parking }} <label class="form-check-label">Residential parking</label></div>
+                  <div class="form-check">{{ form.oku_friendly }} <label class="form-check-label">OKU friendly</label></div>
+                  <div class="form-check">{{ form.multi_purpose_hall }} <label class="form-check-label">Multi-purpose hall</label></div>
+                  <div class="form-check">{{ form.playground }} <label class="form-check-label">Near playground</label></div>
                 </div>
               </div>
 
               <!-- Utilities -->
-              <div class="mb-2 section-title">Utilities</div>
+              <div class="section-title">Utilities</div>
               <div class="row">
                 <div class="col-md-6">
-                  <div class="form-check">
-                    {{ form.has_aircond }} <label class="form-check-label">Aircond</label>
-                  </div>
-                  <div class="form-check">
-                    {{ form.has_washing_machine }} <label class="form-check-label">Washing machine</label>
-                  </div>
-                  <div class="form-check">
-                    {{ form.has_wifi }} <label class="form-check-label">Wi‑Fi</label>
-                  </div>
-                  <div class="form-check">
-                    {{ form.cooking_allowed }} <label class="form-check-label">Cooking allowed</label>
-                  </div>
+                  <div class="form-check">{{ form.has_aircond }} <label class="form-check-label">Air-conditioning</label></div>
+                  <div class="form-check">{{ form.has_washing_machine }} <label class="form-check-label">Washing machine</label></div>
+                  <div class="form-check">{{ form.has_wifi }} <label class="form-check-label">Wi-Fi / Internet</label></div>
+                  <div class="form-check">{{ form.cooking_allowed }} <label class="form-check-label">Cooking allowed</label></div>
                 </div>
                 <div class="col-md-6">
-                  <div class="form-check">
-                    {{ form.shared_bathroom }} <label class="form-check-label">Shared bathroom</label>
-                  </div>
-                  <div class="form-check">
-                    {{ form.private_bathroom }} <label class="form-check-label">Private bathroom</label>
-                  </div>
-                  <div class="form-check">
-                    {{ form.has_tv }} <label class="form-check-label">TV</label>
-                  </div>
-                  <div class="form-check">
-                    {{ form.has_fridge }} <label class="form-check-label">Fridge</label>
-                  </div>
+                  <div class="form-check">{{ form.has_tv }} <label class="form-check-label">TV</label></div>
+                  <div class="form-check">{{ form.shared_bathroom }} <label class="form-check-label">Shared bathroom</label></div>
+                  <div class="form-check">{{ form.private_bathroom }} <label class="form-check-label">Private bathroom</label></div>
+                  <div class="form-check">{{ form.has_shower }} <label class="form-check-label">Shower</label></div>
                 </div>
               </div>
 
-              <!-- Flexibility -->
-              <div class="mb-2 section-title">Flexibility</div>
-              <div class="row mb-3">
+              <!-- Preferences -->
+              <div class="section-title">Preferences</div>
+              <div class="row">
                 <div class="col-md-6">
-                  <div class="form-check">
-                    {{ form.pet_allowed }} <label class="form-check-label">Pet allowed</label>
-                  </div>
+                  <div class="form-check">{{ form.prefer_zero_deposit }} <label class="form-check-label">Prefer zero deposit</label></div>
+                  <div class="form-check">{{ form.prefer_move_in_immediately }} <label class="form-check-label">Prefer move-in immediately</label></div>
                 </div>
                 <div class="col-md-6">
-                  <div class="form-check">
-                    {{ form.smoking_allowed }} <label class="form-check-label">Smoking allowed</label>
-                  </div>
+                  <div class="form-check">{{ form.prefer_pet_allowed }} <label class="form-check-label">Pet allowed</label></div>
+                  <div class="form-check">{{ form.prefer_muslim_friendly }} <label class="form-check-label">Muslim friendly</label></div>
+                  <div class="form-check">{{ form.prefer_smoking_allowed }} <label class="form-check-label">Smoking allowed</label></div>
                 </div>
               </div>
 
-              <!-- Other -->
-              <div class="mb-3">
-                <label class="form-label">Room size (e.g. 10 m²)</label>
-                {{ form.size }}
-              </div>
-
-              <div class="mb-3">
+              <!-- Photo & availability -->
+              <div class="mb-3 mt-3">
                 <label class="form-label">Photo</label><br>
                 {{ form.image }}
               </div>

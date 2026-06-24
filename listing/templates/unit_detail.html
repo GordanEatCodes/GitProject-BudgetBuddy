@@ -1,0 +1,183 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ unit.title }} - Details</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background-color: #ffffff; }
+    .bb-header {
+      background-color: #d2a679;
+      color: #fff;
+      padding: 16px 0;
+      margin-bottom: 24px;
+    }
+    .detail-card {
+      border-radius: 18px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      background-color: #f4e1c6;  /* 奶茶色外框 */
+      overflow: hidden;
+    }
+    .detail-inner {
+      background-color: #fff;
+      border-radius: 12px;
+      padding: 16px;
+      margin: 12px;
+    }
+    .detail-img {
+      max-height: 320px;
+      object-fit: cover;
+      width: 100%;
+      border-radius: 12px 12px 0 0;
+    }
+    .badge-pill {
+      border-radius: 999px;
+    }
+  </style>
+
+  <button
+    type="button"
+    onclick="window.history.back()"
+    style="
+        position: fixed;
+        top: 12px;
+        right: 12px;
+        border: none;
+        background: rgba(0,0,0,0.6);
+        color: #fff;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        font-weight: bold;
+        cursor: pointer;
+        z-index: 9999;
+    "
+    aria-label="Close">
+    ×
+    </button>
+
+</head>
+<body>
+  <div class="bb-header">
+    <div class="container d-flex justify-content-between align-items-center">
+      <h3 class="mb-0">{{ unit.title }}</h3>
+      <button type="button" class="btn btn-light btn-sm" onclick="history.back()">× Close</button>
+    </div>
+  </div>
+
+  <div class="container pb-4">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="detail-card">
+          {% if unit.image %}
+            <img src="{{ unit.image.url }}" alt="Unit photo" class="detail-img">
+          {% endif %}
+
+          <div class="detail-inner">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h4 class="mb-0">{{ unit.title }}</h4>
+              <span class="fw-bold text-danger">RM {{ unit.rent }}/month</span>
+            </div>
+
+            <p class="text-muted mb-2">
+              {{ unit.state }} · {{ unit.location_detail }}
+            </p>
+
+            <p class="mb-3">
+              <span class="badge bg-secondary badge-pill me-2">{{ unit.unit_type }}</span>
+              <span class="badge bg-secondary badge-pill me-2">{{ unit.floor_level }}</span>
+              <span class="badge bg-secondary badge-pill me-2">{{ unit.bedrooms }} BR</span>
+              <span class="badge bg-secondary badge-pill">{{ unit.bathrooms }} BA</span>
+            </p>
+
+            <hr>
+
+            <h6 class="fw-bold">Nearby / Strategies</h6>
+            <div class="mb-3">
+              {% if unit.near_mrt %}<span class="badge bg-light text-dark border me-1">Near MRT</span>{% endif %}
+              {% if unit.near_lrt %}<span class="badge bg-light text-dark border me-1">Near LRT</span>{% endif %}
+              {% if unit.near_ktm %}<span class="badge bg-light text-dark border me-1">Near KTM</span>{% endif %}
+              {% if unit.near_bus_stop %}<span class="badge bg-light text-dark border me-1">Near bus stop</span>{% endif %}
+              {% if unit.near_brt %}<span class="badge bg-light text-dark border me-1">Near BRT</span>{% endif %}
+              {% if unit.security_24h %}<span class="badge bg-light text-dark border me-1">24h security</span>{% endif %}
+              {% if unit.swimming_pool %}<span class="badge bg-light text-dark border me-1">Swimming pool</span>{% endif %}
+              {% if unit.gym_room %}<span class="badge bg-light text-dark border me-1">Gym room</span>{% endif %}
+              {% if unit.covered_carpark %}<span class="badge bg-light text-dark border me-1">Covered carpark</span>{% endif %}
+              {% if unit.near_mall %}<span class="badge bg-light text-dark border me-1">Near shopping mall</span>{% endif %}
+              {% if unit.near_shop_lots %}<span class="badge bg-light text-dark border me-1">Near shop lots</span>{% endif %}
+              {% if unit.near_convenience_store %}<span class="badge bg-light text-dark border me-1">Near convenience store</span>{% endif %}
+              {% if not unit.near_mrt and not unit.near_lrt and not unit.near_ktm and not unit.near_bus_stop and not unit.near_brt and not unit.security_24h and not unit.swimming_pool and not unit.gym_room and not unit.covered_carpark and not unit.near_mall and not unit.near_shop_lots and not unit.near_convenience_store %}
+                <span class="text-muted">No special nearby features listed.</span>
+              {% endif %}
+            </div>
+
+            <h6 class="fw-bold">Utilities</h6>
+            <div class="mb-3">
+              {% if unit.has_aircond %}<span class="badge bg-light text-dark border me-1">Aircond</span>{% endif %}
+              {% if unit.has_washing_machine %}<span class="badge bg-light text-dark border me-1">Washing machine</span>{% endif %}
+              {% if unit.has_wifi %}<span class="badge bg-light text-dark border me-1">Wi‑Fi</span>{% endif %}
+              {% if unit.cooking_allowed %}<span class="badge bg-light text-dark border me-1">Cooking allowed</span>{% endif %}
+              {% if unit.shared_bathroom %}<span class="badge bg-light text-dark border me-1">Shared bathroom</span>{% endif %}
+              {% if unit.private_bathroom %}<span class="badge bg-light text-dark border me-1">Private bathroom</span>{% endif %}
+              {% if unit.has_tv %}<span class="badge bg-light text-dark border me-1">TV</span>{% endif %}
+              {% if unit.has_fridge %}<span class="badge bg-light text-dark border me-1">Fridge</span>{% endif %}
+              {% if not unit.has_aircond and not unit.has_washing_machine and not unit.has_wifi and not unit.cooking_allowed and not unit.shared_bathroom and not unit.private_bathroom and not unit.has_tv and not unit.has_fridge %}
+                <span class="text-muted">No utilities listed.</span>
+              {% endif %}
+            </div>
+
+            <h6 class="fw-bold">Flexibility</h6>
+            <div class="mb-3">
+              {% if unit.pet_allowed %}<span class="badge bg-light text-dark border me-1">Pet allowed</span>{% endif %}
+              {% if unit.smoking_allowed %}<span class="badge bg-light text-dark border me-1">Smoking allowed</span>{% endif %}
+              {% if not unit.pet_allowed and not unit.smoking_allowed %}
+                <span class="text-muted">No special flexibility rules listed.</span>
+              {% endif %}
+            </div>
+
+            {% if unit.size %}
+              <h6 class="fw-bold">Size</h6>
+              <p>{{ unit.size }}</p>
+            {% endif %}
+
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                {% if unit.available %}
+                    <span class="badge bg-success">Available</span>
+                {% else %}
+                    <span class="badge bg-secondary">Not available</span>
+                {% endif %}
+
+                {% if unit.available %}
+                    {% if current_request %}
+                    {% if current_request.status == 'pending' %}
+                        <button class="btn btn-warning btn-sm" disabled>Request Pending</button>
+                    {% elif current_request.status == 'accepted' %}
+                        <button class="btn btn-success btn-sm" disabled>Request Accepted</button>
+                    {% elif current_request.status == 'rejected' %}
+                        <button class="btn btn-outline-danger btn-sm" disabled>Request Rejected</button>
+                    {% endif %}
+                    {% else %}
+                    <form method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary btn-sm">
+                        Request to Rent
+                        </button>
+                    </form>
+                    {% endif %}
+                {% endif %}
+                </div>
+
+
+          </div>
+        </div>
+
+        <div class="text-center mt-3">
+          <a href="javascript:history.back()">← Back</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
