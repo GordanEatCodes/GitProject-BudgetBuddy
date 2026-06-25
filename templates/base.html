@@ -6,6 +6,10 @@
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href= "{% static "images/apple-touch-icon.png" %}"/>
+    <link rel="icon" type="image/png" sizes="32x32" href=" {% static "images/favicon-32x32.png" %}"/>
+    <link rel="icon" type="image/png" sizes="16x16" href=" {% static "images/favicon-16x16.png" %}"/>  
+    <link rel="manifest" href=" {% static "images/site.webmanifest" %}" />
 
     <style>
         :root {
@@ -18,7 +22,16 @@
             --border-soft: #ded7ce;
         }
 
+        html,
         body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
             background-color: var(--main-bg);
             color: var(--text-dark);
             font-family: Arial, Helvetica, sans-serif;
@@ -36,8 +49,14 @@
             font-size: 24px;
         }
 
-        .container {
+        .logo-wrap img {
+            object-fit: contain;
+        }
+
+        .page-content {
+            flex: 1;
             margin-top: 35px;
+            margin-bottom: 45px;
         }
 
         h1, h2, h3, h4 {
@@ -115,10 +134,14 @@
         }
 
         .page-footer {
+            margin-top: auto;
             background-color: var(--cream);
-            margin-top: 60px;
             padding: 30px 45px;
             border-top: 1px solid var(--border-soft);
+        }
+
+        .page-footer strong {
+            color: var(--black);
         }
     </style>
 </head>
@@ -131,22 +154,35 @@
         </a>
 
         <div>
-            <a class="btn btn-secondary me-2" href="{% url 'roommate_list' %}">Roommates</a>
-            <a class="btn btn-primary" href="{% url 'add_roommate' %}">+ Add</a>
+            <a class="btn btn-secondary me-2" href="{% url 'dashboard' %}">
+                Dashboard
+            </a>
+
+            <a class="btn btn-secondary me-2" href="{% url 'roommate_list' %}">
+                Roommates
+            </a>
+
+            <a class="btn btn-secondary me-2" href="{% url 'roommate_dashboard' %}">
+                My Roommate Dashboard
+            </a>
+
+            <a class="btn btn-primary" href="{% url 'add_roommate' %}">
+                + Add
+            </a>
         </div>
     </nav>
 
-    <div class="container">
+    <main class="container page-content">
         {% block content %}
         {% endblock %}
-    </div>
+    </main>
 
-    <div class="page-footer">
+    <footer class="page-footer">
         <strong>BudgetBuddy</strong>
         <p class="text-muted mb-0">
             A centralized platform for university students to find housing and connect with roommates.
         </p>
-    </div>
+    </footer>
 
 </body>
 </html>

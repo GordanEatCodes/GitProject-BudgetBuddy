@@ -2,40 +2,67 @@
 
 {% block content %}
 
-<h2>➕ Add Roommate Post</h2>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Create Roommate Post</h2>
+        <p class="text-muted mb-0">
+            Create a post so other students can apply to become your roommate.
+        </p>
+    </div>
 
-<p class="text-muted">
-    Create a roommate post. If you already have a unit, you can also add unit sharing details.
-</p>
+    <div>
+        <a href="{% url 'roommate_dashboard' %}" class="btn btn-secondary">
+            My Dashboard
+        </a>
+
+        <a href="{% url 'roommate_list' %}" class="btn btn-secondary">
+            Back to Posts
+        </a>
+    </div>
+</div>
+
+
+<div class="alert alert-info shadow-sm">
+    <strong>Tip:</strong>
+    Some fields are auto-filled from your user profile preferences. You can still change them before saving the post.
+</div>
+
 
 <form method="POST" class="mt-3 p-4 border rounded shadow-sm bg-light">
     {% csrf_token %}
 
-    <label>Title</label>
+    <h4>Basic Post Information</h4>
+
+    <p class="text-muted">
+        Tell other students what kind of roommate you are looking for.
+    </p>
+
+    <label class="form-label">Title</label>
     <input 
         type="text" 
         name="title" 
         placeholder="Example: Looking for roommate in Cyberjaya"
-        class="form-control mb-2" 
+        class="form-control mb-3" 
         required>
 
-    <label>Description</label>
+    <label class="form-label">Description</label>
     <textarea 
         name="description" 
         placeholder="Example: I am looking for a clean and quiet roommate."
-        class="form-control mb-2" 
+        class="form-control mb-3" 
         rows="4"
         required></textarea>
 
-    <label>Location</label>
+    <label class="form-label">Location</label>
     <input 
         type="text" 
         name="location" 
         placeholder="Example: Cyberjaya"
-        class="form-control mb-2" 
+        class="form-control mb-3" 
+        value="{{ profile_preferences.location }}"
         required>
 
-    <label>Budget Per Person</label>
+    <label class="form-label">Budget Per Person</label>
     <input 
         type="number" 
         name="budget" 
@@ -50,37 +77,37 @@
 
     <hr>
 
-    <h5 class="mt-4">Unit / Sharing Details</h5>
+    <h4>Unit / Sharing Details</h4>
 
     <p class="text-muted">
         Optional. If you already have a unit, fill in these details.
         If not, you can leave them blank.
     </p>
 
-    <label>Unit Name</label>
+    <label class="form-label">Unit Name</label>
     <input 
         type="text" 
         name="unit_name" 
-        class="form-control mb-2"
+        class="form-control mb-3"
         placeholder="Example: Cyberia Apartment">
 
-    <label>Total Rent</label>
+    <label class="form-label">Total Rent</label>
     <input 
         type="number" 
         step="0.01"
         name="total_rent" 
-        class="form-control mb-2"
+        class="form-control mb-3"
         placeholder="Example: 1800">
 
-    <label>Total People Sharing</label>
+    <label class="form-label">Total People Sharing</label>
     <input 
         type="number" 
         name="total_people" 
-        class="form-control mb-2"
+        class="form-control mb-3"
         value="1"
         min="1">
 
-    <label>Needed Roommates</label>
+    <label class="form-label">Needed Roommates</label>
     <input 
         type="number" 
         name="needed_roommates" 
@@ -90,58 +117,102 @@
 
     <hr>
 
-    <label>Contact</label>
+    <h4>Contact Information</h4>
+
+    <p class="text-muted">
+        This contact is auto-filled from your profile if available.
+    </p>
+
+    <label class="form-label">Contact</label>
     <input 
         type="text" 
         name="contact" 
         placeholder="Example: WhatsApp / Email / Phone number"
         class="form-control mb-3" 
+        value="{{ profile_preferences.contact }}"
         required>
 
     <hr>
 
-    <h5 class="mt-4">Lifestyle Preferences</h5>
+    <h4>Lifestyle Preferences</h4>
 
-    <label>Cleanliness</label>
-    <select name="cleanliness" class="form-control mb-2">
-        <option value="any">Any</option>
-        <option value="very_clean">Very Clean</option>
-        <option value="normal">Normal</option>
-        <option value="messy">Messy</option>
+    <p class="text-muted">
+        These preferences are used for roommate matching. They are auto-filled from your user profile where possible.
+    </p>
+
+    <label class="form-label">Cleanliness</label>
+    <select name="cleanliness" class="form-control mb-3">
+        <option value="any" {% if profile_preferences.cleanliness == 'any' %}selected{% endif %}>
+            Any
+        </option>
+
+        <option value="very_clean" {% if profile_preferences.cleanliness == 'very_clean' %}selected{% endif %}>
+            Very Clean
+        </option>
+
+        <option value="normal" {% if profile_preferences.cleanliness == 'normal' %}selected{% endif %}>
+            Normal
+        </option>
+
+        <option value="messy" {% if profile_preferences.cleanliness == 'messy' %}selected{% endif %}>
+            Messy
+        </option>
     </select>
 
-    <label>Sleep Schedule</label>
-    <select name="sleep_schedule" class="form-control mb-2">
-        <option value="any">Any</option>
-        <option value="early_sleep">Early Sleep</option>
-        <option value="late_sleep">Late Sleep</option>
-        <option value="flexible">Flexible</option>
+    <label class="form-label">Sleep Schedule</label>
+    <select name="sleep_schedule" class="form-control mb-3">
+        <option value="any" {% if profile_preferences.sleep_schedule == 'any' %}selected{% endif %}>
+            Any
+        </option>
+
+        <option value="early_sleep" {% if profile_preferences.sleep_schedule == 'early_sleep' %}selected{% endif %}>
+            Early Sleep
+        </option>
+
+        <option value="late_sleep" {% if profile_preferences.sleep_schedule == 'late_sleep' %}selected{% endif %}>
+            Late Sleep
+        </option>
+
+        <option value="flexible" {% if profile_preferences.sleep_schedule == 'flexible' %}selected{% endif %}>
+            Flexible
+        </option>
     </select>
 
-    <label>Study Preference</label>
-    <select name="study_preference" class="form-control mb-2">
-        <option value="any">Any</option>
-        <option value="quiet">Quiet Environment</option>
-        <option value="normal">Normal</option>
-        <option value="social">Social Environment</option>
+    <label class="form-label">Study Preference</label>
+    <select name="study_preference" class="form-control mb-3">
+        <option value="any" {% if profile_preferences.study_preference == 'any' %}selected{% endif %}>
+            Any
+        </option>
+
+        <option value="quiet" {% if profile_preferences.study_preference == 'quiet' %}selected{% endif %}>
+            Quiet Environment
+        </option>
+
+        <option value="normal" {% if profile_preferences.study_preference == 'normal' %}selected{% endif %}>
+            Normal
+        </option>
+
+        <option value="social" {% if profile_preferences.study_preference == 'social' %}selected{% endif %}>
+            Social Environment
+        </option>
     </select>
 
-    <label>Smoking Preference</label>
-    <select name="smoking" class="form-control mb-2">
+    <label class="form-label">Smoking Preference</label>
+    <select name="smoking" class="form-control mb-3">
         <option value="any">Any</option>
         <option value="no_smoking">No Smoking</option>
         <option value="smoking_ok">Smoking OK</option>
     </select>
 
-    <label>Pet Preference</label>
-    <select name="pets" class="form-control mb-3">
+    <label class="form-label">Pet Preference</label>
+    <select name="pets" class="form-control mb-4">
         <option value="any">Any</option>
         <option value="no_pets">No Pets</option>
         <option value="pets_ok">Pets OK</option>
     </select>
 
-    <button type="submit" class="btn btn-success">
-        Save
+    <button type="submit" class="btn btn-primary">
+        Save Roommate Post
     </button>
 
     <a href="{% url 'roommate_list' %}" class="btn btn-secondary">
