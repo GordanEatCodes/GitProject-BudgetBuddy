@@ -392,10 +392,6 @@ def match_roommates(request, id):
         current_words = set(current_description.split()) - stop_words
         post_words = set(post_description.split()) - stop_words
 
-        # 4. Description keyword similarity - max 15
-        current_description = normalize_text(current_user_post.description)
-        post_description = normalize_text(post.description)
-
         current_words = set(current_description.split()) - stop_words
         post_words = set(post_description.split()) - stop_words
 
@@ -689,3 +685,41 @@ def saved_roommate_posts(request):
     return render(request, 'roommate/saved_roommate_posts.html', {
         'favourites': favourites
     })
+
+from django.http import JsonResponse
+from django.utils.dateformat import format
+
+@login_required(login_url='/login/')
+def get_chat_messages(request, application_id):
+    application = get_object_or_404(
+        RoommateApplication,
+        id=application_id
+    )
+
+    # Only applicant and coordinator can view the chat
+    if (
+        request.user != application.applicant and
+        request.user != application.roommate_post.created_by
+    ):
+        return JsonResponse(
+            {"error": "Permission denied"},
+            status=403
+        )
+
+    messages = application.messages.all()
+
+    data = []
+
+    for msg in messages:
+        data.append({
+            "sender": (
+                "You"
+                if msg.sender == request.user
+                else msg.sender.username
+            ),
+            "is_me": msg.sender == request.user,
+            "message": msg.message,
+            "time": format(msg.created_at, "d M Y, h:i A")
+        })
+
+    return JsonResponse(data, safe=False)

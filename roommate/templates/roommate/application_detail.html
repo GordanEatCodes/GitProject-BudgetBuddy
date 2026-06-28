@@ -287,49 +287,53 @@
 
     <hr>
 
-    {% for msg in messages %}
+   <div id="chat-box">
 
-        {% if msg.sender == user %}
+{% for msg in messages %}
 
-            <div class="d-flex justify-content-end mb-3">
-                <div class="border rounded p-3 bg-light" style="max-width: 75%;">
-                    <strong>You</strong>
+    {% if msg.sender == user %}
 
-                    <p class="mb-1 mt-2">
-                        {{ msg.message }}
-                    </p>
+        <div class="d-flex justify-content-end mb-3">
+            <div class="border rounded p-3 bg-light" style="max-width:75%;">
+                <strong>You</strong>
 
-                    <small class="text-muted">
-                        {{ msg.created_at|date:"d M Y, h:i A" }}
-                    </small>
-                </div>
+                <p class="mb-1 mt-2">
+                    {{ msg.message }}
+                </p>
+
+                <small class="text-muted">
+                    {{ msg.created_at|date:"d M Y, h:i A" }}
+                </small>
             </div>
-
-        {% else %}
-
-            <div class="d-flex justify-content-start mb-3">
-                <div class="border rounded p-3 bg-white" style="max-width: 75%;">
-                    <strong>{{ msg.sender.username }}</strong>
-
-                    <p class="mb-1 mt-2">
-                        {{ msg.message }}
-                    </p>
-
-                    <small class="text-muted">
-                        {{ msg.created_at|date:"d M Y, h:i A" }}
-                    </small>
-                </div>
-            </div>
-
-        {% endif %}
-
-    {% empty %}
-
-        <div class="alert alert-light border text-muted">
-            No messages yet. Send the first message below.
         </div>
 
-    {% endfor %}
+    {% else %}
+
+        <div class="d-flex justify-content-start mb-3">
+            <div class="border rounded p-3 bg-white" style="max-width:75%;">
+                <strong>{{ msg.sender.username }}</strong>
+
+                <p class="mb-1 mt-2">
+                    {{ msg.message }}
+                </p>
+
+                <small class="text-muted">
+                    {{ msg.created_at|date:"d M Y, h:i A" }}
+                </small>
+            </div>
+        </div>
+
+    {% endif %}
+
+{% empty %}
+
+    <div class="alert alert-light border text-muted">
+        No messages yet.
+    </div>
+
+{% endfor %}
+
+</div>
 
 
     <hr>
@@ -373,5 +377,85 @@
     </a>
 
 </div>
+
+<script>
+
+function refreshChat() {
+
+    fetch("{% url 'get_chat_messages' application.id %}")
+        .then(response => response.json())
+        .then(messages => {
+
+            let chatBox = document.getElementById("chat-box");
+
+            let html = "";
+
+            if (messages.length === 0) {
+
+                html = `
+                    <div class="alert alert-light border text-muted">
+                        No messages yet.
+                    </div>
+                `;
+
+            } else {
+
+                messages.forEach(msg => {
+
+                    if (msg.is_me) {
+
+                        html += `
+                        <div class="d-flex justify-content-end mb-3">
+                            <div class="border rounded p-3 bg-light" style="max-width:75%;">
+                                <strong>You</strong>
+
+                                <p class="mb-1 mt-2">
+                                    ${msg.message}
+                                </p>
+
+                                <small class="text-muted">
+                                    ${msg.time}
+                                </small>
+                            </div>
+                        </div>
+                        `;
+
+                    } else {
+
+                        html += `
+                        <div class="d-flex justify-content-start mb-3">
+                            <div class="border rounded p-3 bg-white" style="max-width:75%;">
+                                <strong>${msg.sender}</strong>
+
+                                <p class="mb-1 mt-2">
+                                    ${msg.message}
+                                </p>
+
+                                <small class="text-muted">
+                                    ${msg.time}
+                                </small>
+                            </div>
+                        </div>
+                        `;
+
+                    }
+
+                });
+
+            }
+
+            chatBox.innerHTML = html;
+
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+        });
+
+}
+
+refreshChat();
+
+setInterval(refreshChat, 2000);
+
+</script>
 
 {% endblock %}
