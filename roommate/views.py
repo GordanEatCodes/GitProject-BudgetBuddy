@@ -723,3 +723,31 @@ def get_chat_messages(request, application_id):
         })
 
     return JsonResponse(data, safe=False)
+
+@login_required(login_url='/login/')
+def send_chat_message(request, application_id):
+
+    application = get_object_or_404(
+        RoommateApplication,
+        id=application_id
+    )
+
+    if request.method == "POST":
+
+        message = request.POST.get("message")
+
+        if message:
+
+            RoommateMessage.objects.create(
+                application=application,
+                sender=request.user,
+                message=message
+            )
+
+        return JsonResponse({
+            "success": True
+        })
+
+    return JsonResponse({
+        "success": False
+    })

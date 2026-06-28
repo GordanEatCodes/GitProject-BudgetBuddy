@@ -287,7 +287,9 @@
 
     <hr>
 
-   <div id="chat-box">
+   <div id="chat-box"
+     style="max-height:500px;
+            overflow-y:auto;">
 
 {% for msg in messages %}
 
@@ -338,24 +340,30 @@
 
     <hr>
 
-    <form method="POST">
-        {% csrf_token %}
+    <form id="chat-form">
 
-        <label class="form-label">
-            Send Message
-        </label>
+    {% csrf_token %}
 
-        <textarea 
-            name="message" 
-            class="form-control mb-3" 
-            rows="4"
-            placeholder="Type your message here..."
-            required></textarea>
+    <label class="form-label">
+        Send Message
+    </label>
 
-        <button type="submit" class="btn btn-primary">
-            Send Message
-        </button>
-    </form>
+    <textarea
+        id="message-input"
+        name="message"
+        class="form-control mb-3"
+        rows="3"
+        placeholder="Type a message... (Enter to send, Shift + Enter for new line)"
+        required></textarea>
+
+    <button
+        id="send-btn"
+        type="submit"
+        class="btn btn-primary">
+        Send Message
+    </button>
+
+</form>
 
 </div>
 
@@ -379,6 +387,8 @@
 </div>
 
 <script>
+
+let lastMessageCount = 0;
 
 function refreshChat() {
 
@@ -446,7 +456,11 @@ function refreshChat() {
 
             chatBox.innerHTML = html;
 
-            chatBox.scrollTop = chatBox.scrollHeight;
+            if (messages.length > lastMessageCount) {
+                 chatBox.scrollTop = chatBox.scrollHeight;
+            }
+
+            lastMessageCount = messages.length;
 
         });
 
@@ -454,7 +468,66 @@ function refreshChat() {
 
 refreshChat();
 
-setInterval(refreshChat, 2000);
+setInterval(refreshChat, 1000);
+
+const chatForm = document.getElementById("chat-form");
+const messageInput = document.getElementById("message-input");
+
+chatForm.addEventListener("submit", function (e) {
+
+    e.preventDefault();
+
+    const message = messageInput.value.trim();
+
+    if (!message) return;
+
+    fetch("{% url 'send_chat_message' application.id %}", {
+
+        method: "POST",
+
+        headers: {
+            "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+
+        body: new URLSearchParams({
+            message: message
+        })
+
+    })
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        if (data.success) {
+
+            messageInput.value = "";
+
+            refreshChat();
+
+            messageInput.focus();
+
+            document.getElementById("chat-box").scrollTop =
+                document.getElementById("chat-box").scrollHeight;
+
+         }
+
+    });
+
+});
+
+messageInput.addEventListener("keydown", function (e) {
+
+    if (e.key === "Enter" && !e.shiftKey) {
+
+        e.preventDefault();
+
+        chatForm.requestSubmit();
+
+    }
+
+});
 
 </script>
 
