@@ -155,6 +155,11 @@ def add_roommate(request):
             smoking=request.POST.get('smoking', 'any'),
             pets=request.POST.get('pets', 'any'),
 
+            preferred_pet=request.POST.get(
+                'preferred_pet',
+                ''
+            ),
+
             created_by=request.user,
         )
 
@@ -268,7 +273,10 @@ def edit_roommate(request, id):
         post.sleep_schedule = request.POST.get('sleep_schedule', 'any')
         post.study_preference = request.POST.get('study_preference', 'any')
         post.smoking = request.POST.get('smoking', 'any')
-        post.pets = request.POST.get('pets', 'any')
+        post.preferred_pet = request.POST.get(
+            'preferred_pet',
+            ''
+            )
 
         post.save()
 
@@ -349,6 +357,40 @@ def match_roommates(request, id):
                 reasons.append(f"{label} is flexible")
             else:
                 reasons.append(f"{label} is different")
+
+        # Pet Details comparison (informational only)
+        current_pet_details = normalize_text(current_user_post.preferred_pet)
+        post_pet_details = normalize_text(post.preferred_pet)
+
+        if current_pet_details and post_pet_details:
+
+            current_pet_words = set(current_pet_details.split())
+            post_pet_words = set(post_pet_details.split())
+
+            common_pets = current_pet_words & post_pet_words
+
+            if common_pets:
+                reasons.append(
+                    "Similar pet preference: "
+                    + ", ".join(sorted(common_pets))
+                )
+            else:
+                reasons.append(
+                    "Different pet preference"
+                )
+
+        elif current_pet_details or post_pet_details:
+
+            reasons.append(
+                "Only one post specifies pet details"
+            )
+
+        # 4. Description keyword similarity - max 15
+        current_description = normalize_text(current_user_post.description)
+        post_description = normalize_text(post.description)
+
+        current_words = set(current_description.split()) - stop_words
+        post_words = set(post_description.split()) - stop_words
 
         # 4. Description keyword similarity - max 15
         current_description = normalize_text(current_user_post.description)
