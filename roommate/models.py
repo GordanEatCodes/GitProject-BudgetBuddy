@@ -63,7 +63,20 @@ class RoommatePost(models.Model):
     sleep_schedule = models.CharField(max_length=20, choices=SLEEP_CHOICES, default='any')
     study_preference = models.CharField(max_length=20, choices=STUDY_CHOICES, default='any')
     smoking = models.CharField(max_length=20, choices=SMOKING_CHOICES, default='any')
-    pets = models.CharField(max_length=20, choices=PET_CHOICES, default='any')
+
+    # Basic pet preference
+    pets = models.CharField(
+        max_length=20,
+        choices=PET_CHOICES,
+        default='any'
+    )
+
+    # NEW: More detailed pet preference
+    preferred_pet = models.CharField(
+        max_length=150,
+        blank=True,
+        help_text="Example: Cats, Small Dogs, Rabbit, Fish"
+    )
 
     created_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)

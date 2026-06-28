@@ -12,177 +12,235 @@
     <link rel="manifest" href=" {% static "images/site.webmanifest" %}" />
 
     <style>
-        :root {
-            --main-bg: #f7f3ed;
-            --card-bg: #ffffff;
-            --cream: #f3e6d3;
-            --black: #000000;
-            --text-dark: #111111;
-            --text-muted: #6f6a63;
-            --border-soft: #ded7ce;
+
+        :root{
+            --main-bg:#f7f3ed;
+            --card-bg:#ffffff;
+            --cream:#f3e6d3;
+            --black:#111111;
+            --text-muted:#6f6a63;
+            --border-soft:#ded7ce;
+
+            /* Status Colors */
+            --open:#10b981;
+            --full:#f59e0b;
+            --closed:#ef4444;
         }
 
         html,
-        body {
-            height: 100%;
-            margin: 0;
+        body{
+            height:100%;
+            margin:0;
         }
 
-        body {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background-color: var(--main-bg);
-            color: var(--text-dark);
-            font-family: Arial, Helvetica, sans-serif;
+        body{
+            min-height:100vh;
+            display:flex;
+            flex-direction:column;
+            background:var(--main-bg);
+            font-family:Arial, Helvetica, sans-serif;
+            color:#111;
         }
 
-        .navbar {
-            background-color: var(--main-bg) !important;
-            border-bottom: 1px solid var(--border-soft);
-            padding: 18px 45px;
+        /* ---------- Navbar ---------- */
+
+        .navbar{
+            background:white !important;
+            border-bottom:1px solid var(--border-soft);
+            padding:18px 45px;
         }
 
-        .navbar-brand {
-            color: var(--black) !important;
-            font-weight: 700;
-            font-size: 24px;
+        .logo-wrap img{
+            object-fit:contain;
         }
 
-        .logo-wrap img {
-            object-fit: contain;
+        /* ---------- Page ---------- */
+
+        .page-content{
+            flex:1;
+            margin-top:35px;
+            margin-bottom:45px;
         }
 
-        .page-content {
-            flex: 1;
-            margin-top: 35px;
-            margin-bottom: 45px;
+        h1,h2,h3,h4{
+            font-weight:700;
+            color:#111;
         }
 
-        h1, h2, h3, h4 {
-            color: var(--black);
-            font-weight: 700;
+        /* ---------- Card ---------- */
+
+        .card{
+            background:white;
+            border:1px solid var(--border-soft);
+            border-radius:18px;
+            box-shadow:0 4px 14px rgba(0,0,0,.05);
+            transition:.25s;
         }
 
-        .card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-soft);
-            border-radius: 16px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+        .card:hover{
+            transform:translateY(-3px);
+            box-shadow:0 10px 28px rgba(0,0,0,.08);
         }
 
-        .form-control {
-            background-color: #fbfaf7;
-            border: 1px solid var(--border-soft);
-            border-radius: 10px;
-            padding: 12px;
+        /* ---------- Form ---------- */
+
+        .form-control{
+            background:#fbfaf7;
+            border:1px solid var(--border-soft);
+            border-radius:10px;
+            padding:12px;
         }
 
-        .form-control:focus {
-            border-color: var(--black);
-            box-shadow: none;
+        .form-control:focus{
+            border-color:#111;
+            box-shadow:none;
         }
 
-        .btn {
-            border-radius: 10px;
-            font-weight: 500;
+        /* ---------- Button ---------- */
+
+        .btn{
+            border-radius:10px;
+            font-weight:600;
+            transition:.2s;
+        }
+
+        .btn:hover{
+            transform:translateY(-1px);
         }
 
         .btn-primary,
         .btn-success,
-        .btn-info {
-            background-color: var(--black) !important;
-            border-color: var(--black) !important;
-            color: white !important;
+        .btn-info{
+            background:#111 !important;
+            border-color:#111 !important;
+            color:white !important;
         }
 
         .btn-primary:hover,
         .btn-success:hover,
-        .btn-info:hover {
-            background-color: #333333 !important;
-            border-color: #333333 !important;
+        .btn-info:hover{
+            background:#333 !important;
+            border-color:#333 !important;
         }
 
-        .btn-warning {
-            background-color: var(--cream) !important;
-            border-color: var(--border-soft) !important;
-            color: var(--black) !important;
+        .btn-warning{
+            background:var(--cream) !important;
+            border-color:var(--border-soft) !important;
+            color:#111 !important;
         }
 
-        .btn-secondary {
-            background-color: white !important;
-            border-color: var(--border-soft) !important;
-            color: var(--black) !important;
+        .btn-secondary{
+            background:white !important;
+            border-color:var(--border-soft) !important;
+            color:#111 !important;
         }
 
-        .btn-danger {
-            background-color: #b94a48 !important;
-            border-color: #b94a48 !important;
-            color: white !important;
+        .btn-danger{
+            background:#dc3545 !important;
+            border-color:#dc3545 !important;
+            color:white !important;
         }
 
-        .text-muted {
-            color: var(--text-muted) !important;
+        /* ---------- Status Badges ---------- */
+
+        .badge{
+            padding:8px 14px;
+            border-radius:999px;
+            font-size:13px;
+            font-weight:600;
+            letter-spacing:.3px;
         }
 
-        small {
-            color: var(--text-muted);
+        /* Open */
+
+        .badge.bg-success{
+            background:var(--open) !important;
+            color:white !important;
         }
 
-        .badge.bg-success {
-            background-color: var(--black) !important;
+        /* Full */
+
+        .badge.bg-warning{
+            background:var(--full) !important;
+            color:white !important;
         }
 
-        .page-footer {
-            margin-top: auto;
-            background-color: var(--cream);
-            padding: 30px 45px;
-            border-top: 1px solid var(--border-soft);
+        /* Closed */
+
+        .badge.bg-secondary{
+            background:var(--closed) !important;
+            color:white !important;
         }
 
-        .page-footer strong {
-            color: var(--black);
+        /* ---------- Text ---------- */
+
+        .text-muted{
+            color:var(--text-muted)!important;
         }
+
+        small{
+            color:var(--text-muted);
+        }
+
+        /* ---------- Footer ---------- */
+
+        .page-footer{
+            margin-top:auto;
+            background:var(--cream);
+            padding:30px 45px;
+            border-top:1px solid var(--border-soft);
+        }
+
+        .page-footer strong{
+            color:#111;
+        }
+
     </style>
+
 </head>
 
 <body>
 
-    <nav class="navbar d-flex justify-content-between align-items-center">
-        <a class="logo-wrap" href="{% url 'dashboard' %}" data-name="Logo">
-            <img alt="Budget Buddy Logo" src="{% static 'images/LOGO-bgremove.png' %}" height="40" />
+<nav class="navbar d-flex justify-content-between align-items-center">
+
+    <a class="logo-wrap" href="{% url 'dashboard' %}">
+        <img src="{% static 'images/LOGO-bgremove.png' %}"
+             alt="Budget Buddy"
+             height="42">
+    </a>
+
+    <div>
+
+        <a class="btn btn-secondary me-2"
+           href="{% url 'dashboard' %}">
+            Dashboard
         </a>
 
-        <div>
-            <a class="btn btn-secondary me-2" href="{% url 'dashboard' %}">
-                Dashboard
-            </a>
+        <a class="btn btn-secondary me-2"
+           href="{% url 'roommate_list' %}">
+            Roommates
+        </a>
 
-            <a class="btn btn-secondary me-2" href="{% url 'roommate_list' %}">
-                Roommates
-            </a>
+    </div>
 
-            <a class="btn btn-secondary me-2" href="{% url 'roommate_dashboard' %}">
-                My Roommate Dashboard
-            </a>
+</nav>
 
-            <a class="btn btn-primary" href="{% url 'add_roommate' %}">
-                + Add
-            </a>
-        </div>
-    </nav>
+<main class="container page-content">
 
-    <main class="container page-content">
-        {% block content %}
-        {% endblock %}
-    </main>
+    {% block content %}
+    {% endblock %}
 
-    <footer class="page-footer">
-        <strong>BudgetBuddy</strong>
-        <p class="text-muted mb-0">
-            A centralized platform for university students to find housing and connect with roommates.
-        </p>
-    </footer>
+</main>
+
+<footer class="page-footer">
+
+    <strong>BudgetBuddy</strong>
+
+    <p class="text-muted mb-0">
+        A centralized platform for university students to find housing and connect with roommates.
+    </p>
+
+</footer>
 
 </body>
 </html>

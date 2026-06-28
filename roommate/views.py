@@ -155,6 +155,11 @@ def add_roommate(request):
             smoking=request.POST.get('smoking', 'any'),
             pets=request.POST.get('pets', 'any'),
 
+            preferred_pet=request.POST.get(
+                'preferred_pet',
+                ''
+            ),
+
             created_by=request.user,
         )
 
@@ -268,7 +273,10 @@ def edit_roommate(request, id):
         post.sleep_schedule = request.POST.get('sleep_schedule', 'any')
         post.study_preference = request.POST.get('study_preference', 'any')
         post.smoking = request.POST.get('smoking', 'any')
-        post.pets = request.POST.get('pets', 'any')
+        post.preferred_pet = request.POST.get(
+            'preferred_pet',
+            ''
+            )
 
         post.save()
 
@@ -350,9 +358,39 @@ def match_roommates(request, id):
             else:
                 reasons.append(f"{label} is different")
 
+        # Pet Details comparison (informational only)
+        current_pet_details = normalize_text(current_user_post.preferred_pet)
+        post_pet_details = normalize_text(post.preferred_pet)
+
+        if current_pet_details and post_pet_details:
+
+            current_pet_words = set(current_pet_details.split())
+            post_pet_words = set(post_pet_details.split())
+
+            common_pets = current_pet_words & post_pet_words
+
+            if common_pets:
+                reasons.append(
+                    "Similar pet preference: "
+                    + ", ".join(sorted(common_pets))
+                )
+            else:
+                reasons.append(
+                    "Different pet preference"
+                )
+
+        elif current_pet_details or post_pet_details:
+
+            reasons.append(
+                "Only one post specifies pet details"
+            )
+
         # 4. Description keyword similarity - max 15
         current_description = normalize_text(current_user_post.description)
         post_description = normalize_text(post.description)
+
+        current_words = set(current_description.split()) - stop_words
+        post_words = set(post_description.split()) - stop_words
 
         current_words = set(current_description.split()) - stop_words
         post_words = set(post_description.split()) - stop_words
@@ -646,4 +684,70 @@ def saved_roommate_posts(request):
 
     return render(request, 'roommate/saved_roommate_posts.html', {
         'favourites': favourites
+    })
+
+from django.http import JsonResponse
+from django.utils.dateformat import format
+
+@login_required(login_url='/login/')
+def get_chat_messages(request, application_id):
+    application = get_object_or_404(
+        RoommateApplication,
+        id=application_id
+    )
+
+    # Only applicant and coordinator can view the chat
+    if (
+        request.user != application.applicant and
+        request.user != application.roommate_post.created_by
+    ):
+        return JsonResponse(
+            {"error": "Permission denied"},
+            status=403
+        )
+
+    messages = application.messages.all()
+
+    data = []
+
+    for msg in messages:
+        data.append({
+            "sender": (
+                "You"
+                if msg.sender == request.user
+                else msg.sender.username
+            ),
+            "is_me": msg.sender == request.user,
+            "message": msg.message,
+            "time": format(msg.created_at, "d M Y, h:i A")
+        })
+
+    return JsonResponse(data, safe=False)
+
+@login_required(login_url='/login/')
+def send_chat_message(request, application_id):
+
+    application = get_object_or_404(
+        RoommateApplication,
+        id=application_id
+    )
+
+    if request.method == "POST":
+
+        message = request.POST.get("message")
+
+        if message:
+
+            RoommateMessage.objects.create(
+                application=application,
+                sender=request.user,
+                message=message
+            )
+
+        return JsonResponse({
+            "success": True
+        })
+
+    return JsonResponse({
+        "success": False
     })

@@ -17,7 +17,7 @@
 
         {% if user.is_authenticated %}
             <a href="{% url 'roommate_dashboard' %}" class="btn btn-secondary">
-                My Dashboard
+                My Summary
             </a>
         {% endif %}
     </div>
@@ -304,6 +304,21 @@
                 </p>
             </div>
         </div>
+        <div class="col-md-8 mb-3">
+            <div class="border rounded p-3 h-100">
+                <strong> Pet Details</strong>
+
+                 {% if post.preferred_pet %}
+                     <p class="text-muted mb-0 mt-2">
+                         {{ post.preferred_pet }}
+                     </p>
+                 {% else %}
+                     <p class="text-muted mb-0 mt-2">
+                         Not specified.
+                     </p>
+                 {% endif %}
+             </div>
+         </div>
 
     </div>
 
