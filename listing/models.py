@@ -86,7 +86,8 @@ class Room(models.Model):
     room_type = models.CharField(max_length=10, choices=ROOM_TYPE_CHOICES, default='master')
 
     # Floor / bathroom type
-    floor_level = models.CharField(max_length=10, choices=FLOOR_LEVELS, default='Ground')
+    floor_level = models.IntegerField(null=True, blank=True, help_text="Enter floor number (e.g., 0 for ground, 1-5, etc.)")
+
 
     BATHROOM_TYPE_CHOICES = [
         ('shared', 'Shared bathroom'),
@@ -168,7 +169,8 @@ class Unit(models.Model):
 
     # Unit type + floor
     unit_type = models.CharField(max_length=20, choices=UNIT_TYPES)
-    floor_level = models.CharField(max_length=10, choices=FLOOR_LEVELS)
+    floor_level = models.IntegerField(null=True, blank=True, help_text="Enter floor number (e.g., 0 for ground, 1-5, etc.)")
+
 
     BEDROOM_CHOICES = [
         ('1', '1'),
@@ -271,5 +273,10 @@ class RoomImage(models.Model):
     def __str__(self):
         return f"Image for {self.room.title}"
 
+class UnitImage(models.Model):
+    unit = models.ForeignKey(Unit, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='unit_images/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
 
-
+    def __str__(self):
+        return f"Image for {self.unit.title}"

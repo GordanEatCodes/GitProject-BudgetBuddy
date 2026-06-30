@@ -3,115 +3,90 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Add Unit</title>
+  <title>{% if edit_mode %}Edit Unit{% else %}Add Unit{% endif %}</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body { background-color: #f8f4ee; }
-    .card {
-      border-radius: 18px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-    }
-    .bb-header {
-      background-color: #d2a679;
-      color: #fff;
-      padding: 16px 0;
-      margin-bottom: 24px;
-    }
-    .section-title {
-      font-weight: 600;
-      margin-top: 1rem;
-      margin-bottom: 0.5rem;
-    }
+    .card { border-radius: 18px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+    .bb-header { background-color: #d2a679; color: #fff; padding: 16px 0; margin-bottom: 24px; }
+    .section-title { font-weight: 600; margin-top: 1rem; margin-bottom: 0.5rem; }
+    .help-text { font-size: 0.8rem; color: #7a6652; }
   </style>
-
-  <button
-    type="button"
-    onclick="window.history.back()"
-    style="
-      position: fixed;
-      top: 12px;
-      right: 12px;
-      border: none;
-      background: rgba(0,0,0,0.6);
-      color: #fff;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      font-weight: bold;
-      cursor: pointer;
-      z-index: 9999;
-    "
-    aria-label="Close">
-    ×
-  </button>
-
 </head>
 <body>
-
-  <button
-  type="button"
-  onclick="window.history.back()"
-  style="
-    position: fixed;
-    top: 12px;
-    right: 12px;
-    border: none;
-    background: rgba(0,0,0,0.6);
-    color: #fff;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    font-weight: bold;
-    cursor: pointer;
-    z-index: 9999;
-  "
-  aria-label="Close">
-  ×
-</button>
-
-
   <div class="bb-header">
-    <div class="container">
-      <h3 class="mb-0">Add a Unit</h3>
+    <div class="container d-flex justify-content-between align-items-center">
+      <h3 class="mb-0">{% if edit_mode %}Edit Unit{% else %}Add a Unit{% endif %}</h3>
+      <button type="button" class="btn btn-light btn-sm" onclick="history.back()">× Close</button>
     </div>
   </div>
 
   <div class="container pb-4">
     <div class="row justify-content-center">
-      <div class="col-md-7">
+      <div class="col-md-8 my-3">
         <div class="card">
           <div class="card-body">
+
             <form method="post" enctype="multipart/form-data">
               {% csrf_token %}
 
+              {# 顯示表單錯誤 #}
+              {% if form.non_field_errors %}
+                <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+              {% endif %}
+              {% for field in form %}
+                {% for error in field.errors %}
+                  <div class="alert alert-danger">{{ field.label }}: {{ error }}</div>
+                {% endfor %}
+              {% endfor %}
+
+              <!-- Basic info -->
               <div class="mb-3">
                 <label class="form-label">Title</label>
                 {{ form.title }}
               </div>
 
-              <div class="mb-3">
+              <div class="mb-3" style="max-width: 280px;">
                 <label class="form-label">Rent (RM / month)</label>
                 {{ form.rent }}
               </div>
 
-              <div class="mb-3">
-                <label class="form-label">State</label>
-                {{ form.state }}
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label">Location detail (city / area / address)</label>
-                {{ form.location_detail }}
-              </div>
-
+              <!-- Location -->
+              <div class="section-title">Location</div>
               <div class="row">
                 <div class="col-md-6 mb-3">
+                  <label class="form-label">State</label>
+                  {{ form.state }}
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">City / Area</label>
+                  <select name="city" id="id_city_select" class="form-select">
+                    <option value="">-- Select city / area --</option>
+                  </select>
+                  <div class="help-text">Choose the daerah / city in the selected state.</div>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Location detail (building / street)</label>
+                {{ form.location_detail }}
+                <div class="help-text">Apartment name, block, street or any extra direction</div>
+              </div>
+
+              <!-- Unit details -->
+              <div class="section-title">Unit Details</div>
+              <div class="row">
+                <div class="col-md-4 mb-3">
                   <label class="form-label">Unit type</label>
                   {{ form.unit_type }}
                 </div>
-                <div class="col-md-6 mb-3">
+                <div class="col-md-4 mb-3">
                   <label class="form-label">Floor level</label>
                   {{ form.floor_level }}
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label class="form-label">Size (e.g. 80 m²)</label>
+                  {{ form.size }}
                 </div>
               </div>
 
@@ -126,104 +101,66 @@
                 </div>
               </div>
 
-              <div class="mb-2 section-title">Strategies / Nearby</div>
+              <!-- Strategies / Nearby -->
+              <div class="section-title">Strategies / Nearby</div>
               <div class="row">
                 <div class="col-md-6">
-                  <div class="form-check">
-                    {{ form.near_mrt }} <label class="form-check-label">Near MRT</label>
-                  </div>
-                  <div class="form-check">
-                    {{ form.near_lrt }} <label class="form-check-label">Near LRT</label>
-                  </div>
-                  <div class="form-check">
-                    {{ form.near_ktm }} <label class="form-check-label">Near KTM</label>
-                  </div>
-                  <div class="form-check">
-                    {{ form.near_bus_stop }} <label class="form-check-label">Near bus stop</label>
-                  </div>
-                  <div class="form-check">
-                    {{ form.near_brt }} <label class="form-check-label">Near BRT</label>
-                  </div>
+                  <div class="form-check">{{ form.near_mrt }} <label class="form-check-label">Near MRT</label></div>
+                  <div class="form-check">{{ form.near_lrt }} <label class="form-check-label">Near LRT</label></div>
+                  <div class="form-check">{{ form.near_ktm }} <label class="form-check-label">Near KTM</label></div>
+                  <div class="form-check">{{ form.near_bus_stop }} <label class="form-check-label">Near bus stop</label></div>
+                  <div class="form-check">{{ form.near_brt }} <label class="form-check-label">Near BRT</label></div>
                 </div>
                 <div class="col-md-6">
-                  <div class="form-check">
-                    {{ form.security_24h }} <label class="form-check-label">24h security</label>
-                  </div>
-                  <div class="form-check">
-                    {{ form.swimming_pool }} <label class="form-check-label">Swimming pool</label>
-                  </div>
-                  <div class="form-check">
-                    {{ form.gym_room }} <label class="form-check-label">Gym room</label>
-                  </div>
-                  <div class="form-check">
-                    {{ form.covered_carpark }} <label class="form-check-label">Covered carpark</label>
-                  </div>
-                  <div class="form-check">
-                    {{ form.near_mall }} <label class="form-check-label">Near shopping mall</label>
-                  </div>
-                  <div class="form-check">
-                    {{ form.near_shop_lots }} <label class="form-check-label">Near shop lots</label>
-                  </div>
-                  <div class="form-check">
-                    {{ form.near_convenience_store }} <label class="form-check-label">Near convenience store</label>
-                  </div>
+                  <div class="form-check">{{ form.security_24h }} <label class="form-check-label">24h security</label></div>
+                  <div class="form-check">{{ form.swimming_pool }} <label class="form-check-label">Swimming pool</label></div>
+                  <div class="form-check">{{ form.gym_room }} <label class="form-check-label">Gym room</label></div>
+                  <div class="form-check">{{ form.covered_carpark }} <label class="form-check-label">Covered carpark</label></div>
+                  <div class="form-check">{{ form.near_mall }} <label class="form-check-label">Near shopping mall</label></div>
+                  <div class="form-check">{{ form.near_shop_lots }} <label class="form-check-label">Near shop lots</label></div>
+                  <div class="form-check">{{ form.near_convenience_store }} <label class="form-check-label">Near convenience store</label></div>
                 </div>
               </div>
 
-              <div class="mb-2 section-title">Utilities</div>
+              <!-- Utilities -->
+              <div class="section-title">Utilities</div>
               <div class="row">
                 <div class="col-md-6">
-                  <div class="form-check">
-                    {{ form.has_aircond }} <label class="form-check-label">Aircond</label>
-                  </div>
-                  <div class="form-check">
-                    {{ form.has_washing_machine }} <label class="form-check-label">Washing machine</label>
-                  </div>
-                  <div class="form-check">
-                    {{ form.has_wifi }} <label class="form-check-label">Wi‑Fi</label>
-                  </div>
-                  <div class="form-check">
-                    {{ form.cooking_allowed }} <label class="form-check-label">Cooking allowed</label>
-                  </div>
+                  <div class="form-check">{{ form.has_aircond }} <label class="form-check-label">Aircond</label></div>
+                  <div class="form-check">{{ form.has_washing_machine }} <label class="form-check-label">Washing machine</label></div>
+                  <div class="form-check">{{ form.has_wifi }} <label class="form-check-label">Wi‑Fi</label></div>
+                  <div class="form-check">{{ form.cooking_allowed }} <label class="form-check-label">Cooking allowed</label></div>
                 </div>
                 <div class="col-md-6">
-                  <div class="form-check">
-                    {{ form.shared_bathroom }} <label class="form-check-label">Shared bathroom</label>
-                  </div>
-                  <div class="form-check">
-                    {{ form.private_bathroom }} <label class="form-check-label">Private bathroom</label>
-                  </div>
-                  <div class="form-check">
-                    {{ form.has_tv }} <label class="form-check-label">TV</label>
-                  </div>
-                  <div class="form-check">
-                    {{ form.has_fridge }} <label class="form-check-label">Fridge</label>
-                  </div>
+                  <div class="form-check">{{ form.shared_bathroom }} <label class="form-check-label">Shared bathroom</label></div>
+                  <div class="form-check">{{ form.private_bathroom }} <label class="form-check-label">Private bathroom</label></div>
+                  <div class="form-check">{{ form.has_tv }} <label class="form-check-label">TV</label></div>
+                  <div class="form-check">{{ form.has_fridge }} <label class="form-check-label">Fridge</label></div>
                 </div>
               </div>
 
-              <div class="mb-2 section-title">Flexibility</div>
+              <!-- Flexibility -->
+              <div class="section-title">Flexibility</div>
               <div class="row mb-3">
                 <div class="col-md-6">
-                  <div class="form-check">
-                    {{ form.pet_allowed }} <label class="form-check-label">Pet allowed</label>
-                  </div>
+                  <div class="form-check">{{ form.pet_allowed }} <label class="form-check-label">Pet allowed</label></div>
                 </div>
                 <div class="col-md-6">
-                  <div class="form-check">
-                    {{ form.smoking_allowed }} <label class="form-check-label">Smoking allowed</label>
-                  </div>
+                  <div class="form-check">{{ form.smoking_allowed }} <label class="form-check-label">Smoking allowed</label></div>
                 </div>
               </div>
 
+              <!-- Photos -->
               <div class="mb-3">
-                <label class="form-label">Size (e.g. 80 m²)</label>
-                {{ form.size }}
+                <label class="form-label">Main (cover) photo</label><br>
+                {{ form.image }}
+                <div class="help-text">This is the big cover photo shown first.</div>
               </div>
 
               <div class="mb-3">
-                <label class="form-label">Photo</label><br>
-                {{ form.image }}
+                <label class="form-label">More photos (you can select multiple)</label>
+                <input type="file" name="extra_images" class="form-control" multiple accept="image/*">
+                <div class="help-text">Hold Ctrl / Shift to select multiple photos.</div>
               </div>
 
               <div class="form-check mb-3">
@@ -232,7 +169,7 @@
               </div>
 
               <button type="submit" class="btn btn-primary w-100">
-                Save Unit
+                {% if edit_mode %}Update Unit{% else %}Save Unit{% endif %}
               </button>
             </form>
           </div>
@@ -244,5 +181,56 @@
       </div>
     </div>
   </div>
+
+  <script>
+    // 州 → 城市/daerah 對照表
+    const STATE_CITIES = {
+      "Johor": ["Johor Bahru", "Batu Pahat", "Muar", "Kluang", "Kulai", "Pontian", "Segamat", "Kota Tinggi", "Mersing", "Tangkak"],
+      "Kedah": ["Alor Setar", "Sungai Petani", "Kulim", "Langkawi", "Jitra", "Baling", "Kuala Kedah", "Yan", "Pendang"],
+      "Kelantan": ["Kota Bharu", "Pasir Mas", "Tanah Merah", "Tumpat", "Machang", "Kuala Krai", "Gua Musang", "Bachok"],
+      "Melaka": ["Melaka City", "Alor Gajah", "Jasin", "Masjid Tanah", "Ayer Keroh"],
+      "Negeri Sembilan": ["Seremban", "Port Dickson", "Nilai", "Bahau", "Tampin", "Kuala Pilah", "Rembau"],
+      "Pahang": ["Kuantan", "Temerloh", "Bentong", "Raub", "Jerantut", "Pekan", "Cameron Highlands", "Genting Highlands"],
+      "Perak": ["Ipoh", "Taiping", "Teluk Intan", "Sitiawan", "Lumut", "Kampar", "Batu Gajah", "Tapah", "Kuala Kangsar"],
+      "Perlis": ["Kangar", "Arau", "Padang Besar"],
+      "Pulau Pinang": ["George Town", "Butterworth", "Bukit Mertajam", "Bayan Lepas", "Nibong Tebal", "Balik Pulau", "Seberang Jaya"],
+      "Sabah": ["Kota Kinabalu", "Sandakan", "Tawau", "Lahad Datu", "Keningau", "Penampang", "Putatan", "Beaufort"],
+      "Sarawak": ["Kuching", "Miri", "Sibu", "Bintulu", "Samarahan", "Sri Aman", "Limbang", "Kapit"],
+      "Selangor": ["Shah Alam", "Petaling Jaya", "Subang Jaya", "Klang", "Kajang", "Ampang", "Puchong", "Rawang", "Bangi", "Cyberjaya", "Sepang", "Cheras"],
+      "Terengganu": ["Kuala Terengganu", "Kemaman", "Dungun", "Marang", "Besut", "Setiu", "Hulu Terengganu"],
+      "WP Kuala Lumpur": ["Bukit Bintang", "Cheras", "Kepong", "Setapak", "Wangsa Maju", "Sentul", "Bangsar", "Mont Kiara", "Brickfields", "Titiwangsa"],
+      "WP Labuan": ["Victoria", "Rancha-Rancha", "Patau-Patau"],
+      "WP Putrajaya": ["Presint 1", "Presint 2", "Presint 8", "Presint 9", "Presint 11", "Presint 14", "Presint 15", "Presint 16", "Presint 18"]
+    };
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const stateSelect = document.getElementById('id_state');
+      const citySelect = document.getElementById('id_city_select');
+
+      if (!stateSelect || !citySelect) return;
+
+      const preselectedCity = "{{ form.city.value|default:'' }}";
+
+      function fillCities(state, selectCity) {
+        citySelect.innerHTML = '<option value="">-- Select city / area --</option>';
+        const cities = STATE_CITIES[state] || [];
+        cities.forEach(function (c) {
+          const opt = document.createElement('option');
+          opt.value = c;
+          opt.textContent = c;
+          if (selectCity && c === selectCity) {
+            opt.selected = true;
+          }
+          citySelect.appendChild(opt);
+        });
+      }
+
+      fillCities(stateSelect.value, preselectedCity);
+
+      stateSelect.addEventListener('change', function () {
+        fillCities(stateSelect.value, '');
+      });
+    });
+  </script>
 </body>
 </html>

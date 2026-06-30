@@ -9,7 +9,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.utils import timezone
 from users.models import UserProfile
-from .models import Room, Unit, RoomRequest, UnitRequest, RoomImage
+from .models import Room, Unit, RoomRequest, UnitRequest, RoomImage, UnitImage
 from .form import RoomForm, UnitForm
 
 
@@ -218,10 +218,16 @@ def unit_create(request):
             unit = form.save(commit=False)
             unit.owner = request.user
             unit.save()
+
+            # 處理多張圖片
+            for img in request.FILES.getlist('extra_images'):
+                UnitImage.objects.create(unit=unit, image=img)
+
             return redirect('owner_dashboard')
     else:
         form = UnitForm()
     return render(request, 'unit_form.html', {'form': form})
+
 
 
 @login_required
@@ -409,6 +415,51 @@ def room_toggle_available(request, pk):
     if request.method == 'POST':
         room.available = not room.available
         room.save()
+
+    return redirect('owner_dashboard')
+
+# ────────────── OWNER: EDIT UNIT ──────────────
+@login_required
+def unit_edit(request, pk):
+    """
+    房東編輯自己的 Unit
+    URL: /listing/owner/units/<pk>/edit/
+    """
+    unit = get_object_or_404(Unit, pk=pk, owner=request.user)
+
+    if not user_is_owner(request.user):
+        return HttpResponseForbidden("You are not allowed to edit unit listings.")
+
+    if request.method == 'POST':
+        form = UnitForm(request.POST, request.FILES, instance=unit)
+        if form.is_valid():
+            form.save()
+
+            # 如果有上傳新的額外照片
+            for img in request.FILES.getlist('extra_images'):
+                UnitImage.objects.create(unit=unit, image=img)
+
+            return redirect('owner_dashboard')
+    else:
+        form = UnitForm(instance=unit)
+
+    return render(request, 'unit_form.html', {'form': form, 'edit_mode': True, 'unit': unit})
+
+# ────────────── OWNER: TOGGLE UNIT AVAILABLE ──────────────
+@login_required
+def unit_toggle_available(request, pk):
+    """
+    房東快速上架 / 下架 Unit（切換 available）
+    URL: /listing/owner/units/<pk>/toggle/
+    """
+    unit = get_object_or_404(Unit, pk=pk, owner=request.user)
+
+    if not user_is_owner(request.user):
+        return HttpResponseForbidden("You are not allowed to perform this action.")
+
+    if request.method == 'POST':
+        unit.available = not unit.available
+        unit.save()
 
     return redirect('owner_dashboard')
 

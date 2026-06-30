@@ -123,11 +123,27 @@
                 {{ unit.bedrooms }} BR / {{ unit.bathrooms }} BA · RM {{ unit.rent }}/month
               </div>
             </div>
-            {% if unit.available %}
-              <span class="badge bg-success">Available</span>
-            {% else %}
-              <span class="badge bg-secondary">Not available</span>
-            {% endif %}
+
+            <div class="text-end">
+              {% if unit.available %}
+                <span class="badge bg-success">Available</span>
+              {% else %}
+                <span class="badge bg-secondary">Not available</span>
+              {% endif %}
+
+              <div class="mt-2">
+                <a href="{% url 'unit_edit' unit.id %}" class="btn btn-sm btn-outline-dark">Edit</a>
+
+                <form method="post" action="{% url 'unit_toggle_available' unit.id %}" class="d-inline">
+                  {% csrf_token %}
+                  {% if unit.available %}
+                    <button class="btn btn-sm btn-outline-secondary">Set Unavailable</button>
+                  {% else %}
+                    <button class="btn btn-sm btn-outline-success">Set Available</button>
+                  {% endif %}
+                </form>
+              </div>
+            </div>
           </li>
           {% endfor %}
         </ul>

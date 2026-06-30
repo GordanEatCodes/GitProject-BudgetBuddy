@@ -59,6 +59,7 @@ class RoomForm(forms.ModelForm):
         widgets = {
             'rent': forms.NumberInput(attrs={'step': '1', 'min': '0'}),
             'size': forms.NumberInput(attrs={'step': '1', 'min': '0'}),
+            'floor_level': forms.NumberInput(attrs={'min': '0', 'placeholder': 'e.g., 0, 3, 15'}),
         }
 
 
@@ -112,5 +113,6 @@ class UnitForm(forms.ModelForm):
         widgets = {
             'rent': forms.NumberInput(attrs={'step': '1', 'min': '0'}),
             'size': forms.NumberInput(attrs={'step': '1', 'min': '0'}),
+            'floor_level': forms.NumberInput(attrs={'min': '0', 'placeholder': 'e.g., 0, 3, 15'}),
         }
 

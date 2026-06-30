@@ -25,9 +25,12 @@ urlpatterns = [
 
     path('my-requests/rooms/', views.my_room_requests, name='my_room_requests'),
     
-        # Room 編輯 / 上下架
+    # Room 編輯 / 上下架
     path('owner/rooms/<int:pk>/edit/', views.room_edit, name='room_edit'),
     path('owner/rooms/<int:pk>/toggle/', views.room_toggle_available, name='room_toggle_available'),
 
-]
+    # Unit 編輯 / 上下架
+    path('owner/units/<int:pk>/edit/', views.unit_edit, name='unit_edit'),
+    path('owner/units/<int:pk>/toggle/', views.unit_toggle_available, name='unit_toggle_available'),
 
+]

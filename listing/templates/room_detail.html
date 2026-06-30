@@ -104,9 +104,20 @@
             <div class="section-title">Room Details</div>
             <p class="mb-1"><strong>Unit type:</strong> {{ room.unit_type }}</p>
             <p class="mb-1"><strong>Room type:</strong> {{ room.get_room_type_display }}</p>
-            <p class="mb-1"><strong>Floor level:</strong> {{ room.floor_level }}</p>
+            <p class="mb-1">
+              <strong>Floor level:</strong>
+              {% if room.floor_level == 0 %}
+                Ground Floor
+              {% elif room.floor_level <= 10 %}
+                Level {{ room.floor_level }} (Low rise)
+              {% elif room.floor_level <= 20 %}
+                Level {{ room.floor_level }} (Mid rise)
+              {% else %}
+                Level {{ room.floor_level }} (High rise)
+              {% endif %}
+            </p>
             <p class="mb-2"><strong>Bathroom:</strong> {% if room.bathroom_type == 'private' %}Private{% else %}Shared{% endif %}</p>
-            {% if room.size %}<p class="mb-3"><strong>Size:</strong> {{ room.size }}</p>{% endif %}
+            {% if room.size %}<p class="mb-3"><strong>Size:</strong> {{ room.size }} sqft</p>{% endif %}
 
             <!-- Amenities -->
             <div class="section-title">Amenities / Nearby</div>
