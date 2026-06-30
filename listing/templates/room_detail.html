@@ -6,67 +6,92 @@
   <title>{{ room.title }} - Details</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/basiclightbox@5/dist/basicLightbox.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/basiclightbox@5/dist/basicLightbox.umd.js"></script>
   <style>
     body { background-color: #f8f4ee; }
-    .bb-header {
-      background-color: #d2a679;
-      color: #fff;
-      padding: 16px 0;
-      margin-bottom: 24px;
-    }
-    .detail-card {
-      border-radius: 18px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-      background-color: #fff;
-      overflow: hidden;
-    }
+    .bb-header { background-color: #d2a679; color: #fff; padding: 16px 0; margin-bottom: 24px; }
+    .detail-card { border-radius: 18px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); background-color: #fff; overflow: hidden; }
+
     .detail-img {
-      max-height: 320px;
-      object-fit: cover;
       width: 100%;
+      height: 360px;          /* 固定高度框 */
+      object-fit: contain;    /* 改成 contain：圖片完整顯示，不裁切 */
+      background-color: #f1f1f1; /* 兩側留白時的底色，比較好看 */
+      cursor: pointer;
+      border-radius: 12px;
     }
-    .section-title {
-      font-weight: 600;
-      margin-top: 1rem;
-      margin-bottom: 0.5rem;
+
+    .thumb-img {
+      height: 60px;
+      width: 70px;
+      object-fit: cover;
+      cursor: pointer;
+      border-radius: 8px;
+      border: 2px solid transparent;
     }
+    .thumb-img.active { border-color: #d2a679; }
+
+    .nav-img-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      font-weight: bold;
+      line-height: 1;
+      z-index: 5;
+    }
+    .section-title { font-weight: 600; margin-top: 1rem; margin-bottom: 0.5rem; }
   </style>
-  
 </head>
 <body>
+  <!-- 右上角關閉 -->
+  <button type="button" onclick="window.history.back()"
+    style="position:fixed;top:12px;right:12px;border:none;background:rgba(0,0,0,0.6);color:#fff;width:32px;height:32px;border-radius:50%;font-weight:bold;cursor:pointer;z-index:9999;"
+    aria-label="Close">×</button>
+
+  <!-- Header -->
   <div class="bb-header">
     <div class="container d-flex justify-content-between align-items-center">
       <h3 class="mb-0">{{ room.title }}</h3>
-      <button type="button" class="btn btn-light btn-sm" onclick="history.back()">× Close</button>
     </div>
   </div>
 
   <div class="container py-4">
     <div class="row justify-content-center">
-      <div class="col-md-8 my-2">
+      <div class="col-md-8">
         <div class="detail-card">
 
-          {% if room.image %}
-  <img src="{{ room.image.url }}" alt="Room photo" class="detail-img js-main-image">
-{% endif %}
+          <!-- 圖片區：主圖 + 上/下一張 + 縮圖列 -->
+          <div class="p-3 pb-0">
+            {% if room.image or room.images.all %}
+              <div class="position-relative text-center mb-2">
+                {% if room.image %}
+                  <img src="{{ room.image.url }}" alt="Room photo" class="detail-img js-main-image">
+                {% elif room.images.all %}
+                  {% with first_img=room.images.all.0 %}
+                    <img src="{{ first_img.image.url }}" alt="Room photo" class="detail-img js-main-image">
+                  {% endwith %}
+                {% endif %}
 
-{% if room.images.all %}
-  <div class="p-3 pt-2">
-    <div class="row g-2">
-      {% for img in room.images.all %}
-        <div class="col-3">
-          <img src="{{ img.image.url }}" alt="Room extra photo" class="thumb-img js-thumb-image">
-        </div>
-      {% endfor %}
-    </div>
-  </div>
-{% endif %}
+                <button type="button" class="btn btn-light nav-img-btn js-prev-image" style="left:12px;">‹</button>
+                <button type="button" class="btn btn-light nav-img-btn js-next-image" style="right:12px;">›</button>
+              </div>
 
+              <div class="d-flex flex-wrap gap-2 justify-content-center mb-2">
+                {% if room.image %}
+                  <img src="{{ room.image.url }}" alt="thumb" class="thumb-img js-thumb-image">
+                {% endif %}
+                {% for img in room.images.all %}
+                  <img src="{{ img.image.url }}" alt="thumb" class="thumb-img js-thumb-image">
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
 
-
-          <div class="p-4">
-            <div class="d-flex justify-content-between align-items-center mb-2">
+          <!-- 詳細內容 -->
+          <div class="p-4 pt-0">
+            <div class="d-flex justify-content-between align-items-center mb-2 mt-2">
               <h4 class="mb-0">{{ room.title }}</h4>
               <span class="fw-bold text-danger">RM {{ room.rent }}/month</span>
             </div>
@@ -77,25 +102,11 @@
 
             <!-- Room Details -->
             <div class="section-title">Room Details</div>
-            <p class="mb-1">
-              <strong>Unit type:</strong> {{ room.unit_type }}
-            </p>
-            <p class="mb-1">
-              <strong>Room type:</strong> {{ room.get_room_type_display }}
-            </p>
-            <p class="mb-1">
-              <strong>Floor level:</strong> {{ room.floor_level }}
-            </p>
-            <p class="mb-3">
-              <strong>Bathroom:</strong>
-              {% if room.bathroom_type == 'private' %}Private{% else %}Shared{% endif %}
-            </p>
-
-            {% if room.size %}
-              <p class="mb-3">
-                <strong>Size:</strong> {{ room.size }}
-              </p>
-            {% endif %}
+            <p class="mb-1"><strong>Unit type:</strong> {{ room.unit_type }}</p>
+            <p class="mb-1"><strong>Room type:</strong> {{ room.get_room_type_display }}</p>
+            <p class="mb-1"><strong>Floor level:</strong> {{ room.floor_level }}</p>
+            <p class="mb-2"><strong>Bathroom:</strong> {% if room.bathroom_type == 'private' %}Private{% else %}Shared{% endif %}</p>
+            {% if room.size %}<p class="mb-3"><strong>Size:</strong> {{ room.size }}</p>{% endif %}
 
             <!-- Amenities -->
             <div class="section-title">Amenities / Nearby</div>
@@ -109,16 +120,13 @@
               {% if room.swimming_pool %}<span class="badge bg-light text-dark border me-1">Swimming pool</span>{% endif %}
               {% if room.gym_room %}<span class="badge bg-light text-dark border me-1">Gym</span>{% endif %}
               {% if room.covered_carpark %}<span class="badge bg-light text-dark border me-1">Covered car park</span>{% endif %}
-              {% if room.extra_parking %}<span class="badge bg-light text-dark border me-1">Extra parking</span>{% endif %}
+              {% if room.extra_parking %}<span class="badge bg-light text-dark border me-1">Residential parking</span>{% endif %}
               {% if room.oku_friendly %}<span class="badge bg-light text-dark border me-1">OKU friendly</span>{% endif %}
               {% if room.multi_purpose_hall %}<span class="badge bg-light text-dark border me-1">Multi-purpose hall</span>{% endif %}
-              {% if room.playground %}<span class="badge bg-light text-dark border me-1">Playground</span>{% endif %}
-              {% if room.has_surau %}<span class="badge bg-light text-dark border me-1">Surau</span>{% endif %}
+              {% if room.playground %}<span class="badge bg-light text-dark border me-1">Near playground</span>{% endif %}
+              {% if room.has_surau %}<span class="badge bg-light text-dark border me-1">Near surau</span>{% endif %}
               {% if room.near_mini_market %}<span class="badge bg-light text-dark border me-1">Near mini market</span>{% endif %}
               {% if room.co_living %}<span class="badge bg-light text-dark border me-1">Co-living</span>{% endif %}
-              {% if not room.near_mrt and not room.near_lrt and not room.near_ktm and not room.near_bus_stop and not room.near_train and not room.security_24h and not room.swimming_pool and not room.gym_room and not room.covered_carpark and not room.extra_parking and not room.oku_friendly and not room.multi_purpose_hall and not room.playground and not room.has_surau and not room.near_mini_market and not room.co_living %}
-                <span class="text-muted">No special amenities listed.</span>
-              {% endif %}
             </div>
 
             <!-- Utilities -->
@@ -126,15 +134,12 @@
             <div class="mb-3">
               {% if room.has_aircond %}<span class="badge bg-light text-dark border me-1">Air-conditioning</span>{% endif %}
               {% if room.has_washing_machine %}<span class="badge bg-light text-dark border me-1">Washing machine</span>{% endif %}
-              {% if room.has_wifi %}<span class="badge bg-light text-dark border me-1">Wi‑Fi</span>{% endif %}
+              {% if room.has_wifi %}<span class="badge bg-light text-dark border me-1">Wi-Fi / Internet</span>{% endif %}
               {% if room.cooking_allowed %}<span class="badge bg-light text-dark border me-1">Cooking allowed</span>{% endif %}
               {% if room.has_tv %}<span class="badge bg-light text-dark border me-1">TV</span>{% endif %}
               {% if room.shared_bathroom %}<span class="badge bg-light text-dark border me-1">Shared bathroom</span>{% endif %}
               {% if room.private_bathroom %}<span class="badge bg-light text-dark border me-1">Private bathroom</span>{% endif %}
               {% if room.has_shower %}<span class="badge bg-light text-dark border me-1">Shower</span>{% endif %}
-              {% if not room.has_aircond and not room.has_washing_machine and not room.has_wifi and not room.cooking_allowed and not room.has_tv and not room.shared_bathroom and not room.private_bathroom and not room.has_shower %}
-                <span class="text-muted">No utilities listed.</span>
-              {% endif %}
             </div>
 
             <!-- Preferences -->
@@ -145,12 +150,9 @@
               {% if room.prefer_pet_allowed %}<span class="badge bg-light text-dark border me-1">Prefer pet allowed</span>{% endif %}
               {% if room.prefer_muslim_friendly %}<span class="badge bg-light text-dark border me-1">Prefer muslim friendly</span>{% endif %}
               {% if room.prefer_smoking_allowed %}<span class="badge bg-light text-dark border me-1">Prefer smoking allowed</span>{% endif %}
-              {% if not room.prefer_zero_deposit and not room.prefer_move_in_immediately and not room.prefer_pet_allowed and not room.prefer_muslim_friendly and not room.prefer_smoking_allowed %}
-                <span class="text-muted">No specific preferences listed.</span>
-              {% endif %}
             </div>
 
-            <!-- Availability + Request button -->
+            <!-- Availability + Request -->
             <div class="d-flex justify-content-between align-items-center mt-3">
               {% if room.available %}
                 <span class="badge bg-success">Available</span>
@@ -161,18 +163,16 @@
               {% if room.available %}
                 {% if current_request %}
                   {% if current_request.status == 'pending' %}
-                    <button class="btn btn-warning btn-sm" disabled>Request Pending</button>
+                    <button class="btn btn-warning btn-sm" disabled>Application Pending</button>
                   {% elif current_request.status == 'accepted' %}
-                    <button class="btn btn-success btn-sm" disabled>Request Accepted</button>
-                  {% elif current_request.status == 'rejected' %}
-                    <button class="btn btn-outline-danger btn-sm" disabled>Request Rejected</button>
+                    <button class="btn btn-success btn-sm" disabled>Application Accepted</button>
+                  {% else %}
+                    <button class="btn btn-outline-danger btn-sm" disabled>Application Rejected</button>
                   {% endif %}
                 {% else %}
                   <form method="post" class="d-inline">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-primary btn-sm">
-                      Request to Rent
-                    </button>
+                    <button type="submit" class="btn btn-primary btn-sm">Apply to Rent</button>
                   </form>
                 {% endif %}
               {% endif %}
@@ -180,16 +180,9 @@
 
             <!-- Contact -->
             <h6 class="fw-bold mt-3">Contact</h6>
-            <p class="mb-1">
-              Owner: {{ room.owner.userprofile.username|default:room.owner.username }}
-            </p>
-            {% if room.owner.email %}
-              <p class="mb-1">Email: {{ room.owner.email }}</p>
-            {% endif %}
-            {% if room.owner.userprofile.phone_number %}
-              <p class="mb-1">Phone: {{ room.owner.userprofile.phone_number }}</p>
-            {% endif %}
-
+            <p class="mb-1">Owner: {{ room.owner.userprofile.username|default:room.owner.username }}</p>
+            {% if room.owner.email %}<p class="mb-1">Email: {{ room.owner.email }}</p>{% endif %}
+            {% if room.owner.userprofile.phone_number %}<p class="mb-1">Phone: {{ room.owner.userprofile.phone_number }}</p>{% endif %}
           </div>
         </div>
 
@@ -199,5 +192,47 @@
       </div>
     </div>
   </div>
+
+  <!-- Carousel + Lightbox JS -->
+  <script src="https://cdn.jsdelivr.net/npm/basiclightbox@5/dist/basicLightbox.umd.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const mainImg = document.querySelector('.js-main-image');
+      const thumbs = Array.from(document.querySelectorAll('.js-thumb-image'));
+      const prevBtn = document.querySelector('.js-prev-image');
+      const nextBtn = document.querySelector('.js-next-image');
+
+      if (!mainImg || thumbs.length === 0) return;
+
+      let currentIndex = 0;
+
+      function showIndex(index) {
+        if (index < 0) index = thumbs.length - 1;
+        if (index >= thumbs.length) index = 0;
+        currentIndex = index;
+        mainImg.src = thumbs[currentIndex].src;
+        thumbs.forEach(function (t, i) {
+          if (i === currentIndex) { t.classList.add('active'); }
+          else { t.classList.remove('active'); }
+        });
+      }
+
+      showIndex(0);
+
+      thumbs.forEach(function (img, i) {
+        img.addEventListener('click', function () { showIndex(i); });
+      });
+
+      if (prevBtn) prevBtn.addEventListener('click', function () { showIndex(currentIndex - 1); });
+      if (nextBtn) nextBtn.addEventListener('click', function () { showIndex(currentIndex + 1); });
+
+      mainImg.addEventListener('click', function () {
+        if (!window.basicLightbox) return;
+        basicLightbox.create(
+          '<img src="' + mainImg.src + '" style="max-width:90vw;max-height:90vh;display:block;margin:auto;" />'
+        ).show();
+      });
+    });
+  </script>
 </body>
 </html>

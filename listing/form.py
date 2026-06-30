@@ -62,15 +62,16 @@ class RoomForm(forms.ModelForm):
         }
 
 
-
 class UnitForm(forms.ModelForm):
     class Meta:
         model = Unit
         fields = [
             'title',
             'rent',
+            
             'state',
             'location_detail',
+            
             'unit_type',
             'floor_level',
             'bedrooms',
@@ -85,6 +86,9 @@ class UnitForm(forms.ModelForm):
             'swimming_pool',
             'gym_room',
             'covered_carpark',
+            'oku_friendly',
+            'multi_purpose_hall',
+            'playground',
             'near_mall',
             'near_shop_lots',
             'near_convenience_store',
@@ -105,3 +109,8 @@ class UnitForm(forms.ModelForm):
             'image',
             'available',
         ]
+        widgets = {
+            'rent': forms.NumberInput(attrs={'step': '1', 'min': '0'}),
+            'size': forms.NumberInput(attrs={'step': '1', 'min': '0'}),
+        }
+

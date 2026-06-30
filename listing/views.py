@@ -9,7 +9,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.utils import timezone
 from users.models import UserProfile
-from .models import Room, Unit, RoomRequest, UnitRequest
+from .models import Room, Unit, RoomRequest, UnitRequest, RoomImage
 from .form import RoomForm, UnitForm
 
 
@@ -67,7 +67,7 @@ def room_list(request):
     floor_level = request.GET.get('floor_level', '').strip()
     bathroom_type = request.GET.get('bathroom_type', '').strip()
 
-    rooms = Room.objects.all().order_by('-created_at')
+    rooms = Room.objects.filter(available=True).order_by('-created_at')
 
     if query:
         rooms = rooms.filter(
@@ -115,7 +115,7 @@ def unit_list(request):
     bedrooms = request.GET.get('bedrooms', '').strip()
     bathrooms = request.GET.get('bathrooms', '').strip()
 
-    units = Unit.objects.all().order_by('-created_at')
+    units = Unit.objects.filter(available=True).order_by('-created_at')
 
     if query:
         units = units.filter(
@@ -196,6 +196,10 @@ def room_create(request):
             room = form.save(commit=False)
             room.owner = request.user
             room.save()
+
+            for img in request.FILES.getlist('extra_images'):
+                RoomImage.objects.create(room=room, image=img)
+
             return redirect('owner_dashboard')
     else:
         form = RoomForm()
@@ -366,5 +370,45 @@ def my_room_requests(request):
     }
     return render(request, 'my_room_requests.html', context)
 
+# ────────────── OWNER: EDIT ROOM ──────────────
+@login_required
+def room_edit(request, pk):
+    # 只能編輯自己的房源
+    room = get_object_or_404(Room, pk=pk, owner=request.user)
 
+    if not user_is_owner(request.user):
+        return HttpResponseForbidden("You are not allowed to edit room listings.")
+
+    if request.method == 'POST':
+        form = RoomForm(request.POST, request.FILES, instance=room)
+        if form.is_valid():
+            form.save()
+
+            # 如果有上傳新的額外照片，繼續加到 RoomImage
+            for img in request.FILES.getlist('extra_images'):
+                RoomImage.objects.create(room=room, image=img)
+
+            return redirect('owner_dashboard')
+    else:
+        form = RoomForm(instance=room)
+
+    return render(request, 'room_form.html', {'form': form, 'edit_mode': True, 'room': room})
+
+
+# ────────────── OWNER: TOGGLE ROOM AVAILABLE ──────────────
+@login_required
+def room_toggle_available(request, pk):
+    """
+    快速上架 / 下架（切換 available）
+    """
+    room = get_object_or_404(Room, pk=pk, owner=request.user)
+
+    if not user_is_owner(request.user):
+        return HttpResponseForbidden("You are not allowed to perform this action.")
+
+    if request.method == 'POST':
+        room.available = not room.available
+        room.save()
+
+    return redirect('owner_dashboard')
 

@@ -152,17 +152,17 @@
                 {% if unit.available %}
                     {% if current_request %}
                     {% if current_request.status == 'pending' %}
-                        <button class="btn btn-warning btn-sm" disabled>Request Pending</button>
+                        <button class="btn btn-warning btn-sm" disabled>Application Pending</button>
                     {% elif current_request.status == 'accepted' %}
-                        <button class="btn btn-success btn-sm" disabled>Request Accepted</button>
+                        <button class="btn btn-success btn-sm" disabled>Application Accepted</button>
                     {% elif current_request.status == 'rejected' %}
-                        <button class="btn btn-outline-danger btn-sm" disabled>Request Rejected</button>
+                        <button class="btn btn-outline-danger btn-sm" disabled>Application Rejected</button>
                     {% endif %}
                     {% else %}
                     <form method="post" class="d-inline">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-primary btn-sm">
-                        Request to Rent
+                        Apply to Rent
                         </button>
                     </form>
                     {% endif %}

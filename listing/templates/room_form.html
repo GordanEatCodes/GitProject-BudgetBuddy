@@ -31,17 +31,17 @@
 <body>
   <div class="bb-header">
     <div class="container d-flex justify-content-between align-items-center">
-      <h3 class="mb-0">List a Room</h3>
+      <h3 class="mb-0">{% if edit_mode %}Edit Room{% else %}List a Room{% endif %}</h3>
       <button type="button" class="btn btn-light btn-sm" onclick="history.back()">× Close</button>
     </div>
   </div>
+
 
   <div class="container py-4">
     <div class="row justify-content-center">
       <div class="col-md-8 my-3">
         <div class="card">
           <div class="card-body">
-            ...
 
             <form method="post" enctype="multipart/form-data">
               
@@ -78,17 +78,17 @@
               <!-- Location -->
               <div class="section-title">Location</div>
               <div class="row">
-                <div class="col-md-4 mb-3">
-                  <label class="form-label">State</label>
-                  {{ form.state }}
-                </div>
-                <div class="col-md-8 mb-3">
-                  <label class="form-label">City / Area</label>
-                  {{ form.city }}
-                  <div class="help-text">
-                    Example: Putrajaya, Shah Alam, Kajang
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label">State</label>
+                    {{ form.state }}
                   </div>
-                </div>
+                  <div class="col-md-8 mb-3">
+                    <label class="form-label">City / Area</label>
+                    <select name="city" id="id_city_select" class="form-select">
+                      <option value="">-- Select city / area --</option>
+                    </select>
+                    <div class="help-text">Choose the daerah / city in the selected state.</div>
+                  </div>
               </div>
 
               <div class="mb-3">
@@ -183,11 +183,18 @@
                 </div>
               </div>
 
-              <!-- Photo & availability -->
-              <div class="mb-3 mt-3">
-                <label class="form-label">Photo</label><br>
-                {{ form.image }}
-              </div>
+              <!-- Photos -->
+                <div class="mb-3 mt-3">
+                  <label class="form-label">Main (title) photo</label><br>
+                  {{ form.image }}
+                  <div class="help-text">This is the big cover photo shown first.</div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">More photos (you can select multiple)</label>
+                  <input type="file" name="extra_images" class="form-control" multiple accept="image/*">
+                  <div class="help-text">Hold Ctrl / Shift to select multiple photos.</div>
+                </div>
 
               <div class="form-check mb-3">
                 {{ form.available }}
@@ -195,8 +202,9 @@
               </div>
 
               <button type="submit" class="btn btn-primary w-100">
-                Save Room
+                {% if edit_mode %}Update Room{% else %}Save Room{% endif %}
               </button>
+
             </form>
           </div>
         </div>
@@ -207,5 +215,62 @@
       </div>
     </div>
   </div>
+
+  <script>
+    // 州 → 城市/daerah 對照表（可自行補齊）
+    const STATE_CITIES = {
+      "Johor": ["Johor Bahru", "Batu Pahat", "Muar", "Kluang", "Kulai", "Pontian", "Segamat", "Kota Tinggi", "Mersing", "Tangkak"],
+      "Kedah": ["Alor Setar", "Sungai Petani", "Kulim", "Langkawi", "Jitra", "Baling", "Kuala Kedah", "Yan", "Pendang"],
+      "Kelantan": ["Kota Bharu", "Pasir Mas", "Tanah Merah", "Tumpat", "Machang", "Kuala Krai", "Gua Musang", "Bachok"],
+      "Melaka": ["Melaka City", "Alor Gajah", "Jasin", "Masjid Tanah", "Ayer Keroh"],
+      "Negeri Sembilan": ["Seremban", "Port Dickson", "Nilai", "Bahau", "Tampin", "Kuala Pilah", "Rembau"],
+      "Pahang": ["Kuantan", "Temerloh", "Bentong", "Raub", "Jerantut", "Pekan", "Cameron Highlands", "Genting Highlands"],
+      "Perak": ["Ipoh", "Taiping", "Teluk Intan", "Sitiawan", "Lumut", "Kampar", "Batu Gajah", "Tapah", "Kuala Kangsar"],
+      "Perlis": ["Kangar", "Arau", "Padang Besar"],
+      "Pulau Pinang": ["George Town", "Butterworth", "Bukit Mertajam", "Bayan Lepas", "Nibong Tebal", "Balik Pulau", "Seberang Jaya"],
+      "Sabah": ["Kota Kinabalu", "Sandakan", "Tawau", "Lahad Datu", "Keningau", "Penampang", "Putatan", "Beaufort"],
+      "Sarawak": ["Kuching", "Miri", "Sibu", "Bintulu", "Samarahan", "Sri Aman", "Limbang", "Kapit"],
+      "Selangor": ["Shah Alam", "Petaling Jaya", "Subang Jaya", "Klang", "Kajang", "Ampang", "Puchong", "Rawang", "Bangi", "Cyberjaya", "Sepang", "Cheras"],
+      "Terengganu": ["Kuala Terengganu", "Kemaman", "Dungun", "Marang", "Besut", "Setiu", "Hulu Terengganu"],
+      "WP Kuala Lumpur": ["Bukit Bintang", "Cheras", "Kepong", "Setapak", "Wangsa Maju", "Sentul", "Bangsar", "Mont Kiara", "Brickfields", "Titiwangsa"],
+      "WP Labuan": ["Victoria", "Rancha-Rancha", "Patau-Patau"],
+      "WP Putrajaya": ["Presint 1", "Presint 2", "Presint 8", "Presint 9", "Presint 11", "Presint 14", "Presint 15", "Presint 16", "Presint 18"]
+    };
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const stateSelect = document.getElementById('id_state');   // Django 產生的 state select
+      const citySelect = document.getElementById('id_city_select');
+
+      if (!stateSelect || !citySelect) return;
+
+      // 如果是「編輯」情況，後端會傳入已選的 city，這裡記下來
+      const preselectedCity = "{{ form.city.value|default:'' }}";
+
+      function fillCities(state, selectCity) {
+        // 清空現有選項（保留第一個提示）
+        citySelect.innerHTML = '<option value="">-- Select city / area --</option>';
+
+        const cities = STATE_CITIES[state] || [];
+        cities.forEach(function (c) {
+          const opt = document.createElement('option');
+          opt.value = c;
+          opt.textContent = c;
+          if (selectCity && c === selectCity) {
+            opt.selected = true;
+          }
+          citySelect.appendChild(opt);
+        });
+      }
+
+      // 初始：用目前 state 填一次（編輯時會自動選回 city）
+      fillCities(stateSelect.value, preselectedCity);
+
+      // 切換 state 時，重新填 city
+      stateSelect.addEventListener('change', function () {
+        fillCities(stateSelect.value, '');
+      });
+    });
+  </script>
+
 </body>
 </html>

@@ -76,23 +76,40 @@
       {% if rooms or units %}
         <ul class="list-group list-group-flush">
           {% for room in rooms %}
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            <div>
-              <div class="listing-item-title">
-                {{ room.title }}
-                <span class="badge bg-info ms-1">Room</span>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <div class="listing-item-title">
+                  {{ room.title }}
+                  <span class="badge bg-info ms-1">Room</span>
+                </div>
+                <div class="listing-item-sub">
+                  {{ room.state }}{% if room.city %} · {{ room.city }}{% endif %} · RM {{ room.rent }}/month
+                </div>
               </div>
-              <div class="listing-item-sub">
-                {{ room.state }}{% if room.city %} · {{ room.city }}{% endif %} · RM {{ room.rent }}/month
+
+              <div class="text-end">
+                {% if room.available %}
+                  <span class="badge bg-success">Available</span>
+                {% else %}
+                  <span class="badge bg-secondary">Not available</span>
+                {% endif %}
+
+                <div class="mt-2">
+                  <a href="{% url 'room_edit' room.id %}" class="btn btn-sm btn-outline-dark">Edit</a>
+
+                  <form method="post" action="{% url 'room_toggle_available' room.id %}" class="d-inline">
+                    {% csrf_token %}
+                    {% if room.available %}
+                      <button class="btn btn-sm btn-outline-secondary">Set Unavailable</button>
+                    {% else %}
+                      <button class="btn btn-sm btn-outline-success">Set Available</button>
+                    {% endif %}
+                  </form>
+                </div>
               </div>
-            </div>
-            {% if room.available %}
-              <span class="badge bg-success">Available</span>
-            {% else %}
-              <span class="badge bg-secondary">Not available</span>
-            {% endif %}
-          </li>
-          {% endfor %}
+            </li>
+            {% endfor %}
+
 
           {% for unit in units %}
           <li class="list-group-item d-flex justify-content-between align-items-center">

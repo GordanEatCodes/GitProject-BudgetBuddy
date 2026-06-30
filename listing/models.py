@@ -185,7 +185,7 @@ class Unit(models.Model):
     bedrooms = models.CharField(max_length=4, choices=BEDROOM_CHOICES)
     bathrooms = models.CharField(max_length=4, choices=BATHROOM_CHOICES)
 
-    # Strategies
+    # Strategies / Amenities
     near_mrt = models.BooleanField(default=False)
     near_lrt = models.BooleanField(default=False)
     near_ktm = models.BooleanField(default=False)
@@ -198,6 +198,9 @@ class Unit(models.Model):
     near_mall = models.BooleanField(default=False)
     near_shop_lots = models.BooleanField(default=False)
     near_convenience_store = models.BooleanField(default=False)
+    oku_friendly = models.BooleanField(default=False)
+    multi_purpose_hall = models.BooleanField(default=False)
+    playground = models.BooleanField(default=False)
 
     # Utilities
     has_aircond = models.BooleanField(default=False)
