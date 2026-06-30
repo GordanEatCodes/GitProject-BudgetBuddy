@@ -1,0 +1,95 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Support Inbox — Budget Buddy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+ 
+  <link rel= "stylesheet" href="{% static "css/agent_inbox.css" %}" />
+
+  <link rel="apple-touch-icon" sizes="180x180" href= "{% static "images/apple-touch-icon.png" %}"/>
+  <link rel="icon" type="image/png" sizes="32x32" href=" {% static "images/favicon-32x32.png" %}"/>
+  <link rel="icon" type="image/png" sizes="16x16" href=" {% static "images/favicon-16x16.png" %}"/>  
+  <link rel="manifest" href=" {% static "images/site.webmanifest" %}" />
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="brand">
+    <a class="brand-name">Budget Buddy</a>
+  </div>
+
+  <!-- Unassigned -->
+  <div class="card">
+    <a href="{% url 'dashboard' %}" class="card-exit" title="Exit">&#x2715;</a>
+    <div class="card-header">
+      <span class="card-title">Unassigned chats</span>
+      <span class="badge {% if not unassigned %}muted{% endif %}">{{ unassigned|length }}</span>
+    </div>
+
+    <div class="chat-list">
+      {% for chat in unassigned %}
+        <div class="chat-item">
+          <div class="chat-avatar">
+            {{ chat.display_name|slice:":1"|upper }}
+          </div>
+          <div class="chat-info">
+            <div class="chat-name">
+              {{ chat.display_name}}
+            </div>
+            <div class="chat-meta">
+              Chat #{{ chat.id }} &middot; {{ chat.last_message_at|date:"d M, H:i" }}
+            </div>
+          </div>
+          <a class="btn-action" href="{% url 'support:agent_claim' chat.id %}">Claim</a>
+        </div>
+      {% empty %}
+        <div class="empty-state">
+          <div class="empty-icon">&#x2714;</div>
+          <p>No unassigned chats right now</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- My chats -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">My chats</span>
+      <span class="badge {% if not my_chats %}muted{% endif %}">{{ my_chats|length }}</span>
+    </div>
+
+    <div class="chat-list">
+      {% for chat in my_chats %}
+        <div class="chat-item">
+          <div class="chat-avatar">
+            {{ chat.display_name|slice:":1"|upper }}
+          </div>
+          <div class="chat-info">
+            <div class="chat-name">
+              {{ chat.display_name }}
+              <span class="agent-tag">Claimed</span>
+            </div>
+            <div class="chat-meta">
+              Chat #{{ chat.id }} &middot; {{ chat.last_message_at|date:"d M, H:i" }}
+            </div>
+          </div>
+          <a class="btn-action outline" href="{% url 'support:agent_chat' chat.id %}">Open</a>
+        </div>
+      {% empty %}
+        <div class="empty-state">
+          <div class="empty-icon">&#x1F4AC;</div>
+          <p>You have no active chats</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,470 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">My Summary</h2>
+        <p class="text-muted mb-0">
+            View a summary of your roommate posts, applications, saved posts, and recent activities.
+        </p>
+    </div>
+
+    <div>
+        <a href="{% url 'add_roommate' %}" class="btn btn-primary">
+            + Create Post
+        </a>
+
+        <a href="{% url 'roommate_list' %}" class="btn btn-outline-secondary">
+            Browse Posts
+        </a>
+    </div>
+</div>
+
+
+<div class="alert alert-info shadow-sm">
+    <strong>How to use this page:</strong>
+    Create a roommate post, wait for students to apply, accept suitable applicants, and use messages to discuss details.
+</div>
+
+
+<div class="row mb-4">
+
+    <div class="col-md-3 mb-3">
+        <div class="card p-3 shadow-sm text-center h-100">
+            <h3 class="mb-1">{{ total_posts }}</h3>
+            <p class="text-muted mb-0">My Posts</p>
+            <small class="text-muted">Roommate posts created by you</small>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card p-3 shadow-sm text-center h-100">
+            <h3 class="mb-1">{{ open_posts_count }}</h3>
+            <p class="text-muted mb-0">Open Posts</p>
+            <small class="text-muted">Posts still accepting applications</small>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card p-3 shadow-sm text-center h-100">
+            <h3 class="mb-1">{{ pending_received_count }}</h3>
+            <p class="text-muted mb-0">Pending Received</p>
+            <small class="text-muted">Applications waiting for your decision</small>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card p-3 shadow-sm text-center h-100">
+            <h3 class="mb-1">{{ pending_my_applications_count }}</h3>
+            <p class="text-muted mb-0">My Pending Applications</p>
+            <small class="text-muted">Posts you applied for</small>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card p-3 shadow-sm text-center h-100">
+            <h3 class="mb-1">{{ saved_posts_count }}</h3>
+            <p class="text-muted mb-0">Saved Posts</p>
+            <small class="text-muted">Roommate posts saved for later</small>
+        </div>
+    </div>
+
+</div>
+
+
+<div class="card p-4 mb-4 shadow-sm">
+    <h4>Quick Actions</h4>
+
+    <p class="text-muted">
+        Choose what you want to do next.
+    </p>
+
+    <div class="d-flex flex-wrap gap-2">
+
+        <a href="{% url 'add_roommate' %}" class="btn btn-primary">
+            + Create Roommate Post
+        </a>
+
+        <a href="{% url 'roommate_list' %}" class="btn btn-outline-dark">
+            Browse Roommate Posts
+        </a>
+
+        <a href="{% url 'saved_roommate_posts' %}" class="btn btn-outline-primary">
+            View Saved Posts
+        </a>
+
+        <a href="{% url 'applications_received' %}" class="btn btn-outline-success">
+            Applications Received
+            {% if pending_received_count > 0 %}
+                <span class="badge bg-danger">{{ pending_received_count }}</span>
+            {% endif %}
+        </a>
+
+        <a href="{% url 'my_roommate_applications' %}" class="btn btn-outline-warning">
+            My Applications
+            {% if pending_my_applications_count > 0 %}
+                <span class="badge bg-danger">{{ pending_my_applications_count }}</span>
+            {% endif %}
+        </a>
+
+    </div>
+</div>
+
+
+<div class="card p-4 mb-4 shadow-sm">
+    <h4>Roommate Process Guide</h4>
+
+    <p class="text-muted">
+        Follow these steps to use the roommate feature.
+    </p>
+
+    <div class="row">
+
+        <div class="col-md-3 mb-3">
+            <div class="border rounded p-3 h-100">
+                <h5>1. Create Post</h5>
+                <p class="text-muted mb-0">
+                    Add your location, budget, lifestyle preferences, and unit details.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="border rounded p-3 h-100">
+                <h5>2. Receive Applications</h5>
+                <p class="text-muted mb-0">
+                    Other students can apply to your roommate post.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="border rounded p-3 h-100">
+                <h5>3. Accept / Reject</h5>
+                <p class="text-muted mb-0">
+                    Review applicants and choose suitable roommates.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="border rounded p-3 h-100">
+                <h5>4. Message</h5>
+                <p class="text-muted mb-0">
+                    Chat with applicants to discuss rental and roommate details.
+                </p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<hr>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h3>My Roommate Posts</h3>
+        <p class="text-muted mb-0">
+            These are the posts you created.
+        </p>
+    </div>
+
+    <a href="{% url 'add_roommate' %}" class="btn btn-sm btn-primary">
+        + Add New Post
+    </a>
+</div>
+
+{% for post in user_posts %}
+
+<div class="card p-3 mb-3 shadow-sm">
+
+    <div class="d-flex justify-content-between align-items-start">
+
+        <div>
+            <h4 class="mb-1">{{ post.title }}</h4>
+
+            <p class="text-muted mb-1">
+                📍 {{ post.location }} | 💰 RM {{ post.budget }} per person
+            </p>
+        </div>
+
+        <div>
+            {% if post.post_status == 'open' %}
+                <span class="badge bg-success">Open</span>
+            {% elif post.post_status == 'full' %}
+                <span class="badge bg-warning text-dark">Full</span>
+            {% else %}
+                <span class="badge bg-secondary">Closed</span>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <p class="mt-2">{{ post.description }}</p>
+
+    <div class="alert alert-light border mb-2">
+        <strong>Roommate Slots:</strong>
+        Needed {{ post.needed_roommates }} |
+        Accepted {{ post.accepted_roommates_count }} |
+        Remaining {{ post.remaining_roommates_needed }}
+    </div>
+
+    <div class="mt-2">
+
+        <a href="{% url 'roommate_detail' post.id %}" class="btn btn-sm btn-dark">
+            View Details
+        </a>
+
+        <a href="{% url 'applications_received' %}" class="btn btn-sm btn-primary">
+            View Applications
+        </a>
+
+        <a href="{% url 'match_roommates' post.id %}" class="btn btn-sm btn-info">
+            Match
+        </a>
+
+        <a href="{% url 'edit_roommate' post.id %}" class="btn btn-sm btn-warning">
+            Edit
+        </a>
+
+        {% if post.post_status == 'open' %}
+
+            <form method="POST" action="{% url 'close_roommate_post' post.id %}" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-secondary">
+                    Close Post
+                </button>
+            </form>
+
+        {% elif post.post_status == 'closed' %}
+
+            <form method="POST" action="{% url 'reopen_roommate_post' post.id %}" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-success">
+                    Reopen Post
+                </button>
+            </form>
+
+        {% elif post.post_status == 'full' %}
+
+            <button class="btn btn-sm btn-warning" disabled>
+                Post Full
+            </button>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% empty %}
+
+<div class="card p-4 text-center shadow-sm">
+    <h5>You have not created any roommate posts yet.</h5>
+
+    <p class="text-muted">
+        Create your first post so other students can apply to become your roommate.
+    </p>
+
+    <a href="{% url 'add_roommate' %}" class="btn btn-primary">
+        + Create Roommate Post
+    </a>
+</div>
+
+{% endfor %}
+
+
+<hr>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h3>Recent Applications Received</h3>
+        <p class="text-muted mb-0">
+            These are students who applied to your posts.
+        </p>
+    </div>
+
+    <a href="{% url 'applications_received' %}" class="btn btn-sm btn-outline-success">
+        View All
+    </a>
+</div>
+
+{% for app in received_applications %}
+
+<div class="card p-3 mb-3 shadow-sm">
+
+    <h5>{{ app.roommate_post.title }}</h5>
+
+    <p class="mb-1">
+        <strong>Applicant:</strong> {{ app.applicant.username }}
+    </p>
+
+    <p>
+        <strong>Status:</strong>
+
+        {% if app.status == 'accepted' %}
+            <span class="badge bg-success">Accepted</span>
+        {% elif app.status == 'rejected' %}
+            <span class="badge bg-danger">Rejected</span>
+        {% else %}
+            <span class="badge bg-warning text-dark">Pending</span>
+        {% endif %}
+    </p>
+
+    <a href="{% url 'application_detail' app.id %}" class="btn btn-sm btn-dark">
+        Open Message
+    </a>
+
+</div>
+
+{% empty %}
+
+<div class="card p-3 mb-3 shadow-sm">
+    <p class="text-muted mb-0">
+        No applications received yet. When someone applies to your post, it will appear here.
+    </p>
+</div>
+
+{% endfor %}
+
+
+<hr>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h3>My Recent Applications</h3>
+        <p class="text-muted mb-0">
+            These are roommate posts you applied for.
+        </p>
+    </div>
+
+    <a href="{% url 'my_roommate_applications' %}" class="btn btn-sm btn-outline-warning">
+        View All
+    </a>
+</div>
+
+{% for app in my_applications %}
+
+<div class="card p-3 mb-3 shadow-sm">
+
+    <h5>{{ app.roommate_post.title }}</h5>
+
+    <p class="mb-1">
+        <strong>Coordinator:</strong>
+
+        {% if app.roommate_post.created_by %}
+            {{ app.roommate_post.created_by.username }}
+        {% else %}
+            Unknown
+        {% endif %}
+    </p>
+
+    <p>
+        <strong>Status:</strong>
+
+        {% if app.status == 'accepted' %}
+            <span class="badge bg-success">Accepted</span>
+        {% elif app.status == 'rejected' %}
+            <span class="badge bg-danger">Rejected</span>
+        {% else %}
+            <span class="badge bg-warning text-dark">Pending</span>
+        {% endif %}
+    </p>
+
+    <a href="{% url 'application_detail' app.id %}" class="btn btn-sm btn-dark">
+        Open Message
+    </a>
+
+</div>
+
+{% empty %}
+
+<div class="card p-3 mb-3 shadow-sm">
+    <p class="text-muted mb-0">
+        You have not applied to any roommate posts yet.
+    </p>
+</div>
+
+{% endfor %}
+
+
+<hr>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h3>Recent Saved Posts</h3>
+        <p class="text-muted mb-0">
+            Posts you saved for later.
+        </p>
+    </div>
+
+    <a href="{% url 'saved_roommate_posts' %}" class="btn btn-sm btn-outline-primary">
+        View All
+    </a>
+</div>
+
+{% for favourite in saved_posts %}
+
+<div class="card p-3 mb-3 shadow-sm">
+
+    <div class="d-flex justify-content-between align-items-start">
+
+        <div>
+            <h5>{{ favourite.roommate_post.title }}</h5>
+
+            <p class="text-muted mb-1">
+                📍 {{ favourite.roommate_post.location }} |
+                💰 RM {{ favourite.roommate_post.budget }} per person
+            </p>
+        </div>
+
+        <div>
+            {% if favourite.roommate_post.post_status == 'open' %}
+                <span class="badge bg-success">Open</span>
+            {% elif favourite.roommate_post.post_status == 'full' %}
+                <span class="badge bg-warning text-dark">Full</span>
+            {% else %}
+                <span class="badge bg-secondary">Closed</span>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <p>{{ favourite.roommate_post.description }}</p>
+
+    <p class="text-muted">
+        Saved on: {{ favourite.created_at|date:"d M Y, h:i A" }}
+    </p>
+
+    <a href="{% url 'roommate_detail' favourite.roommate_post.id %}" class="btn btn-sm btn-dark">
+        View Details
+    </a>
+
+    <a href="{% url 'match_roommates' favourite.roommate_post.id %}" class="btn btn-sm btn-info">
+        Match
+    </a>
+
+    <form method="POST" action="{% url 'toggle_favourite' favourite.roommate_post.id %}" class="d-inline">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.path }}">
+
+        <button type="submit" class="btn btn-sm btn-outline-danger">
+            Remove Saved
+        </button>
+    </form>
+
+</div>
+
+{% empty %}
+
+<div class="card p-3 mb-3 shadow-sm">
+    <p class="text-muted mb-0">
+        You have not saved any roommate posts yet.
+    </p>
+</div>
+
+{% endfor %}
+
+{% endblock %}

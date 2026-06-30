@@ -1,11 +1,90 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>About Us - Budget Buddy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="apple-touch-icon" sizes="180x180" href= "{% static "images/apple-touch-icon.png" %}"/>
+  <link rel="icon" type="image/png" sizes="32x32" href=" {% static "images/favicon-32x32.png" %}"/>
+  <link rel="icon" type="image/png" sizes="16x16" href=" {% static "images/favicon-16x16.png" %}"/>  
+  <link rel="manifest" href=" {% static "images/site.webmanifest" %}" />
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/about.css' %}" />
+
 </head>
 <body>
 
+  <div class="page-wrapper">
+
+    <!-- ══ HEADER ══ -->
+    <header>
+      <a class="logo-wrap" href="/" data-name="Logo">
+        <img alt="Budget Buddy Logo" src="{% static 'images/LOGO.png' %}" />
+      </a>
+    </header>
+
+    <!-- ══ ABOUT HERO ══ -->
+<section class="hero about-hero">
+
+  <div class="about-heading-block">
+    <span class="eyebrow">Team</span>
+    <h1 class="about-headline">The team behind<br>Budget Buddy</h1>
+    <p class="about-subheadline">Three students building a simpler way for university<br>students to find housing and roommates.</p>
+  </div>
+
+  <div class="team-grid">
+
+    <!-- Developer 1 — replace photo, name, role, bio -->
+    <div class="team-card">
+      <div class="card-photo-wrap">
+        <img src="{% static 'images/an.jpg' %}" alt="Developer One" />
+      </div>
+      <div class="card-band">
+        <span class="card-number">REN AN</span>
+      </div>
+      <div class="card-body">
+        <h3 class="card-role">Roommates Matching Developer</h3>
+        <p class="card-bio">Matches students with roommates based on preferences and lifestyle</p>
+      </div>
+    </div>
+
+    <!-- Developer 2 — raised card, replace photo, name, role, bio -->
+    <div class="team-card team-card--featured">
+      <div class="card-photo-wrap">
+        <img src="{% static 'images/MYGD.jpg' %}" alt="Developer Two" />
+      </div>
+      <div class="card-band">
+        <span class="card-number">GORDAN</span>
+      </div>
+      <div class="card-body">
+        <h3 class="card-role">User Interface Developer</h3>
+        <p class="card-bio">Overall development of Budget Buddy and ensures seamless integration</p>
+      </div>
+    </div>
+
+    <!-- Developer 3 — replace photo, name, role, bio -->
+    <div class="team-card">
+      <div class="card-photo-wrap">
+        <img src="{% static 'images/zhekai.jpg' %}" alt="Developer Three" />
+      </div>
+      <div class="card-band">
+        <span class="card-number">ZHE KAI</span>
+      </div>
+      <div class="card-body">
+        <h3 class="card-role">Rental Management Developer</h3>
+        <p class="card-bio">Manages the rental listing functionality and managing housing options.</p>
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+  </div>
 </body>
 </html>

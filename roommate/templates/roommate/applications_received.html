@@ -1,0 +1,237 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Applications Received</h2>
+        <p class="text-muted mb-0">
+            Review applications submitted to your roommate posts and manage each applicant's status.
+        </p>
+    </div>
+
+    <div>
+        <a href="{% url 'roommate_dashboard' %}" class="btn btn-secondary">
+            My Summary
+        </a>
+
+        <a href="{% url 'roommate_list' %}" class="btn btn-secondary">
+            Back to Posts
+        </a>
+    </div>
+</div>
+
+
+<div class="alert alert-info shadow-sm">
+    <strong>How to use this page:</strong>
+    Check each applicant's message, accept suitable roommates, reject unsuitable applications, or undo your decision by setting the application back to pending.
+</div>
+
+
+<div class="card p-3 mb-4 shadow-sm">
+    <h5>Status Guide</h5>
+
+    <div class="d-flex flex-wrap gap-2 mt-2">
+
+        <span class="badge bg-warning text-dark">
+            Pending
+        </span>
+        <span class="text-muted me-3">
+            Waiting for your decision
+        </span>
+
+        <span class="badge bg-success">
+            Accepted
+        </span>
+        <span class="text-muted me-3">
+            Applicant has been accepted
+        </span>
+
+        <span class="badge bg-danger">
+            Rejected
+        </span>
+        <span class="text-muted">
+            Application was rejected
+        </span>
+
+    </div>
+</div>
+
+
+{% for app in applications %}
+
+<div class="card p-4 mb-4 shadow-sm">
+
+    <div class="d-flex justify-content-between align-items-start">
+
+        <div>
+            <h3 class="mb-1">{{ app.roommate_post.title }}</h3>
+
+            <p class="text-muted mb-0">
+                Application submitted by <strong>{{ app.applicant.username }}</strong>
+            </p>
+        </div>
+
+        <div class="text-end">
+            {% if app.status == 'accepted' %}
+                <span class="badge bg-success fs-6">Accepted</span>
+            {% elif app.status == 'rejected' %}
+                <span class="badge bg-danger fs-6">Rejected</span>
+            {% else %}
+                <span class="badge bg-warning text-dark fs-6">Pending</span>
+            {% endif %}
+
+            <br>
+
+            <small class="text-muted">
+                Applied on:<br>
+                {{ app.created_at|date:"d M Y, h:i A" }}
+            </small>
+        </div>
+
+    </div>
+
+
+    <hr>
+
+
+    <div class="row mb-3">
+
+        <div class="col-md-4 mb-3">
+            <div class="border rounded p-3 h-100">
+                <strong>Applicant</strong>
+                <p class="text-muted mb-0 mt-2">
+                    {{ app.applicant.username }}
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="border rounded p-3 h-100">
+                <strong>Roommate Post</strong>
+                <p class="text-muted mb-0 mt-2">
+                    {{ app.roommate_post.title }}
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="border rounded p-3 h-100">
+                <strong>Post Status</strong>
+                <p class="mb-0 mt-2">
+                    {% if app.roommate_post.post_status == 'open' %}
+                        <span class="badge bg-success">Open</span>
+                    {% elif app.roommate_post.post_status == 'full' %}
+                        <span class="badge bg-warning text-dark">Full</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Closed</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="card p-3 mb-3 bg-light border">
+        <strong>Applicant Message</strong>
+
+        {% if app.message %}
+            <p class="mb-0 mt-2">
+                {{ app.message }}
+            </p>
+        {% else %}
+            <p class="text-muted mb-0 mt-2">
+                No message was provided by this applicant.
+            </p>
+        {% endif %}
+    </div>
+
+
+    <div class="alert alert-light border">
+
+        {% if app.status == 'pending' %}
+            This application is waiting for your decision. You can accept or reject the applicant.
+        {% elif app.status == 'accepted' %}
+            This applicant has been accepted. You can undo the acceptance if you change your mind.
+        {% elif app.status == 'rejected' %}
+            This application was rejected. You can set it back to pending if needed.
+        {% endif %}
+
+    </div>
+
+
+    <div class="d-flex flex-wrap gap-2">
+
+        <a href="{% url 'application_detail' app.id %}" class="btn btn-sm btn-dark">
+            Open Message
+        </a>
+
+        <a href="{% url 'roommate_detail' app.roommate_post.id %}" class="btn btn-sm btn-info">
+            View Post
+        </a>
+
+
+        {% if app.status == 'pending' %}
+
+            <form method="POST" action="{% url 'update_application_status' app.id 'accepted' %}" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-success">
+                    Accept Applicant
+                </button>
+            </form>
+
+            <form method="POST" action="{% url 'update_application_status' app.id 'rejected' %}" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-danger">
+                    Reject Applicant
+                </button>
+            </form>
+
+        {% elif app.status == 'accepted' %}
+
+            <form method="POST" action="{% url 'update_application_status' app.id 'pending' %}" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-warning">
+                    Undo Accept
+                </button>
+            </form>
+
+        {% elif app.status == 'rejected' %}
+
+            <form method="POST" action="{% url 'update_application_status' app.id 'pending' %}" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-warning">
+                    Set Back to Pending
+                </button>
+            </form>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% empty %}
+
+<div class="card p-5 text-center shadow-sm">
+
+    <h4>No applications received yet.</h4>
+
+    <p class="text-muted">
+        When students apply to your roommate posts, their applications will appear here.
+    </p>
+
+    <a href="{% url 'roommate_dashboard' %}" class="btn btn-secondary">
+        Back to Dashboard
+    </a>
+
+    <a href="{% url 'roommate_list' %}" class="btn btn-primary">
+        Browse Roommate Posts
+    </a>
+
+</div>
+
+{% endfor %}
+
+{% endblock %}

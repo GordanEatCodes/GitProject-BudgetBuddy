@@ -1,0 +1,228 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Us — Budget Buddy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  
+  <link rel= "stylesheet" href="{% static "css/contact_us.css" %}"/>
+
+  <link rel="apple-touch-icon" sizes="180x180" href= "{% static "images/apple-touch-icon.png" %}"/>
+  <link rel="icon" type="image/png" sizes="32x32" href=" {% static "images/favicon-32x32.png" %}"/>
+  <link rel="icon" type="image/png" sizes="16x16" href=" {% static "images/favicon-16x16.png" %}"/>  
+  <link rel="manifest" href=" {% static "images/site.webmanifest" %}" />
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="brand">
+    <a class="brand-name">Budget Buddy</a>
+  </div>
+
+  <div class="card">
+    <a href="{% url 'dashboard' %}" class="card-exit" title="Exit">&#x2715;</a>
+    <p class="card-title">Contact Us</p>
+    <p class="card-sub">We're here to help you find the right place and the right people. Reach out any way that works for you.</p>
+
+    <ul class="contact-list">
+      <li class="contact-item">
+        <div class="c-icon">&#x2316;</div>
+        <div>
+          <div class="c-label">Location</div>
+          <div class="c-value">Multimedia University, Cyberjaya</div>
+        </div>
+      </li>
+      <li class="contact-item">
+        <div class="c-icon">&#x25F7;</div>
+        <div>
+          <div class="c-label">Support Hours</div>
+          <div class="c-value">Mon – Fri, 9 am – 6 pm</div>
+        </div>
+      </li>
+    </ul>
+
+    <hr class="divider" />
+
+    <div class="chat-cta">
+      <div class="chat-cta-text">
+        <p>Live chat</p>
+        <p>Talk to a support agent right now</p>
+      </div>
+      <button class="btn-start" id="open-chat-btn">Start chat</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── CHAT WIDGET ── -->
+<div id="chat-widget">
+
+  <div id="chat-window">
+
+    <div class="cw-header">
+      <div class="cw-avatar">&#x1F3A7;</div>
+      <div class="cw-info">
+        <div class="cw-name">Budget Buddy Support</div>
+        <div class="cw-status"><span class="cw-dot"></span> Online</div>
+      </div>
+      <button class="cw-close" id="cw-close-btn" title="Minimise">&times;</button>
+    </div>
+
+    <div class="cw-messages" id="cw-messages">
+      {% if chat_history %}
+        {% for msg in chat_history %}
+          <div class="bubble {{ msg.sender_type }}">
+            <span class="bubble-text">{{ msg.content }}</span>
+            <span class="bubble-time">{{ msg.created_at|date:"H:i" }}</span>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="cw-empty" id="cw-empty">
+          <div class="cw-empty-icon">&#x1F44B;</div>
+          <p>Hi there! Send us a message and a support agent will reply shortly.</p>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="cw-closed" id="cw-closed">
+      This chat session has been closed. Refresh the page to start a new one.
+    </div>
+
+    <div class="cw-input-row" id="cw-input-row">
+      <input class="cw-input" type="text" id="cw-input" placeholder="Type a message…" autocomplete="off" />
+      <button class="cw-send" id="cw-send-btn" title="Send">&#x27A4;</button>
+    </div>
+
+  </div>
+
+  <button id="chat-fab" title="Chat with us">
+    &#x1F4AC;
+    <span id="chat-badge"></span>
+  </button>
+
+</div>
+
+<script>
+  const SESSION_ID = {{ chat_session.id }};
+  const SEND_URL   = "{% url 'support:send_message' chat_session.id %}";
+  const POLL_URL   = "{% url 'support:poll_messages' chat_session.id %}";
+
+  let lastId      = {% if chat_history %}{{ chat_history.last.id|default:0 }}{% else %}0{% endif %};
+  let unread      = 0;
+  let isOpen      = false;
+  let isClosed    = false;
+  {% if chat_session.status == 'closed' %}isClosed = true;{% endif %}
+
+  const win    = document.getElementById('chat-window');
+  const fab    = document.getElementById('chat-fab');
+  const badge  = document.getElementById('chat-badge');
+  const msgs   = document.getElementById('cw-messages');
+  const input  = document.getElementById('cw-input');
+  const empty  = document.getElementById('cw-empty');
+  const closed = document.getElementById('cw-closed');
+  const inputRow = document.getElementById('cw-input-row');
+
+  function csrfToken() {
+    const v = `; ${document.cookie}`;
+    const p = v.split('; csrftoken=');
+    return p.length === 2 ? p.pop().split(';').shift() : '';
+  }
+
+  function scrollBottom() { msgs.scrollTop = msgs.scrollHeight; }
+
+  function addBubble(msg) {
+    if (empty) empty.style.display = 'none';
+    const wrap = document.createElement('div');
+    wrap.className = `bubble ${msg.sender_type}`;
+    const t = document.createElement('span');
+    t.className = 'bubble-text';
+    t.textContent = msg.content;
+    const ts = document.createElement('span');
+    ts.className = 'bubble-time';
+    ts.textContent = msg.created_at;
+    wrap.appendChild(t);
+    wrap.appendChild(ts);
+    msgs.appendChild(wrap);
+    scrollBottom();
+  }
+
+  function openChat() {
+    win.classList.add('open');
+    fab.innerHTML = '&times;<span id="chat-badge"></span>';
+    isOpen = true;
+    unread = 0;
+    document.getElementById('chat-badge').classList.remove('show');
+    scrollBottom();
+    if (!isClosed) input.focus();
+  }
+
+  function closeChat() {
+    win.classList.remove('open');
+    fab.innerHTML = '&#x1F4AC;<span id="chat-badge"></span>';
+    isOpen = false;
+  }
+
+  function markClosed() {
+    isClosed = true;
+    closed.classList.add('show');
+    inputRow.style.display = 'none';
+  }
+
+  fab.addEventListener('click', () => isOpen ? closeChat() : openChat());
+  document.getElementById('cw-close-btn').addEventListener('click', closeChat);
+  document.getElementById('open-chat-btn').addEventListener('click', openChat);
+
+  async function sendMessage() {
+    const content = input.value.trim();
+    if (!content || isClosed) return;
+    input.value = '';
+    try {
+      const res = await fetch(SEND_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': csrfToken() },
+        body: `content=${encodeURIComponent(content)}`,
+      });
+      if (res.ok) {
+        const msg = await res.json();
+        lastId = msg.id;
+        addBubble(msg);
+      }
+    } catch (e) { console.error(e); }
+  }
+
+  document.getElementById('cw-send-btn').addEventListener('click', sendMessage);
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage(); });
+
+  async function poll() {
+    try {
+      const res = await fetch(`${POLL_URL}?after=${lastId}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      data.messages.forEach(msg => {
+        addBubble(msg);
+        lastId = msg.id;
+        if (!isOpen && msg.sender_type === 'agent') {
+          unread++;
+          const b = document.getElementById('chat-badge');
+          if (b) { b.textContent = unread; b.classList.add('show'); }
+        }
+      });
+      if (data.status === 'closed' && !isClosed) markClosed();
+    } catch (e) { console.error(e); }
+  }
+
+  if (isClosed) {
+    markClosed();
+  } else {
+    setInterval(poll, 3000);
+  }
+
+  scrollBottom();
+</script>
+</body>
+</html>

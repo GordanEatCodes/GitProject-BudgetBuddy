@@ -2,19 +2,161 @@
 
 {% block content %}
 
-<h2>Edit Roommate</h2>
+<h2>✏️ Edit Roommate</h2>
 
-<form method="POST" class="p-4 border rounded shadow-sm">
+<form method="POST" class="mt-3 p-4 border rounded shadow-sm bg-light">
     {% csrf_token %}
 
-    <input type="text" name="title" value="{{ post.title }}" class="form-control mb-2">
-    <textarea name="description" class="form-control mb-2">{{ post.description }}</textarea>
+    <label>Title</label>
+    <input type="text" name="title" value="{{ post.title }}"
+           class="form-control mb-2" required>
 
-    <input type="text" name="location" value="{{ post.location }}" class="form-control mb-2">
-    <input type="number" name="budget" value="{{ post.budget }}" class="form-control mb-2">
-    <input type="text" name="contact" value="{{ post.contact }}" class="form-control mb-2">
+    <label>Description</label>
+    <textarea name="description"
+              class="form-control mb-2" required>{{ post.description }}</textarea>
 
-    <button type="submit" class="btn btn-primary">Update</button>
+    <label>Location</label>
+    <input type="text" name="location" value="{{ post.location }}"
+           class="form-control mb-2" required>
+
+    <label>Budget</label>
+    <input type="number" name="budget" value="{{ post.budget }}"
+           class="form-control mb-2" min="0" required>
+
+    <label>Contact</label>
+    <input type="text" name="contact" value="{{ post.contact }}"
+           class="form-control mb-3" required>
+
+    <hr>
+
+    <h5 class="mt-4">Lifestyle Preferences</h5>
+
+    <label>Cleanliness</label>
+    <select name="cleanliness" class="form-control mb-2">
+        <option value="any" {% if post.cleanliness == 'any' %}selected{% endif %}>Any</option>
+        <option value="very_clean" {% if post.cleanliness == 'very_clean' %}selected{% endif %}>Very Clean</option>
+        <option value="normal" {% if post.cleanliness == 'normal' %}selected{% endif %}>Normal</option>
+        <option value="messy" {% if post.cleanliness == 'messy' %}selected{% endif %}>Messy</option>
+    </select>
+
+    <label>Sleep Schedule</label>
+    <select name="sleep_schedule" class="form-control mb-2">
+        <option value="any" {% if post.sleep_schedule == 'any' %}selected{% endif %}>Any</option>
+        <option value="early_sleep" {% if post.sleep_schedule == 'early_sleep' %}selected{% endif %}>Early Sleep</option>
+        <option value="late_sleep" {% if post.sleep_schedule == 'late_sleep' %}selected{% endif %}>Late Sleep</option>
+        <option value="flexible" {% if post.sleep_schedule == 'flexible' %}selected{% endif %}>Flexible</option>
+    </select>
+
+    <label>Study Preference</label>
+    <select name="study_preference" class="form-control mb-2">
+        <option value="any" {% if post.study_preference == 'any' %}selected{% endif %}>Any</option>
+        <option value="quiet" {% if post.study_preference == 'quiet' %}selected{% endif %}>Quiet Environment</option>
+        <option value="normal" {% if post.study_preference == 'normal' %}selected{% endif %}>Normal</option>
+        <option value="social" {% if post.study_preference == 'social' %}selected{% endif %}>Social Environment</option>
+    </select>
+
+    <label>Smoking Preference</label>
+    <select name="smoking" class="form-control mb-2">
+        <option value="any" {% if post.smoking == 'any' %}selected{% endif %}>Any</option>
+        <option value="no_smoking" {% if post.smoking == 'no_smoking' %}selected{% endif %}>No Smoking</option>
+        <option value="smoking_ok" {% if post.smoking == 'smoking_ok' %}selected{% endif %}>Smoking OK</option>
+    </select>
+
+<label>Pet Preference</label>
+
+<select name="pets" class="form-control mb-3">
+    <option value="any"
+        {% if post.pets == 'any' %}selected{% endif %}>
+        Any
+    </option>
+
+    <option value="no_pets"
+        {% if post.pets == 'no_pets' %}selected{% endif %}>
+        No Pets
+    </option>
+
+    <option value="pets_ok"
+        {% if post.pets == 'pets_ok' %}selected{% endif %}>
+        Pets OK
+    </option>
+</select>
+
+<label>
+    Pet Details
+    <small class="text-muted">(Optional)</small>
+</label>
+
+<input
+    type="text"
+    name="preferred_pet"
+    class="form-control mb-2"
+    value="{{ post.preferred_pet }}"
+    placeholder="Examples: Cats, Small Dogs, Rabbit, Fish, No reptiles">
+
+<small class="text-muted">
+    Describe the pets you are comfortable living with or any pet-related preferences.
+</small>
+
+<hr>
+
+    <button type="submit" class="btn btn-primary">
+        Update
+    </button>
+
+    <a href="{% url 'roommate_list' %}" class="btn btn-secondary">
+        Cancel
+    </a>
+
+    <hr>
+
+<h5>Unit / Sharing Details</h5>
+
+<label>Unit Name</label>
+<input 
+    type="text" 
+    name="unit_name" 
+    class="form-control mb-2"
+    value="{{ post.unit_name }}">
+
+<label>Total Rent</label>
+<input 
+    type="number" 
+    step="0.01"
+    name="total_rent" 
+    class="form-control mb-2"
+    value="{{ post.total_rent|default:'' }}">
+
+<label>Total People Sharing</label>
+<input 
+    type="number" 
+    name="total_people" 
+    class="form-control mb-2"
+    value="{{ post.total_people }}"
+    min="1">
+
+<label>Needed Roommates</label>
+<input 
+    type="number" 
+    name="needed_roommates" 
+    class="form-control mb-2"
+    value="{{ post.needed_roommates }}"
+    min="1">
+
+<label>Post Status</label>
+<select name="post_status" class="form-control mb-3">
+    <option value="open" {% if post.post_status == 'open' %}selected{% endif %}>
+        Open
+    </option>
+
+    <option value="full" {% if post.post_status == 'full' %}selected{% endif %}>
+        Full
+    </option>
+
+    <option value="closed" {% if post.post_status == 'closed' %}selected{% endif %}>
+        Closed
+    </option>
+</select>
+
 </form>
 
 {% endblock %}

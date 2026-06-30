@@ -6,7 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Create account</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
+  <link rel="apple-touch-icon" sizes="180x180" href= "{% static "images/apple-touch-icon.png" %}"/>
+  <link rel="icon" type="image/png" sizes="32x32" href=" {% static "images/favicon-32x32.png" %}"/>
+  <link rel="icon" type="image/png" sizes="16x16" href=" {% static "images/favicon-16x16.png" %}"/>  
+  <link rel="manifest" href=" {% static "images/site.webmanifest" %}" />
   <link rel="stylesheet" href="{% static 'css/register.css' %}"/>
+  <link rel="stylesheet" href="{% static 'css/base.css' %}"/>
 </head>
 <body>
 <div class="wrap">
@@ -25,28 +30,24 @@
   </div>
   <div class="step-label">STEP 1 OF 5 — CREATE ACCOUNT</div>
 
-  <div class="card">
+  <div class="card"> 
+    <a href="{% url 'home' %}" class="card-exit" title="Exit">&#x2715;</a>
+      
     <div class="card-title">Create Your Account</div>
     <div class="card-sub">Takes about 2 minutes to set up</div>
-
+      
     <div class="server-error" id="serverErr"></div>
-
-    <!--
-      ACTION points to your backend register route.
-      On success your backend does: res.redirect('/setup/role')
-      On error your backend re-renders this page with an error message.
-    -->
     <form id="RegistrationForm" action="{% url 'register' %}" method="POST">
       {% csrf_token %}
 
       <div class="field">
-        <label for="fullname">Full name</label>
+        <label for="fullname">Full Name</label>
         <input type="text" id="fullname" name="fullname" placeholder="Johnny Cage" autocomplete="name"/>
         <div class="field-error" id="nameErr">Please enter your full name</div>
       </div>
 
       <div class="field">
-        <label for="email">Email address</label>
+        <label for="email">Email Address</label>
         <input type="email" id="email" name="email" placeholder="your@email.com" autocomplete="email"/>
         <div class="field-error" id="emailErr">Enter a valid email address</div>
       </div>
@@ -55,7 +56,7 @@
         <label for="password1">Password</label>
         <div class="pw-wrap">
           <input type="password" id="password1" name="password1" placeholder="At least 8 characters" autocomplete="new-password"/>
-          <button type="button" class="pw-toggle" id="pwToggle">show</button>
+          <button type="button" class="pw-toggle" id="pwToggle1">show</button>
         </div>
         <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
         <div class="strength-label" id="strengthLabel"></div>
@@ -66,6 +67,7 @@
         <label for="password2">Confirm password</label>
         <div class="pw-wrap">
           <input type="password" id="password2" name="password2" placeholder="Same password again" autocomplete="new-password"/>
+          <button type="button" class="pw-toggle" id="pwToggle2">show</button>
         </div>
         <div class="field-error" id="confirmErr">Passwords do not match</div>
       </div>
@@ -81,18 +83,25 @@
 
 <script>
   const form = document.getElementById('RegistrationForm');
-  const nameEl = document.getElementById('username');
+  const nameEl = document.getElementById('fullname');
   const emailEl = document.getElementById('email');
   const pwEl = document.getElementById('password1');
   const confirmEl = document.getElementById('password2');
-  const pwToggle = document.getElementById('pwToggle');
+  const pwToggle1 = document.getElementById('pwToggle1');
+  const pwToggle2 = document.getElementById('pwToggle2');
   const strengthFill = document.getElementById('strengthFill');
   const strengthLabel = document.getElementById('strengthLabel');
 
-  pwToggle.addEventListener('click', () => {
+  pwToggle1.addEventListener('click', () => {
     const show = pwEl.type === 'password';
     pwEl.type = show ? 'text' : 'password';
-    pwToggle.textContent = show ? 'hide' : 'show';
+    pwToggle1.textContent = show ? 'hide' : 'show';
+  });
+
+  pwToggle2.addEventListener('click', () => {
+    const show = confirmEl.type === 'password';
+    confirmEl.type = show ? 'text' : 'password';
+    pwToggle2.textContent = show ? 'hide' : 'show';
   });
 
   function scorePassword(pw) {
@@ -104,6 +113,13 @@
     if (/[^A-Za-z0-9]/.test(pw)) score++;
     return score;
   }
+
+  pwEl.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !confirmEl.value.trim()) {
+      e.preventDefault();
+      confirmEl.focus();
+    }
+  });
 
   pwEl.addEventListener('input', () => {
     const score = scorePassword(pwEl.value);

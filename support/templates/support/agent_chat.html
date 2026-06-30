@@ -1,0 +1,166 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chat #{{ chat_session.id }} — Budget Buddy Support</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+ 
+  <link rel= "stylesheet" href= "{% static "css/agent_chat.css" %}" />
+
+  <link rel="apple-touch-icon" sizes="180x180" href= "{% static "images/apple-touch-icon.png" %}"/>
+  <link rel="icon" type="image/png" sizes="32x32" href=" {% static "images/favicon-32x32.png" %}"/>
+  <link rel="icon" type="image/png" sizes="16x16" href=" {% static "images/favicon-16x16.png" %}"/>  
+  <link rel="manifest" href=" {% static "images/site.webmanifest" %}" />
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="brand">
+    <a class="brand-name">Budget Buddy</a>
+  </div>
+
+  <a class="back-link" href="{% url 'support:agent_inbox' %}">
+    <span class="back-arrow">&#8592;</span> Back to inbox
+  </a>
+
+  <div class="chat-card">
+
+    <!-- Header -->
+    <div class="chat-header">
+      <div class="header-avatar">
+        {% if chat_session.user %}{{ chat_session.user.username|slice:":1"|upper }}{% else %}?{% endif %}
+      </div>
+      <div class="header-info">
+        <div class="header-name">
+          {% if chat_session.user %}{{ chat_session.user.username }}{% else %}{{chat_session.display_name}}{% endif %}
+        </div>
+        <div class="header-meta">Chat #{{ chat_session.id }} &middot; {{ chat_session.last_message_at|date:"d M, H:i" }}</div>
+      </div>
+      {% if chat_session.status == 'open' %}
+        <a class="btn-close-chat" href="{% url 'support:agent_close_chat' chat_session.id %}">End chat</a>
+      {% endif %}
+    </div>
+
+    <!-- Messages -->
+    <div class="chat-messages" id="chat-messages">
+      {% if chat_history %}
+        {% for msg in chat_history %}
+          <div class="bubble {{ msg.sender_type }}">
+            <span class="bubble-label">
+              {% if msg.sender_type == 'agent' %}You{% elif msg.sender_type == 'visitor' %}{% if chat_session.user %}{{ chat_session.user.username }}{% else %}Guest{% endif %}{% endif %}
+            </span>
+            <span class="bubble-text">{{ msg.content }}</span>
+            <span class="bubble-time">{{ msg.created_at|date:"H:i" }}</span>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty-state" id="empty-state">
+          <div class="empty-icon">&#x1F4AC;</div>
+          <p>No messages yet. The visitor will appear here once they send a message.</p>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Closed banner -->
+    {% if chat_session.status == 'closed' %}
+      <div class="closed-banner">This chat session has been closed.</div>
+    {% endif %}
+
+    <!-- Input -->
+    {% if chat_session.status == 'open' %}
+      <div class="chat-input-row" id="input-row">
+        <input class="chat-input" type="text" id="chat-input" placeholder="Reply to visitor…" autocomplete="off" />
+        <button class="send-btn" id="send-btn" title="Send">&#x27A4;</button>
+      </div>
+    {% endif %}
+
+  </div>
+
+</div>
+
+<script>
+  const SESSION_ID = {{ chat_session.id }};
+  const SEND_URL   = "{% url 'support:send_message' chat_session.id %}";
+  const POLL_URL   = "{% url 'support:poll_messages' chat_session.id %}";
+  const IS_OPEN    = {% if chat_session.status == 'open' %}true{% else %}false{% endif %};
+
+  let lastId = {% if chat_history %}{{ chat_history.last.id|default:0 }}{% else %}0{% endif %};
+
+  const msgArea  = document.getElementById('chat-messages');
+  const inputEl  = document.getElementById('chat-input');
+  const sendBtn  = document.getElementById('send-btn');
+  const emptyEl  = document.getElementById('empty-state');
+
+  function csrfToken() {
+    const v = `; ${document.cookie}`;
+    const p = v.split('; csrftoken=');
+    return p.length === 2 ? p.pop().split(';').shift() : '';
+  }
+
+  function scrollBottom() { msgArea.scrollTop = msgArea.scrollHeight; }
+
+  function addBubble(msg) {
+    if (emptyEl) emptyEl.style.display = 'none';
+    const wrap  = document.createElement('div');
+    wrap.className = `bubble ${msg.sender_type}`;
+
+    const label = document.createElement('span');
+    label.className = 'bubble-label';
+    label.textContent = msg.sender_type === 'agent' ? 'You' : '{% if chat_session.user %}{{ chat_session.user.username }}{% else %}Guest{% endif %}';
+
+    const text = document.createElement('span');
+    text.className = 'bubble-text';
+    text.textContent = msg.content;
+
+    const time = document.createElement('span');
+    time.className = 'bubble-time';
+    time.textContent = msg.created_at;
+
+    wrap.appendChild(label);
+    wrap.appendChild(text);
+    wrap.appendChild(time);
+    msgArea.appendChild(wrap);
+    scrollBottom();
+  }
+
+  async function sendMessage() {
+    if (!inputEl) return;
+    const content = inputEl.value.trim();
+    if (!content) return;
+    inputEl.value = '';
+    try {
+      const res = await fetch(SEND_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': csrfToken() },
+        body: `content=${encodeURIComponent(content)}`,
+      });
+      if (res.ok) {
+        const msg = await res.json();
+        lastId = msg.id;
+        addBubble(msg);
+      }
+    } catch (e) { console.error(e); }
+  }
+
+  if (sendBtn) sendBtn.addEventListener('click', sendMessage);
+  if (inputEl) inputEl.addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage(); });
+
+  async function poll() {
+    try {
+      const res = await fetch(`${POLL_URL}?after=${lastId}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      data.messages.forEach(msg => { addBubble(msg); lastId = msg.id; });
+    } catch (e) { console.error(e); }
+  }
+
+  if (IS_OPEN) setInterval(poll, 3000);
+  scrollBottom();
+</script>
+</body>
+</html>

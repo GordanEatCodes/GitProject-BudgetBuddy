@@ -67,6 +67,16 @@
     nav.main-nav a:hover {
       opacity: 0.6;
     }
+
+    .user-greeting {
+      font-weight: 500;
+      font-size: 16px;
+      letter-spacing: -0.08px;
+      color: #000000 !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
  
     /* ════════════════════════════
        HERO
@@ -77,6 +87,7 @@
       display: flex;
       align-items: stretch;
       width: 100%;
+      min-height: 0;
     }
  
     .hero-content {
@@ -111,6 +122,10 @@
       line-height: 1.45;
     }
  
+    .buttons a {
+      text-decoration: none;
+    }
+    
     .buttons {
       display: flex;
       flex-wrap: wrap;
@@ -135,9 +150,10 @@
       width: 195px;
       cursor: pointer;
       line-height: 1.45;
+      text-decoration: none;
     }
  
-    .btn-primary:hover { background: #222; }
+    .btn-primary:hover { background: #b4b4b4; }
  
     .btn-secondary {
       display: flex;
@@ -155,6 +171,7 @@
       border-radius: 12px;
       cursor: pointer;
       line-height: 1.45;
+      text-decoration: none;
     }
  
     .btn-secondary:hover { border-color: rgba(0, 0, 0, 0.35); }
@@ -172,7 +189,8 @@
       inset: 0;
       width: 100%;
       height: 100%;
-      object-fit: contain;
+      object-fit: cover;
+      object-position: center;
       pointer-events: none;
     }
  

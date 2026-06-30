@@ -9,34 +9,43 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet" />
   
+  <link rel="apple-touch-icon" sizes="180x180" href= "{% static "images/apple-touch-icon.png" %}"/>
+  <link rel="icon" type="image/png" sizes="32x32" href=" {% static "images/favicon-32x32.png" %}"/>
+  <link rel="icon" type="image/png" sizes="16x16" href=" {% static "images/favicon-16x16.png" %}"/>  
+  <link rel="manifest" href=" {% static "images/site.webmanifest" %}" />
   <link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
 </head>
 <body>
- 
+
   <div class="page-wrapper">
  
     <!-- ══ HEADER ══ -->
     <header>
-      <a class="logo-wrap" href="/" data-name="Logo">
+      <a class="logo-wrap" href="{% url 'dashboard' %}" data-name="Logo">
         <img alt="Budget Buddy Logo" src="{% static 'images/LOGO.png' %}" />
       </a>
+
+      <nav class="main-nav">
+        <span class="user-greeting">Hello, {{ display_name }}</span>
+        <a href="{% url 'logout' %}">Logout</a>
+      </nav>
     </header>
  
     <!-- ══ HERO ══ -->
     <section class="hero">
       <div class="hero-content">
         <div class="text-block">
-          <h1 class="headline">Enter the world<br>where finding<br>roommates and house is easy</h1>
+          <h1 class="headline">Enter the world<br>where finding<br>roommates and <br>house is easy</h1>
           <p class="subheadline">A centralized platform for university students<br>to find housing and connect with roommates.</p>
         </div>
         <div class="buttons">
-          <a href=""><button class="btn-primary">RENT HOUSE</button></a>
-          <a href=""><button class="btn-secondary">FIND ROOMMATES</button></a>
+          <a href="{% url 'choose' %}"><button class="btn-primary">RENT HOUSE</button></a>
+          <a href="{% url 'roommate_list' %}"><button class="btn-secondary">FIND ROOMMATES</button></a>
         </div>
       </div>
  
       <div class="hero-image" aria-hidden="true">
-        <img alt="" src="{% static 'images/Home.jpg' %}" />
+        <img alt="" src="{% static 'images/roommates02.jpg' %}" />
       </div>
     </section>
  
@@ -52,13 +61,17 @@
         <nav class="footer-nav">
           <div class="footer-col">
             <span class="footer-col-header">Company</span>
-            <a class="col-link" href="/about/">About Us</a>
-            <a class="col-link" href="/contact/">Contact Us</a>
+            <a class="col-link" href="{% url 'about_dash' %}">About Us</a>
+            {% if user.is_staff %}
+              <a class="col-link" href="{% url 'support:agent_inbox' %}">Contact Us</a>
+            {% else %}
+              <a class="col-link" href="{% url 'support:contact_dash' %}">Contact Us</a>
+            {% endif %}
           </div>
           <div class="footer-col">
             <span class="footer-col-header">Features</span>
-            <a class="col-link" href="#">Rent House</a>
-            <a class="col-link" href="#">Find Roommates</a>
+            <a class="col-link" href="">Rent House</a>
+            <a class="col-link" href="{% url 'roommate_list' %}">Find Roommates</a>
           </div>
         </nav>
  
