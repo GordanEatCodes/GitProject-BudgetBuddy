@@ -91,7 +91,7 @@
                 {% if room.available %}
                   <span class="badge bg-success">Available</span>
                 {% else %}
-                  <span class="badge bg-secondary">Not available</span>
+                  <span class="badge bg-warning">Not available</span>
                 {% endif %}
 
                 <div class="mt-2">
@@ -128,7 +128,7 @@
               {% if unit.available %}
                 <span class="badge bg-success">Available</span>
               {% else %}
-                <span class="badge bg-secondary">Not available</span>
+                <span class="badge bg-warning">Not available</span>
               {% endif %}
 
               <div class="mt-2">
@@ -175,7 +175,7 @@
                   <span class="badge
                     {% if req.status == 'pending' %}bg-warning text-dark
                     {% elif req.status == 'accepted' %}bg-success
-                    {% else %}bg-secondary{% endif %}">
+                    {% else %}bg-danger{% endif %}">
                     {{ req.get_status_display }}
                   </span>
 
@@ -224,7 +224,7 @@
                   <span class="badge
                     {% if req.status == 'pending' %}bg-warning text-dark
                     {% elif req.status == 'accepted' %}bg-success
-                    {% else %}bg-secondary{% endif %}">
+                    {% else %}bg-danger{% endif %}">
                     {{ req.get_status_display }}
                   </span>
 

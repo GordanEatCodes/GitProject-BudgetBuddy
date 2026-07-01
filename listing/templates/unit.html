@@ -15,7 +15,7 @@
       overflow: hidden;
       box-shadow: 0 8px 20px rgba(160, 120, 80, 0.18);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
-      height: 100%;
+      height: auto;
     }
     .unit-card:hover {
       transform: translateY(-6px);
@@ -53,6 +53,10 @@
       font-size: 0.85rem;
       padding-inline: 18px;
     }
+    .section-heading {
+      color: #7a6652;
+      font-weight: 700;
+    }
   </style>
 </head>
 <body>
@@ -78,22 +82,100 @@
   </button>
 
   <div class="container py-4">
-    <!-- Top band with color + search (你可以之後擴充 filter) -->
+    <!-- 頂端顏色區 + 搜尋 + Filter 按鈕 -->
     <div class="mb-4 p-3 rounded-3" style="background-color:#d2a679;">
       <h2 class="mb-3 text-white">Find a Unit</h2>
 
-      <form method="get" class="d-flex gap-2">
-        <input
-          type="text"
-          name="q"
-          class="form-control"
-          placeholder="Search by title, city, size..."
-          value="{{ query|default:'' }}"
-        >
-        <button class="btn btn-dark" type="submit">
-          <i class="bi bi-search"></i>
+      <div class="d-flex gap-2 mb-3">
+        <form method="get" class="flex-grow-1 d-flex gap-2">
+          <input
+            type="text"
+            name="q"
+            class="form-control"
+            placeholder="Search by title, city, size..."
+            value="{{ query|default:'' }}"
+          >
+          <button class="btn btn-dark" type="submit">
+            <i class="bi bi-search"></i>
+          </button>
+        </form>
+        
+        <button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#filterPanel" aria-expanded="false">
+          <i class="bi bi-funnel me-2"></i> Filter
         </button>
-      </form>
+      </div>
+
+      <!-- Filter Panel (摺疊) -->
+      <div class="collapse" id="filterPanel">
+        <div class="card card-body bg-white">
+          <form method="get" class="row g-3">
+            <input type="hidden" name="q" value="{{ query|default:'' }}">
+            
+            <div class="col-md-6">
+              <label class="form-label">State</label>
+              <select name="state" class="form-select">
+                <option value="">-- All States --</option>
+                <option value="Johor" {% if state == 'Johor' %}selected{% endif %}>Johor</option>
+                <option value="Kedah" {% if state == 'Kedah' %}selected{% endif %}>Kedah</option>
+                <option value="Kelantan" {% if state == 'Kelantan' %}selected{% endif %}>Kelantan</option>
+                <option value="Melaka" {% if state == 'Melaka' %}selected{% endif %}>Melaka</option>
+                <option value="Negeri Sembilan" {% if state == 'Negeri Sembilan' %}selected{% endif %}>Negeri Sembilan</option>
+                <option value="Pahang" {% if state == 'Pahang' %}selected{% endif %}>Pahang</option>
+                <option value="Perak" {% if state == 'Perak' %}selected{% endif %}>Perak</option>
+                <option value="Perlis" {% if state == 'Perlis' %}selected{% endif %}>Perlis</option>
+                <option value="Pulau Pinang" {% if state == 'Pulau Pinang' %}selected{% endif %}>Pulau Pinang</option>
+                <option value="Sabah" {% if state == 'Sabah' %}selected{% endif %}>Sabah</option>
+                <option value="Sarawak" {% if state == 'Sarawak' %}selected{% endif %}>Sarawak</option>
+                <option value="Selangor" {% if state == 'Selangor' %}selected{% endif %}>Selangor</option>
+                <option value="Terengganu" {% if state == 'Terengganu' %}selected{% endif %}>Terengganu</option>
+                <option value="WP Kuala Lumpur" {% if state == 'WP Kuala Lumpur' %}selected{% endif %}>WP Kuala Lumpur</option>
+                <option value="WP Labuan" {% if state == 'WP Labuan' %}selected{% endif %}>WP Labuan</option>
+                <option value="WP Putrajaya" {% if state == 'WP Putrajaya' %}selected{% endif %}>WP Putrajaya</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Unit Type</label>
+              <select name="unit_type" class="form-select">
+                <option value="">-- All Types --</option>
+                <option value="Studio" {% if unit_type == 'Studio' %}selected{% endif %}>Studio</option>
+                <option value="Apartment" {% if unit_type == 'Apartment' %}selected{% endif %}>Apartment</option>
+                <option value="Condo" {% if unit_type == 'Condo' %}selected{% endif %}>Condo</option>
+                <option value="Terrace" {% if unit_type == 'Terrace' %}selected{% endif %}>Terrace</option>
+                <option value="Semi-D" {% if unit_type == 'Semi-D' %}selected{% endif %}>Semi-D</option>
+                <option value="Bungalow" {% if unit_type == 'Bungalow' %}selected{% endif %}>Bungalow</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Bedrooms</label>
+              <select name="bedrooms" class="form-select">
+                <option value="">-- All --</option>
+                <option value="1" {% if bedrooms == '1' %}selected{% endif %}>1</option>
+                <option value="2" {% if bedrooms == '2' %}selected{% endif %}>2</option>
+                <option value="3-5" {% if bedrooms == '3-5' %}selected{% endif %}>3–5</option>
+                <option value="5+" {% if bedrooms == '5+' %}selected{% endif %}>5+</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Bathrooms</label>
+              <select name="bathrooms" class="form-select">
+                <option value="">-- All --</option>
+                <option value="1" {% if bathrooms == '1' %}selected{% endif %}>1</option>
+                <option value="2" {% if bathrooms == '2' %}selected{% endif %}>2</option>
+                <option value="3-5" {% if bathrooms == '3-5' %}selected{% endif %}>3–5</option>
+                <option value="5+" {% if bathrooms == '5+' %}selected{% endif %}>5+</option>
+              </select>
+            </div>
+
+            <div class="col-12">
+              <button type="submit" class="btn btn-primary">Apply Filter</button>
+              <a href="{% url 'unit_list' %}" class="btn btn-outline-secondary">Clear</a>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
 
     {% if query %}
@@ -102,6 +184,14 @@
       </p>
     {% endif %}
 
+    <!-- Search Results 標題 -->
+    {% if units %}
+      <h4 class="mb-4 section-heading">
+        <i class="bi bi-house-check me-2"></i> Search Results
+      </h4>
+    {% endif %}
+
+    <!-- 主要結果列表 -->
     <div class="row row-cols-1 row-cols-md-3 g-4">
       {% for unit in units %}
       <div class="col">
@@ -125,8 +215,9 @@
 
             <p class="unit-price mb-1">RM {{ unit.rent }}/month</p>
             <p class="unit-location mb-2">
-              <i class="bi bi-geo-alt me-1"></i>{{ unit.state }} · {{ unit.location_detail }}
+              <i class="bi bi-geo-alt me-1"></i>{{ unit.state }} {% if unit.city %} · {{ unit.city }}{% endif %} {% if unit.location_detail %} · {{ unit.location_detail }}{% endif %}
             </p>
+            
 
             <div class="badge-group">
               <span class="badge-char">{{ unit.bedrooms }} BR</span>
@@ -134,9 +225,6 @@
 
               {% if unit.size %}
                 <span class="badge-char">Size: {{ unit.size }}</span>
-              {% endif %}
-              {% if unit.furnished %}
-                <!-- 如果有 furnished 之類欄位，這裏可以顯示，沒有就刪掉 -->
               {% endif %}
               {% if unit.has_aircond %}
                 <span class="badge-char">Aircond</span>
@@ -166,6 +254,77 @@
         <p>No units found{% if query %} for "{{ query }}"{% endif %}.</p>
       {% endfor %}
     </div>
+
+    <!-- Other Results Section -->
+    {% if other_results %}
+      <div class="mt-5 pt-4 border-top">
+        <h4 class="mb-4 section-heading">
+          <i class="bi bi-stars me-2"></i> You Might Also Like
+        </h4>
+        
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+          {% for unit in other_results %}
+          <div class="col">
+            <div class="unit-card h-100" style="opacity: 0.9;">
+              {% if unit.image %}
+                <img src="{{ unit.image.url }}" class="unit-img" alt="Unit photo">
+              {% endif %}
+
+              <div class="p-3">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <h5 class="unit-title mb-0">{{ unit.title }}</h5>
+
+                  {% if unit.available %}
+                    <span class="badge bg-success availability-badge">
+                      <i class="bi bi-check-circle me-1"></i> Available
+                    </span>
+                  {% else %}
+                    <span class="badge bg-secondary availability-badge">Not available</span>
+                  {% endif %}
+                </div>
+
+                <p class="unit-price mb-1">RM {{ unit.rent }}/month</p>
+                <p class="unit-location mb-2">
+                  <i class="bi bi-geo-alt me-1"></i>{{ unit.state }} {% if unit.city %} · {{ unit.city }}{% endif %} {% if unit.location_detail %} · {{ unit.location_detail }}{% endif %}
+                </p>
+
+                <div class="badge-group">
+                  <span class="badge-char">{{ unit.bedrooms }} BR</span>
+                  <span class="badge-char">{{ unit.bathrooms }} BA</span>
+
+                  {% if unit.size %}
+                    <span class="badge-char">Size: {{ unit.size }}</span>
+                  {% endif %}
+                  {% if unit.has_aircond %}
+                    <span class="badge-char">Aircond</span>
+                  {% endif %}
+                  {% if unit.has_wifi %}
+                    <span class="badge-char">Wi‑Fi</span>
+                  {% endif %}
+                  {% if unit.cooking_allowed %}
+                    <span class="badge-char">Cooking allowed</span>
+                  {% endif %}
+                  {% if unit.near_mrt or unit.near_lrt or unit.near_ktm %}
+                    <span class="badge-char badge-char-success">
+                      <i class="bi bi-train-front-fill me-1"></i>Near train
+                    </span>
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="card-footer bg-transparent border-0 pb-3 px-3">
+                <a href="{% url 'unit_detail' unit.id %}" class="btn btn-outline-dark card-footer-btn">
+                  More detail
+                </a>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
   </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

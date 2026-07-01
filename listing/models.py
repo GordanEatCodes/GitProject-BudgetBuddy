@@ -159,13 +159,15 @@ class Unit(models.Model):
     title = models.CharField(max_length=200)
     rent = models.DecimalField(max_digits=10, decimal_places=2)
 
-    # Location
+        # Location
     state = models.CharField(max_length=30, choices=MALAYSIA_STATES)
+    city = models.CharField(max_length=100, blank=True)  # e.g. "Shah Alam", "Kuching"
     location_detail = models.CharField(
         max_length=255,
         blank=True,
-        help_text="City / area / address details"
+        help_text="Apartment name / street / extra details"
     )
+
 
     # Unit type + floor
     unit_type = models.CharField(max_length=20, choices=UNIT_TYPES)
@@ -173,19 +175,21 @@ class Unit(models.Model):
 
 
     BEDROOM_CHOICES = [
-        ('1', '1'),
-        ('2', '2'),
-        ('3-5', '3–5'),
-        ('5+', '5+'),
+        (1, '1'),
+        (2, '2'),
+        (3, '3'),
+        (4, '4'),
+        (5, '5'),
     ]
     BATHROOM_CHOICES = [
-        ('1', '1'),
-        ('2', '2'),
-        ('3-5', '3–5'),
-        ('5+', '5+'),
+        (1, '1'),
+        (2, '2'),
+        (3, '3'),
+        (4, '4'),
+        (5, '5'),
     ]
-    bedrooms = models.CharField(max_length=4, choices=BEDROOM_CHOICES)
-    bathrooms = models.CharField(max_length=4, choices=BATHROOM_CHOICES)
+    bedrooms = models.IntegerField(choices=BEDROOM_CHOICES)
+    bathrooms = models.IntegerField(choices=BATHROOM_CHOICES)
 
     # Strategies / Amenities
     near_mrt = models.BooleanField(default=False)
