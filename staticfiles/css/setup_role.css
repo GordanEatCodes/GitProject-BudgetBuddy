@@ -1,0 +1,198 @@
+ *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #F7F5F0;
+      --card: #FFFFFF;
+      --text: #000000;
+      --muted: #6B6B6B;
+      --border: #E0DDD6;
+      --accent: #000000;
+      --accent-light: #EAF2ED;
+      --tenant-bg: #EAF3FE;
+      --tenant-border: #378ADD;
+      --tenant-text: #0C447C;
+      --owner-bg: #F0EBF8;
+      --owner-border: #7F77DD;
+      --owner-text: #3C3489;
+      --radius: 12px;
+    }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .wrap { width: 100%; max-width: 480px; }
+    .brand {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .brand-name {
+      font-family: 'DM Serif Display', serif;
+      font-size: 26px;
+      color:#000000;
+    }
+    .progress-dots {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 24px;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+    .dot.active { background: var(--accent); }
+
+    .step-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+      margin-top: -16px;
+      margin-bottom: 24px;
+      letter-spacing: 0.05em;
+    }
+    .page-title {
+      font-size: 22px;
+      font-weight: 500;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .page-sub {
+      font-size: 14px;
+      color: var(--muted);
+      text-align: center;
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
+
+    /*
+      THE ROLE FORM:
+      action="/setup/role" sends POST with role='tenant' or role='owner'
+      Backend saves role, then redirects to /setup/profile
+    */
+    .role-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .role-card {
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 16px;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s, transform 0.1s;
+      text-align: center;
+      background: var(--card);
+      position: relative;
+    }
+    .role-card:hover { transform: translateY(-2px); }
+    .role-card input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .role-card.tenant:has(input:checked) {
+      border-color: var(--tenant-border);
+      background: var(--tenant-bg);
+    }
+    .role-card.owner:has(input:checked) {
+      border-color: var(--owner-border);
+      background: var(--owner-bg);
+    }
+    .role-icon {
+      font-size: 36px;
+      margin-bottom: 12px;
+      display: block;
+      line-height: 1;
+    }
+    .role-name {
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+    .role-desc {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .tenant:has(input:checked) .role-name { color: var(--tenant-text); }
+    .owner:has(input:checked) .role-name { color: var(--owner-text); }
+    .check-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: #fff;
+      transition: background 0.15s;
+    }
+    .tenant:has(input:checked) .check-badge { background: var(--tenant-border); }
+    .owner:has(input:checked) .check-badge { background: var(--owner-border); }
+
+    .features {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      min-height: 80px;
+    }
+    .features-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      margin-bottom: 10px;
+    }
+    .feature-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .feature-list li {
+      font-size: 13px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .feature-list li::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 13px;
+      background: var(--accent);
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-primary:active { transform: scale(0.99); }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }

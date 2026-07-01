@@ -1,0 +1,122 @@
+/* verify_otp.css — styles specific to the OTP verification page */
+
+/* Progress dots — matches register.html style */
+.progress-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 24px;
+}
+.dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+}
+.dot.done   { background: var(--accent); opacity: 0.45; }
+.dot.active { background: var(--accent); }
+
+.step-label {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+  margin-top: -16px;
+  margin-bottom: 24px;
+  letter-spacing: 0.05em;
+}
+
+/* Card tweaks */
+.card-title { font-size: 20px; font-weight: 500; margin-bottom: 6px; }
+.card-sub   {
+  font-size: 14px; color: var(--muted);
+  margin-bottom: 24px; line-height: 1.6;
+}
+
+.otp-icon {
+  font-size: 36px;
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.email-highlight {
+  font-weight: 500;
+  color: var(--accent);
+}
+
+/* ── 6-box OTP input ── */
+.otp-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.otp-box {
+  width: 48px; height: 56px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: #FAFAF8;
+  text-align: center;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  caret-color: var(--accent);
+}
+.otp-box:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(45,90,61,0.10);
+  background: #fff;
+}
+.otp-box.error {
+  border-color: #E24B4A;
+  box-shadow: 0 0 0 3px rgba(226,75,74,0.10);
+}
+
+/* inline error */
+.otp-error {
+  font-size: 12px;
+  color: #E24B4A;
+  text-align: center;
+  margin-bottom: 18px;
+  display: none;
+}
+.otp-error.show { display: block; }
+
+/* server error banner */
+.server-error {
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #B91C1C;
+  margin-bottom: 20px;
+  display: none;
+}
+.server-error.show { display: block; }
+
+/* resend row */
+.resend-row {
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 18px;
+}
+.resend-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+.resend-link:hover { text-decoration: underline; }
+
+/* bottom link row */
+.link-row {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.link-row a { color: var(--accent); text-decoration: none; font-weight: 500; }
+.link-row a:hover { text-decoration: underline; }
