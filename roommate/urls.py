@@ -15,6 +15,8 @@ urlpatterns = [
     path('my-applications/', views.my_roommate_applications, name='my_roommate_applications'),
 
     path('application/<int:application_id>/', views.application_detail, name='application_detail'),
+    path('application/<int:application_id>/messages/',views.get_chat_messages,name='get_chat_messages'),
+    path('application/<int:application_id>/send/',views.send_chat_message,name='send_chat_message'),
 
     path(
         'application/<int:application_id>/cancel-accepted/',

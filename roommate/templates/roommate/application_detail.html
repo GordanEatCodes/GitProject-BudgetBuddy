@@ -12,7 +12,7 @@
 
     <div>
         <a href="{% url 'roommate_dashboard' %}" class="btn btn-secondary">
-            My Dashboard
+            My Summary
         </a>
 
         {% if user == application.roommate_post.created_by %}
@@ -287,71 +287,83 @@
 
     <hr>
 
-    {% for msg in messages %}
+   <div id="chat-box"
+     style="max-height:500px;
+            overflow-y:auto;">
 
-        {% if msg.sender == user %}
+{% for msg in messages %}
 
-            <div class="d-flex justify-content-end mb-3">
-                <div class="border rounded p-3 bg-light" style="max-width: 75%;">
-                    <strong>You</strong>
+    {% if msg.sender == user %}
 
-                    <p class="mb-1 mt-2">
-                        {{ msg.message }}
-                    </p>
+        <div class="d-flex justify-content-end mb-3">
+            <div class="border rounded p-3 bg-light" style="max-width:75%;">
+                <strong>You</strong>
 
-                    <small class="text-muted">
-                        {{ msg.created_at|date:"d M Y, h:i A" }}
-                    </small>
-                </div>
+                <p class="mb-1 mt-2">
+                    {{ msg.message }}
+                </p>
+
+                <small class="text-muted">
+                    {{ msg.created_at|date:"d M Y, h:i A" }}
+                </small>
             </div>
-
-        {% else %}
-
-            <div class="d-flex justify-content-start mb-3">
-                <div class="border rounded p-3 bg-white" style="max-width: 75%;">
-                    <strong>{{ msg.sender.username }}</strong>
-
-                    <p class="mb-1 mt-2">
-                        {{ msg.message }}
-                    </p>
-
-                    <small class="text-muted">
-                        {{ msg.created_at|date:"d M Y, h:i A" }}
-                    </small>
-                </div>
-            </div>
-
-        {% endif %}
-
-    {% empty %}
-
-        <div class="alert alert-light border text-muted">
-            No messages yet. Send the first message below.
         </div>
 
-    {% endfor %}
+    {% else %}
+
+        <div class="d-flex justify-content-start mb-3">
+            <div class="border rounded p-3 bg-white" style="max-width:75%;">
+                <strong>{{ msg.sender.username }}</strong>
+
+                <p class="mb-1 mt-2">
+                    {{ msg.message }}
+                </p>
+
+                <small class="text-muted">
+                    {{ msg.created_at|date:"d M Y, h:i A" }}
+                </small>
+            </div>
+        </div>
+
+    {% endif %}
+
+{% empty %}
+
+    <div class="alert alert-light border text-muted">
+        No messages yet.
+    </div>
+
+{% endfor %}
+
+</div>
 
 
     <hr>
 
-    <form method="POST">
-        {% csrf_token %}
+    <form id="chat-form">
 
-        <label class="form-label">
-            Send Message
-        </label>
+    {% csrf_token %}
 
-        <textarea 
-            name="message" 
-            class="form-control mb-3" 
-            rows="4"
-            placeholder="Type your message here..."
-            required></textarea>
+    <label class="form-label">
+        Send Message
+    </label>
 
-        <button type="submit" class="btn btn-primary">
-            Send Message
-        </button>
-    </form>
+    <textarea
+        id="message-input"
+        name="message"
+        class="form-control mb-3"
+        rows="3"
+        placeholder="Type a message... (Enter to send, Shift + Enter for new line)"
+        required></textarea>
+
+    <button
+        id="send-btn"
+        type="submit"
+        class="btn btn-primary">
+        Send Message
+    </button>
+
+</form>
 
 </div>
 
@@ -373,5 +385,150 @@
     </a>
 
 </div>
+
+<script>
+
+let lastMessageCount = 0;
+
+function refreshChat() {
+
+    fetch("{% url 'get_chat_messages' application.id %}")
+        .then(response => response.json())
+        .then(messages => {
+
+            let chatBox = document.getElementById("chat-box");
+
+            let html = "";
+
+            if (messages.length === 0) {
+
+                html = `
+                    <div class="alert alert-light border text-muted">
+                        No messages yet.
+                    </div>
+                `;
+
+            } else {
+
+                messages.forEach(msg => {
+
+                    if (msg.is_me) {
+
+                        html += `
+                        <div class="d-flex justify-content-end mb-3">
+                            <div class="border rounded p-3 bg-light" style="max-width:75%;">
+                                <strong>You</strong>
+
+                                <p class="mb-1 mt-2">
+                                    ${msg.message}
+                                </p>
+
+                                <small class="text-muted">
+                                    ${msg.time}
+                                </small>
+                            </div>
+                        </div>
+                        `;
+
+                    } else {
+
+                        html += `
+                        <div class="d-flex justify-content-start mb-3">
+                            <div class="border rounded p-3 bg-white" style="max-width:75%;">
+                                <strong>${msg.sender}</strong>
+
+                                <p class="mb-1 mt-2">
+                                    ${msg.message}
+                                </p>
+
+                                <small class="text-muted">
+                                    ${msg.time}
+                                </small>
+                            </div>
+                        </div>
+                        `;
+
+                    }
+
+                });
+
+            }
+
+            chatBox.innerHTML = html;
+
+            if (messages.length > lastMessageCount) {
+                 chatBox.scrollTop = chatBox.scrollHeight;
+            }
+
+            lastMessageCount = messages.length;
+
+        });
+
+}
+
+refreshChat();
+
+setInterval(refreshChat, 1000);
+
+const chatForm = document.getElementById("chat-form");
+const messageInput = document.getElementById("message-input");
+
+chatForm.addEventListener("submit", function (e) {
+
+    e.preventDefault();
+
+    const message = messageInput.value.trim();
+
+    if (!message) return;
+
+    fetch("{% url 'send_chat_message' application.id %}", {
+
+        method: "POST",
+
+        headers: {
+            "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+
+        body: new URLSearchParams({
+            message: message
+        })
+
+    })
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        if (data.success) {
+
+            messageInput.value = "";
+
+            refreshChat();
+
+            messageInput.focus();
+
+            document.getElementById("chat-box").scrollTop =
+                document.getElementById("chat-box").scrollHeight;
+
+         }
+
+    });
+
+});
+
+messageInput.addEventListener("keydown", function (e) {
+
+    if (e.key === "Enter" && !e.shiftKey) {
+
+        e.preventDefault();
+
+        chatForm.requestSubmit();
+
+    }
+
+});
+
+</script>
 
 {% endblock %}

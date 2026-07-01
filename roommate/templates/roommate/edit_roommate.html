@@ -62,12 +62,42 @@
         <option value="smoking_ok" {% if post.smoking == 'smoking_ok' %}selected{% endif %}>Smoking OK</option>
     </select>
 
-    <label>Pet Preference</label>
-    <select name="pets" class="form-control mb-3">
-        <option value="any" {% if post.pets == 'any' %}selected{% endif %}>Any</option>
-        <option value="no_pets" {% if post.pets == 'no_pets' %}selected{% endif %}>No Pets</option>
-        <option value="pets_ok" {% if post.pets == 'pets_ok' %}selected{% endif %}>Pets OK</option>
-    </select>
+<label>Pet Preference</label>
+
+<select name="pets" class="form-control mb-3">
+    <option value="any"
+        {% if post.pets == 'any' %}selected{% endif %}>
+        Any
+    </option>
+
+    <option value="no_pets"
+        {% if post.pets == 'no_pets' %}selected{% endif %}>
+        No Pets
+    </option>
+
+    <option value="pets_ok"
+        {% if post.pets == 'pets_ok' %}selected{% endif %}>
+        Pets OK
+    </option>
+</select>
+
+<label>
+    Pet Details
+    <small class="text-muted">(Optional)</small>
+</label>
+
+<input
+    type="text"
+    name="preferred_pet"
+    class="form-control mb-2"
+    value="{{ post.preferred_pet }}"
+    placeholder="Examples: Cats, Small Dogs, Rabbit, Fish, No reptiles">
+
+<small class="text-muted">
+    Describe the pets you are comfortable living with or any pet-related preferences.
+</small>
+
+<hr>
 
     <button type="submit" class="btn btn-primary">
         Update
