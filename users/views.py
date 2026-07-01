@@ -1,10 +1,12 @@
 import random
+import logging
 from urllib import request
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.shortcuts import redirect, render
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
+logger = logging.getLogger(__name__)
 
 from Budget_Buddy.settings import EMAIL_HOST_USER
 from users.models import UserProfile
@@ -87,14 +89,26 @@ def register_view(request):
             }
             print(f"DEBUG - OTP is: {otp}")  # For testing purposes, print OTP to console
             print(f"DEBUG - Sending OTP to: {form.cleaned_data['email']}")  # Debug email
-            send_mail(
-                subject='Your OTP Code for Budget Buddy Registration',
-                message=f'Your OTP code is: {otp}',
-                from_email=None,  # Use default from_email from settings
-                recipient_list=[form.cleaned_data['email']],
-            )
-            print("DEBUG - Email sent")  # Debug email sent
+
+            try:
+            
+                send_mail(
+                    subject='Your OTP Code for Budget Buddy Registration',
+                    message=f'Your OTP code is: {otp}',
+                    from_email= None,
+                    recipient_list=[form.cleaned_data['email']],
+                )
+                print("DEBUG - Email sent successfully")  # Debug email sent
+            except Exception as e:
+                logger.error(f"Failed to send registration OTP email: {e}")
+                form.add_error(None, 'Could not send OTP email. Please try again later.')
+                return render(request, 'accounts/register.html', {
+                    'form': form, 
+                    'stage': 'form'
+                    })
+            
             return redirect('register_otp')
+
     else:
         form = RegistrationForm()
 
@@ -221,15 +235,24 @@ def forgot_password_view(request):
             request.session['password_reset_otp'] = otp
             request.session['password_reset_email'] = email
             print(f"DEBUG - Password reset OTP: {otp}")  # Debug OTP
-            send_mail(
-                subject='Your OTP Code for Budget Buddy Password Reset',
-                message=f'Your OTP code is: {otp}',
-                from_email=None,
-                recipient_list=[email],
-            )
+
+            try:
+                send_mail(
+                    subject='Your OTP Code for Password Reset',
+                    message=f'Your OTP code is: {otp}',
+                    from_email= None,
+                    recipient_list=[email],
+                )
+            except Exception as e:
+                logger.error(f"Failed to send password reset OTP email: {e}")
+                form.add_error(None, 'Could not send OTP email. Please try again later.')
+                return render(request, 'accounts/forgot_password.html', {'form': form})
+            
             return redirect('reset_password_otp')
+        
     else:
         form = ForgotPasswordForm()
+
     return render(request, 'accounts/forgot_password.html', {'form': form})
         
 def reset_password_otp_view(request):
