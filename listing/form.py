@@ -15,7 +15,7 @@ class RoomForm(forms.ModelForm):
             'room_type',
             'floor_level',
             'bathroom_type',
-            'near_mrt', 'near_lrt', 'near_ktm', 'near_bus_stop', 'near_train',
+            'near_mrt', 'near_lrt', 'near_ktm', 'near_bus_stop',
             'security_24h', 'swimming_pool', 'gym_room', 'covered_carpark',
             'oku_friendly', 'multi_purpose_hall', 'playground', 'has_surau',
             'near_mini_market', 'co_living', 'extra_parking',
@@ -27,6 +27,13 @@ class RoomForm(forms.ModelForm):
             'size',
             'image',
             'available',
+            'near_mall',
+            'near_shop_lots',
+            'near_convenience_store',
+            'near_brt',
+            'has_fridge',
+
+
         ]
         widgets = {
             'rent': forms.NumberInput(attrs={'step': '1', 'min': '0'}),
@@ -84,7 +91,18 @@ class UnitForm(forms.ModelForm):
             'playground',
             'near_mall',
             'near_shop_lots',
-            'near_convenience_store',
+            'near_convenience_store',        
+            'has_surau',
+            'near_mini_market',
+            'co_living',
+            'extra_parking',
+            'has_shower',
+            'prefer_zero_deposit',
+            'prefer_move_in_immediately',
+            'prefer_pet_allowed',
+            'prefer_muslim_friendly',
+            'prefer_smoking_allowed',
+
 
             'has_aircond',
             'has_washing_machine',
@@ -105,7 +123,7 @@ class UnitForm(forms.ModelForm):
         widgets = {
             'rent': forms.NumberInput(attrs={'step': '1', 'min': '0'}),
             'size': forms.NumberInput(attrs={'step': '1', 'min': '0'}),
-            'floor_level': forms.NumberInput(attrs={'min': '0', 'placeholder':'0 for ground floor, 1, 2, ...'}),
+            'floor_level': forms.NumberInput(attrs={'min': '0', 'placeholder':'e.g., 0 for ground floor, 1, 2, ...'}),
         }
 
     def __init__(self, *args, **kwargs):

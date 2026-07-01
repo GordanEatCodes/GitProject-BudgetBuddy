@@ -169,8 +169,8 @@
 
             <hr class="my-1">
 
-            <!-- Nearby / Strategies -->
-            <div class="section-title">Nearby / Strategies</div>
+            <!-- Amenities / Nearby -->
+            <div class="section-title">Amenities / Nearby</div>
             <div class="mb-3">
               {% if unit.near_mrt %}<span class="badge-amenity">Near MRT</span>{% endif %}
               {% if unit.near_lrt %}<span class="badge-amenity">Near LRT</span>{% endif %}
@@ -181,6 +181,13 @@
               {% if unit.swimming_pool %}<span class="badge-amenity">Swimming pool</span>{% endif %}
               {% if unit.gym_room %}<span class="badge-amenity">Gym room</span>{% endif %}
               {% if unit.covered_carpark %}<span class="badge-amenity">Covered carpark</span>{% endif %}
+              {% if unit.extra_parking %}<span class="badge-amenity">Residential parking</span>{% endif %}
+              {% if unit.oku_friendly %}<span class="badge-amenity">OKU friendly</span>{% endif %}
+              {% if unit.multi_purpose_hall %}<span class="badge-amenity">Multi-purpose hall</span>{% endif %}
+              {% if unit.playground %}<span class="badge-amenity">Playground</span>{% endif %}
+              {% if unit.co_living %}<span class="badge-amenity">Co-living</span>{% endif %}
+              {% if unit.has_surau %}<span class="badge-amenity">Near surau</span>{% endif %}
+              {% if unit.near_mini_market %}<span class="badge-amenity">Near mini market</span>{% endif %}
               {% if unit.near_mall %}<span class="badge-amenity">Near shopping mall</span>{% endif %}
               {% if unit.near_shop_lots %}<span class="badge-amenity">Near shop lots</span>{% endif %}
               {% if unit.near_convenience_store %}<span class="badge-amenity">Near convenience store</span>{% endif %}
@@ -191,23 +198,27 @@
             <!-- Utilities -->
             <div class="section-title">Utilities</div>
             <div class="mb-3">
-              {% if unit.has_aircond %}<span class="badge-amenity">Aircond</span>{% endif %}
+              {% if unit.has_aircond %}<span class="badge-amenity">Air-conditioning</span>{% endif %}
               {% if unit.has_washing_machine %}<span class="badge-amenity">Washing machine</span>{% endif %}
               {% if unit.has_wifi %}<span class="badge-amenity">Wi‑Fi</span>{% endif %}
               {% if unit.cooking_allowed %}<span class="badge-amenity">Cooking allowed</span>{% endif %}
-              {% if unit.shared_bathroom %}<span class="badge-amenity">Shared bathroom</span>{% endif %}
-              {% if unit.private_bathroom %}<span class="badge-amenity">Private bathroom</span>{% endif %}
               {% if unit.has_tv %}<span class="badge-amenity">TV</span>{% endif %}
               {% if unit.has_fridge %}<span class="badge-amenity">Fridge</span>{% endif %}
+              {% if unit.shared_bathroom %}<span class="badge-amenity">Shared bathroom</span>{% endif %}
+              {% if unit.private_bathroom %}<span class="badge-amenity">Private bathroom</span>{% endif %}
+              {% if unit.has_shower %}<span class="badge-amenity">Shower</span>{% endif %}
             </div>
             
             <hr class="my-1">
 
-            <!-- Flexibility -->
-            <div class="section-title">Flexibility</div>
+            <!-- Preferences -->
+            <div class="section-title">Preferences</div>
             <div class="mb-3">
+              {% if unit.prefer_zero_deposit %}<span class="badge-amenity">Prefer zero deposit</span>{% endif %}
+              {% if unit.prefer_move_in_immediately %}<span class="badge-amenity">Prefer move-in immediately</span>{% endif %}
               {% if unit.pet_allowed %}<span class="badge-amenity">Pet allowed</span>{% endif %}
               {% if unit.smoking_allowed %}<span class="badge-amenity">Smoking allowed</span>{% endif %}
+              {% if unit.prefer_muslim_friendly %}<span class="badge-amenity">Muslim friendly</span>{% endif %}
             </div>
 
             <hr class="my-1">

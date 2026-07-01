@@ -81,7 +81,7 @@ def room_list(request):
 
     # Characteristic checkbox 篩選
     checkbox_fields = [
-        'near_mrt', 'near_lrt', 'near_ktm', 'near_bus_stop', 'near_train',
+        'near_mrt', 'near_lrt', 'near_ktm', 'near_bus_stop',
         'security_24h', 'swimming_pool', 'gym_room', 'covered_carpark',
         'oku_friendly', 'multi_purpose_hall', 'playground', 'has_surau',
         'near_mini_market', 'co_living', 'extra_parking',
@@ -167,7 +167,7 @@ def unit_list(request):
 
     # Characteristic checkbox 篩選
     checkbox_fields = [
-        'near_mrt', 'near_lrt', 'near_ktm', 'near_bus_stop', 'near_train',
+        'near_mrt', 'near_lrt', 'near_ktm', 'near_bus_stop',
         'security_24h', 'swimming_pool', 'gym_room', 'covered_carpark',
         'oku_friendly', 'multi_purpose_hall', 'playground', 'has_surau',
         'near_mini_market', 'co_living', 'extra_parking',

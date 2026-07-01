@@ -104,7 +104,7 @@ class Room(models.Model):
     near_lrt = models.BooleanField(default=False)
     near_ktm = models.BooleanField(default=False)
     near_bus_stop = models.BooleanField(default=False)
-    near_train = models.BooleanField(default=False)
+    near_brt = models.BooleanField(default=False)
     security_24h = models.BooleanField(default=False)
     swimming_pool = models.BooleanField(default=False)
     gym_room = models.BooleanField(default=False)
@@ -116,6 +116,10 @@ class Room(models.Model):
     near_mini_market = models.BooleanField(default=False)
     co_living = models.BooleanField(default=False)
     extra_parking = models.BooleanField(default=False)
+    near_mall = models.BooleanField(default=False)
+    near_shop_lots = models.BooleanField(default=False)
+    near_convenience_store = models.BooleanField(default=False)
+
 
     # Utilities
     has_aircond = models.BooleanField(default=False)
@@ -123,6 +127,7 @@ class Room(models.Model):
     has_wifi = models.BooleanField(default=False)
     cooking_allowed = models.BooleanField(default=False)
     has_tv = models.BooleanField(default=False)
+    has_fridge = models.BooleanField(default=False)
     shared_bathroom = models.BooleanField(default=False)
     private_bathroom = models.BooleanField(default=False)
     has_shower = models.BooleanField(default=True)
@@ -207,6 +212,11 @@ class Unit(models.Model):
     oku_friendly = models.BooleanField(default=False)
     multi_purpose_hall = models.BooleanField(default=False)
     playground = models.BooleanField(default=False)
+    has_surau = models.BooleanField(default=False)
+    near_mini_market = models.BooleanField(default=False)
+    co_living = models.BooleanField(default=False)
+    extra_parking = models.BooleanField(default=False)
+
 
     # Utilities
     has_aircond = models.BooleanField(default=False)
@@ -217,10 +227,18 @@ class Unit(models.Model):
     private_bathroom = models.BooleanField(default=False)
     has_tv = models.BooleanField(default=False)
     has_fridge = models.BooleanField(default=False)
+    has_shower = models.BooleanField(default=True)
+
 
     # Flexibility
     pet_allowed = models.BooleanField(default=False)
     smoking_allowed = models.BooleanField(default=False)
+    prefer_zero_deposit = models.BooleanField(default=False)
+    prefer_move_in_immediately = models.BooleanField(default=False)
+    prefer_pet_allowed = models.BooleanField(default=False)
+    prefer_muslim_friendly = models.BooleanField(default=False)
+    prefer_smoking_allowed = models.BooleanField(default=False)
+
 
     # General
     size = models.CharField(max_length=50, blank=True, null=True, help_text="e.g. 80 m²")
