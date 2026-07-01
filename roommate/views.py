@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 from .models import RoommatePost, RoommateApplication, RoommateMessage, RoommateFavourite
 from users.models import UserProfile
@@ -161,6 +162,11 @@ def add_roommate(request):
             ),
 
             created_by=request.user,
+        )
+
+        messages.success(
+           request,
+           "Roommate post created successfully!"
         )
 
         return redirect('roommate_list')
