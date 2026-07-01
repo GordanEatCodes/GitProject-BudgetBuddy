@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Owner Dashboard</title>
+  <title>Owner Page</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet" />
@@ -82,7 +82,7 @@
   <!-- Header -->
   <div class="bb-header">
     <div class="container">
-      <h2 class="mb-1">Owner Dashboard</h2>
+      <h2 class="mb-1 fw-bold">Owner Page</h2>
       <p class="mb-0">Manage your room and unit listings.</p>
     </div>
   </div>
@@ -90,7 +90,8 @@
   <div class="container pb-4">
     <!-- Your Listings -->
     <div class="bb-section mb-4">
-      <h5 class="mb-3">Your Listings</h5>
+      <h5 class="mb-3 fw-bold">Your Listings</h5>
+      <hr class="my-1">
 
       {% if rooms or units %}
         <ul class="list-group list-group-flush">
@@ -173,7 +174,7 @@
 
     <!-- Room Applications -->
     <div class="bb-section mb-4">
-      <h5 class="mb-3">Rental Applications for Your Rooms</h5>
+      <h5 class="mb-3 fw-bold">Rental Applications for Your Rooms</h5>
 
       {% if room_requests %}
         <ul class="list-group list-group-flush">
@@ -222,7 +223,7 @@
 
     <!-- Unit Applications -->
     <div class="bb-section mb-4">
-      <h5 class="mb-3">Rental Applications for Your Units</h5>
+      <h5 class="mb-3 fw-bold">Rental Applications for Your Units</h5>
 
       {% if unit_requests %}
         <ul class="list-group list-group-flush">
@@ -274,7 +275,7 @@
       <div class="col-md-6">
         <a href="{% url 'room_create' %}" class="text-decoration-none">
           <div class="bb-section text-center">
-            <h5>Add Room</h5>
+            <h5 class="fw-bold">Add Room</h5>
             <p class="text-muted mb-2">Upload a room listing for tenants to see.</p>
             <button class="btn btn-outline-dark btn-pill px-4">Create Room Listing</button>
           </div>
@@ -284,7 +285,7 @@
       <div class="col-md-6">
         <a href="{% url 'unit_create' %}" class="text-decoration-none">
           <div class="bb-section text-center">
-            <h5>Add Unit</h5>
+            <h5 class="fw-bold">Add Unit</h5>
             <p class="text-muted mb-2">Post an entire apartment or house.</p>
             <button class="btn btn-outline-dark btn-pill px-4">Create Unit Listing</button>
           </div>

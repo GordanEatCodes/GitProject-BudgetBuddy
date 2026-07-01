@@ -59,10 +59,6 @@ def room_list(request):
     房間列表頁（給租客看的列表）
     URL: /listing/rooms/
     支援搜尋 + 篩選 + 相關度排序 + 分類結果
-    
-    結果分成：
-    - exact_match: 完全符合篩選條件的房源
-    - other_results: 相關但不完全符合的房源
     """
     query = request.GET.get('q', '').strip()
     state = request.GET.get('state', '').strip()
@@ -73,10 +69,9 @@ def room_list(request):
 
     rooms = Room.objects.filter(available=True)
 
-    # 儲存原始篩選條件（用於區分 exact match）
-    filter_applied = bool(state or unit_type or floor_level or bathroom_type)
+    filter_applied = bool(state or city or unit_type or floor_level or bathroom_type)
 
-        # 基本篩選（非搜尋）
+    # 基本篩選（非位置類）
     if unit_type:
         rooms = rooms.filter(unit_type=unit_type)
     if floor_level:
@@ -84,7 +79,7 @@ def room_list(request):
     if bathroom_type:
         rooms = rooms.filter(bathroom_type=bathroom_type)
 
-    # Characteristic checkbox 篩選（有勾選才篩）
+    # Characteristic checkbox 篩選
     checkbox_fields = [
         'near_mrt', 'near_lrt', 'near_ktm', 'near_bus_stop', 'near_train',
         'security_24h', 'swimming_pool', 'gym_room', 'covered_carpark',
@@ -96,96 +91,33 @@ def room_list(request):
         'prefer_zero_deposit', 'prefer_move_in_immediately',
         'prefer_pet_allowed', 'prefer_muslim_friendly', 'prefer_smoking_allowed',
     ]
-
     for field in checkbox_fields:
         if request.GET.get(field) == 'on':
             rooms = rooms.filter(**{field: True})
 
-
-    # 分成兩個結果集：精確匹配 + 其他
-    exact_match = rooms.filter(state=state) if state else rooms
-    
-    # 相關度排序（基於 state + query）
+    # keyword 搜尋（在拆分 exact/other 之前先過濾）
     if query:
-        relevance_cases = []
-        
-        # Level 1: 同州同市 + keyword 精確匹配
-        if state and city:
-            relevance_cases.append(
-                When(
-                    Q(state=state) & Q(city=city) & Q(title__icontains=query),
-                    then=Value(500)
-                )
-            )
-        
-        # Level 2: 同州 + keyword 精確匹配
-        if state:
-            relevance_cases.append(
-                When(
-                    Q(state=state) & Q(title__icontains=query),
-                    then=Value(400)
-                )
-            )
-        
-        # Level 3: 同州同市 (無 keyword 要求)
-        if state and city:
-            relevance_cases.append(
-                When(
-                    Q(state=state) & Q(city=city),
-                    then=Value(300)
-                )
-            )
-        
-        # Level 4: 同州 (無 keyword 要求)
-        if state:
-            relevance_cases.append(
-                When(
-                    Q(state=state),
-                    then=Value(200)
-                )
-            )
-        
-        # Level 5: keyword 任何地方
-        relevance_cases.append(
-            When(
-                Q(title__icontains=query) | Q(location_detail__icontains=query) | Q(size__icontains=query),
-                then=Value(100)
-            )
-        )
-        
-        rooms = rooms.annotate(
-            relevance=Case(*relevance_cases, default=Value(0), output_field=IntegerField())
-        ).order_by('-relevance', '-created_at')
-        
-        exact_match = exact_match.annotate(
-            relevance=Case(*relevance_cases, default=Value(0), output_field=IntegerField())
-        ).order_by('-relevance', '-created_at')
-        
-        # 過濾只顯示有匹配的
         rooms = rooms.filter(
             Q(title__icontains=query) |
             Q(location_detail__icontains=query) |
             Q(size__icontains=query)
         )
-        
-        exact_match = exact_match.filter(
-            Q(title__icontains=query) |
-            Q(location_detail__icontains=query) |
-            Q(size__icontains=query)
-        )
 
-    elif state:  # 只選 state 但沒 query
-        rooms = rooms.filter(state=state).order_by('-created_at')
-        exact_match = exact_match.order_by('-created_at')
+    # 排序
+    rooms = rooms.order_by('-created_at')
 
-    else:  # 都沒有
-        rooms = rooms.order_by('-created_at')
-        exact_match = exact_match.order_by('-created_at')
-
-    # 分離精確匹配和其他結果
-    if state:
+    # ─── 分成 exact_match 和 other_results ───
+    # 優先順序：city > state
+    if city:
+        # 精確：同 city；其他：同 state 但不同 city + 其他 state
+        exact_match = rooms.filter(city=city)
+        other_results = rooms.exclude(city=city)
+    elif state:
+        # 精確：同 state；其他：其他 state
+        exact_match = rooms.filter(state=state)
         other_results = rooms.exclude(state=state)
     else:
+        exact_match = rooms
         other_results = rooms.none()
 
     context = {
@@ -202,13 +134,14 @@ def room_list(request):
     return render(request, 'room.html', context)
 
 
+
 # ────────────── UNIT LIST ──────────────
 @login_required
 def unit_list(request):
     """
-    整套房（Unit）列表頁（給租客看的列表）
+    整套房（Unit）列表頁
     URL: /listing/units/
-    支援搜尋 + 篩選 + 相關度排序 + 分類結果
+    支援搜尋 + 篩選 + 分類結果
     """
     query = request.GET.get('q', '').strip()
     state = request.GET.get('state', '').strip()
@@ -220,9 +153,9 @@ def unit_list(request):
 
     units = Unit.objects.filter(available=True)
 
-    filter_applied = bool(state or unit_type or floor_level or bedrooms or bathrooms)
+    filter_applied = bool(state or city or unit_type or floor_level or bedrooms or bathrooms)
 
-    # 基本篩選（非搜尋）
+    # 基本篩選（非位置類）
     if unit_type:
         units = units.filter(unit_type=unit_type)
     if floor_level:
@@ -232,7 +165,7 @@ def unit_list(request):
     if bathrooms:
         units = units.filter(bathrooms=bathrooms)
 
-    # Characteristic checkbox 篩選（有勾選才篩）
+    # Characteristic checkbox 篩選
     checkbox_fields = [
         'near_mrt', 'near_lrt', 'near_ktm', 'near_bus_stop', 'near_train',
         'security_24h', 'swimming_pool', 'gym_room', 'covered_carpark',
@@ -241,73 +174,33 @@ def unit_list(request):
         'has_aircond', 'has_washing_machine', 'has_wifi', 'cooking_allowed',
         'has_tv', 'shared_bathroom', 'private_bathroom', 'has_shower',
         'pet_allowed', 'smoking_allowed',
-        'prefer_zero_deposit', 'prefer_move_in_immediately',
-        'prefer_pet_allowed', 'prefer_muslim_friendly', 'prefer_smoking_allowed',
     ]
-
     for field in checkbox_fields:
         if request.GET.get(field) == 'on':
-            rooms = rooms.filter(**{field: True})
-            
-    # 分成兩個結果集：精確匹配 + 其他
-    exact_match = units.filter(state=state) if state else units
+            # 只篩 Unit 有的欄位（避免報錯）
+            if field in [f.name for f in Unit._meta.get_fields()]:
+                units = units.filter(**{field: True})
 
-    # 相關度排序（基於 state + query）
+    # keyword 搜尋
     if query:
-        relevance_cases = []
-        
-        if state and city:
-            relevance_cases.append(
-                When(Q(state=state) & Q(city=city) & Q(title__icontains=query), then=Value(500))
-            )
-        if state:
-            relevance_cases.append(
-                When(Q(state=state) & Q(title__icontains=query), then=Value(400))
-            )
-        if state and city:
-            relevance_cases.append(
-                When(Q(state=state) & Q(city=city), then=Value(300))
-            )
-        if state:
-            relevance_cases.append(
-                When(Q(state=state), then=Value(200))
-            )
-        relevance_cases.append(
-            When(Q(title__icontains=query) | Q(location_detail__icontains=query) | Q(size__icontains=query), then=Value(100))
-        )
-        
-        units = units.annotate(
-            relevance=Case(*relevance_cases, default=Value(0), output_field=IntegerField())
-        ).order_by('-relevance', '-created_at')
-        
-        exact_match = exact_match.annotate(
-            relevance=Case(*relevance_cases, default=Value(0), output_field=IntegerField())
-        ).order_by('-relevance', '-created_at')
-        
-        # 過濾只顯示有匹配的
         units = units.filter(
             Q(title__icontains=query) |
             Q(location_detail__icontains=query) |
             Q(size__icontains=query)
         )
-        exact_match = exact_match.filter(
-            Q(title__icontains=query) |
-            Q(location_detail__icontains=query) |
-            Q(size__icontains=query)
-        )
 
-    elif state:  # 只選 state 但沒 query
-        units = units.filter(state=state).order_by('-created_at')
-        exact_match = exact_match.order_by('-created_at')
+    # 排序
+    units = units.order_by('-created_at')
 
-    else:  # 都沒有
-        units = units.order_by('-created_at')
-        exact_match = exact_match.order_by('-created_at')
-
-    # 分離精確匹配和其他結果
-    if state:
+    # ─── 分成 exact_match 和 other_results ───
+    if city:
+        exact_match = units.filter(city=city)
+        other_results = units.exclude(city=city)
+    elif state:
+        exact_match = units.filter(state=state)
         other_results = units.exclude(state=state)
     else:
+        exact_match = units
         other_results = units.none()
 
     context = {
