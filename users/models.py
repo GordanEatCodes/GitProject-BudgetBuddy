@@ -18,7 +18,7 @@ class UserProfile(models.Model):
     user = models. OneToOneField(User, on_delete=models.CASCADE)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
 
-    gender = models.CharField(max_length=20, blank=True)
+    gender =models.CharField(max_length=20, blank=True)
     sleep_schedule = models.CharField(max_length=20, blank=True)
     cleanliness = models.IntegerField(default=3)
     noise_tolerance = models.IntegerField(default=3)

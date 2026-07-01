@@ -1,99 +1,175 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Owner Dashboard</title>
+  <title>Owner Page</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <link rel="apple-touch-icon" sizes="180x180" href= "{% static "images/apple-touch-icon.png" %}"/>
+  <link rel="icon" type="image/png" sizes="32x32" href=" {% static "images/favicon-32x32.png" %}"/>
+  <link rel="icon" type="image/png" sizes="16x16" href=" {% static "images/favicon-16x16.png" %}"/>  
+  <link rel="manifest" href=" {% static "images/site.webmanifest" %}" />
 
   <style>
     body {
-      background-color: #ffffff; /* main background = white */
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background-color: #ffffff;
+      font-family: 'Inter', sans-serif;
     }
-
     .bb-header {
-      background-color: #d2a679;  /* bubble-tea brown */
-      color: #fff;
+      background-color: #ffefdb;
+      color: #000;
       border-radius: 0 0 18px 18px;
       padding: 20px 0;
       margin-bottom: 24px;
     }
-
     .bb-section {
-      background-color: #f8f4ee;
+      background-color: #ffffff;
+      border: 1px solid #f0e4d4;
       border-radius: 18px;
       padding: 20px;
       box-shadow: 0 6px 18px rgba(0,0,0,0.06);
     }
-
     .listing-item-title {
       font-weight: 600;
-      color: #4b3323;
+      color: #000;
     }
-
     .listing-item-sub {
       font-size: 0.85rem;
-      color: #7a6652;
+      color: rgba(0,0,0,0.55);
     }
-
     .btn-pill {
       border-radius: 999px;
     }
+    /* 房源類型標籤改米色 */
+    .badge-type {
+      background-color: #ffefdb;
+      color: #000;
+      border: 1px solid #e5c9a0;
+    }
+    .btn-outline-dark {
+      color: #000;
+      border-color: #000;
+    }
+    .btn-outline-dark:hover {
+      background-color: #000;
+      color: #fff;
+    }
+    h5, h2 { color: #000; }
   </style>
 </head>
 <body>
-  <!-- Bubble-tea header -->
+
+  <button
+    type="button"
+    onclick="window.history.back()"
+    style="
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      border: none;
+      background: #000;
+      color: #fff;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 9999;
+    "
+    aria-label="Close">
+    ×
+  </button>
+  
+  <!-- Header -->
   <div class="bb-header">
     <div class="container">
-      <h2 class="mb-1">Owner Dashboard</h2>
+      <h2 class="mb-1 fw-bold">Owner Page</h2>
       <p class="mb-0">Manage your room and unit listings.</p>
     </div>
   </div>
 
   <div class="container pb-4">
-    <!-- Long rectangle showing listings or empty text -->
+    <!-- Your Listings -->
     <div class="bb-section mb-4">
-      <h5 class="mb-3">Your Listings</h5>
+      <h5 class="mb-3 fw-bold">Your Listings</h5>
+      <hr class="my-1">
 
       {% if rooms or units %}
         <ul class="list-group list-group-flush">
           {% for room in rooms %}
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            <div>
-              <div class="listing-item-title">
-                {{ room.title }}
-                <span class="badge bg-info ms-1">Room</span>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <div class="listing-item-title">
+                  {{ room.title }}
+                  <span class="badge badge-type ms-1">Room</span>
+                </div>
+                <div class="listing-item-sub">
+                  {{ room.state }}{% if room.city %} · {{ room.city }}{% endif %} · RM {{ room.rent }}/month
+                </div>
               </div>
-              <div class="listing-item-sub">
-                {{ room.location }} · ¥{{ room.rent }}/month
+
+              <div class="text-end">
+                {% if room.available %}
+                  <span class="badge bg-success">Available</span>
+                {% else %}
+                  <span class="badge bg-secondary">Not available</span>
+                {% endif %}
+
+                <div class="mt-2">
+                  <a href="{% url 'room_edit' room.id %}" class="btn btn-sm btn-outline-dark">Edit</a>
+
+                  <form method="post" action="{% url 'room_toggle_available' room.id %}" class="d-inline">
+                    {% csrf_token %}
+                    {% if room.available %}
+                      <button class="btn btn-sm btn-outline-secondary">Set Unavailable</button>
+                    {% else %}
+                      <button class="btn btn-sm btn-outline-success">Set Available</button>
+                    {% endif %}
+                  </form>
+                </div>
               </div>
-            </div>
-            {% if room.available %}
-              <span class="badge bg-success">Available</span>
-            {% else %}
-              <span class="badge bg-secondary">Not available</span>
-            {% endif %}
-          </li>
-          {% endfor %}
+            </li>
+            {% endfor %}
+
 
           {% for unit in units %}
           <li class="list-group-item d-flex justify-content-between align-items-center">
             <div>
               <div class="listing-item-title">
                 {{ unit.title }}
-                <span class="badge bg-warning text-dark ms-1">Unit</span>
+                <span class="badge badge-type ms-1">Unit</span>
               </div>
               <div class="listing-item-sub">
-                {{ unit.location }} · ¥{{ unit.rent }}/month ·
-                {{ unit.bedrooms }} BR / {{ unit.bathrooms }} BA
+                {{ unit.state }} · {{ unit.location_detail }} ·
+                {{ unit.bedrooms }} BR / {{ unit.bathrooms }} BA · RM {{ unit.rent }}/month
               </div>
             </div>
-            {% if unit.available %}
-              <span class="badge bg-success">Available</span>
-            {% else %}
-              <span class="badge bg-secondary">Not available</span>
-            {% endif %}
+
+            <div class="text-end">
+              {% if unit.available %}
+                <span class="badge bg-success">Available</span>
+              {% else %}
+                <span class="badge bg-secondary">Not available</span>
+              {% endif %}
+
+              <div class="mt-2">
+                <a href="{% url 'unit_edit' unit.id %}" class="btn btn-sm btn-outline-dark">Edit</a>
+
+                <form method="post" action="{% url 'unit_toggle_available' unit.id %}" class="d-inline">
+                  {% csrf_token %}
+                  {% if unit.available %}
+                    <button class="btn btn-sm btn-outline-secondary">Set Unavailable</button>
+                  {% else %}
+                    <button class="btn btn-sm btn-outline-success">Set Available</button>
+                  {% endif %}
+                </form>
+              </div>
+            </div>
           </li>
           {% endfor %}
         </ul>
@@ -102,12 +178,110 @@
       {% endif %}
     </div>
 
-    <!-- Two boxes: add room / add unit -->
+    <!-- Room Applications -->
+    <div class="bb-section mb-4">
+      <h5 class="mb-3 fw-bold">Rental Applications for Your Rooms</h5>
+
+      {% if room_requests %}
+        <ul class="list-group list-group-flush">
+          {% for req in room_requests %}
+            <li class="list-group-item">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <div class="listing-item-title">
+                    {{ req.room.title }}
+                    <span class="badge badge-type ms-1">Room</span>
+                  </div>
+                  <div class="listing-item-sub">
+                    From: {{ req.tenant.username }} · {{ req.created_at|date:"Y-m-d H:i" }}
+                  </div>
+                </div>
+
+                <div class="text-end">
+                  <span class="badge
+                    {% if req.status == 'pending' %}bg-warning text-dark
+                    {% elif req.status == 'accepted' %}bg-success
+                    {% else %}bg-danger{% endif %}">
+                    {{ req.get_status_display }}
+                  </span>
+
+                  {% if req.status == 'pending' %}
+                    <div class="mt-2">
+                      <form method="post" action="{% url 'room_request_action' req.id 'accept' %}" class="d-inline">
+                        {% csrf_token %}
+                        <button class="btn btn-sm btn-success">Accept</button>
+                      </form>
+                      <form method="post" action="{% url 'room_request_action' req.id 'reject' %}" class="d-inline ms-1">
+                        {% csrf_token %}
+                        <button class="btn btn-sm btn-danger">Reject</button>
+                      </form>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="mb-0 text-muted">No room rental applications yet.</p>
+      {% endif %}
+    </div>
+
+    <!-- Unit Applications -->
+    <div class="bb-section mb-4">
+      <h5 class="mb-3 fw-bold">Rental Applications for Your Units</h5>
+
+      {% if unit_requests %}
+        <ul class="list-group list-group-flush">
+          {% for req in unit_requests %}
+            <li class="list-group-item">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <div class="listing-item-title">
+                    {{ req.unit.title }}
+                    <span class="badge badge-type ms-1">Unit</span>
+                  </div>
+                  <div class="listing-item-sub">
+                    From: {{ req.tenant.username }} · {{ req.created_at|date:"Y-m-d H:i" }}
+                  </div>
+                </div>
+
+                <div class="text-end">
+                  <span class="badge
+                    {% if req.status == 'pending' %}bg-warning text-dark
+                    {% elif req.status == 'accepted' %}bg-success
+                    {% else %}bg-danger{% endif %}">
+                    {{ req.get_status_display }}
+                  </span>
+
+                  {% if req.status == 'pending' %}
+                    <div class="mt-2">
+                      <form method="post" action="{% url 'unit_request_action' req.id 'accept' %}" class="d-inline">
+                        {% csrf_token %}
+                        <button class="btn btn-sm btn-success">Accept</button>
+                      </form>
+                      <form method="post" action="{% url 'unit_request_action' req.id 'reject' %}" class="d-inline ms-1">
+                        {% csrf_token %}
+                        <button class="btn btn-sm btn-danger">Reject</button>
+                      </form>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="mb-0 text-muted">No unit rental applications yet.</p>
+      {% endif %}
+    </div>
+
+    <!-- Add Room / Add Unit -->
     <div class="row g-3">
       <div class="col-md-6">
         <a href="{% url 'room_create' %}" class="text-decoration-none">
           <div class="bb-section text-center">
-            <h5>Add Room</h5>
+            <h5 class="fw-bold">Add Room</h5>
             <p class="text-muted mb-2">Upload a room listing for tenants to see.</p>
             <button class="btn btn-outline-dark btn-pill px-4">Create Room Listing</button>
           </div>
@@ -115,11 +289,11 @@
       </div>
 
       <div class="col-md-6">
-        <a href="#" class="text-decoration-none">
+        <a href="{% url 'unit_create' %}" class="text-decoration-none">
           <div class="bb-section text-center">
-            <h5>Add Unit</h5>
-            <p class="text-muted mb-2">Post an entire apartment or house. (To be implemented)</p>
-            <button class="btn btn-outline-dark btn-pill px-4" disabled>Coming Soon</button>
+            <h5 class="fw-bold">Add Unit</h5>
+            <p class="text-muted mb-2">Post an entire apartment or house.</p>
+            <button class="btn btn-outline-dark btn-pill px-4">Create Unit Listing</button>
           </div>
         </a>
       </div>

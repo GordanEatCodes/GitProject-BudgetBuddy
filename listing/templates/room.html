@@ -1,35 +1,406 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Rooms</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+  <link rel="apple-touch-icon" sizes="180x180" href= "{% static "images/apple-touch-icon.png" %}"/>
+  <link rel="icon" type="image/png" sizes="32x32" href=" {% static "images/favicon-32x32.png" %}"/>
+  <link rel="icon" type="image/png" sizes="16x16" href=" {% static "images/favicon-16x16.png" %}"/>  
+  <link rel="manifest" href=" {% static "images/site.webmanifest" %}" />
+  
   <style>
-    body { background-color: #f4e1c6; }             /* main = milk tea */
-    .room-card { background-color: #ffffff; }       /* cards = white */
-    /* paste your previous .room-card, .room-img, etc. styles here */
+    body {
+      background-color: #ffffff;
+      font-family: 'Inter', sans-serif;
+    }
+    .room-card {
+      background-color: #ffffff;
+      border-radius: 18px;
+      border: 1px solid #f0e4d4;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      height: auto;
+    }
+    .room-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 14px 30px rgba(0,0,0,0.12);
+    }
+    .room-img {
+      height: 220px;
+      width: 100%;
+      object-fit: cover;
+    }
+    .room-title { font-weight: 700; color: #000; }
+    .room-price { color: #000; font-weight: 700; }
+    .room-location { color: rgba(0,0,0,0.55); font-size: 0.95rem; }
+
+    .badge-group {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .badge-char {
+      background-color: #ffefdb;
+      color: #000;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      border: 1px solid #e5c9a0;
+    }
+    .badge-char-success {
+      background-color: #ffefdb;
+      border-color: #e5c9a0;
+      color: #000;
+    }
+    .availability-badge {
+      font-size: 0.75rem;
+      border-radius: 999px;
+      padding: 3px 10px;
+    }
+    .card-footer-btn {
+      border-radius: 999px;
+      font-size: 0.85rem;
+      padding-inline: 18px;
+    }
+    .section-heading {
+      color: #000;
+      font-weight: 700;
+    }
+    /* Search band 改米色 */
+    .search-band {
+      background-color: #ffefdb !important;
+    }
+    .search-band h2 {
+      color: #000 !important;
+    }
+    /* 按鈕黑色系 */
+    .btn-dark {
+      background-color: #000;
+      border-color: #000;
+    }
+    .btn-dark:hover {
+      background-color: #b4b4b4;
+      border-color: #b4b4b4;
+    }
+    .btn-primary {
+      background-color: #000;
+      border-color: #000;
+    }
+    .btn-primary:hover {
+      background-color: #b4b4b4;
+      border-color: #b4b4b4;
+    }
+    .btn-outline-dark {
+      color: #000;
+      border-color: #000;
+    }
+    .btn-outline-dark:hover {
+      background-color: #000;
+      color: #fff;
+    }
   </style>
 </head>
 <body>
-  <div class="container py-4">
-    <!-- Top area with second main color -->
-    <div class="mb-4 p-3 rounded-3" style="background-color:#d2a679;">
-      <h2 class="mb-3 text-white">Find a Room</h2>
+  <button
+    type="button"
+    onclick="window.history.back()"
+    style="
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      border: none;
+      background: #000;
+      color: #fff;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 9999;
+    "
+    aria-label="Close">
+    ×
+  </button>
 
-      <form method="get" class="d-flex gap-2">
-        <input
-          type="text"
-          name="q"
-          class="form-control"
-          placeholder="Search by location, title, size..."
-          value="{{ query|default:'' }}"
-        >
-        <button class="btn btn-dark" type="submit">
-          <i class="bi bi-search"></i>
+  <div class="container py-4">
+    <!-- 頂端顏色區 + 搜尋 + Filter 按鈕 -->
+    <div class="mb-4 p-3 rounded-3 search-band">
+      <h2 class="mb-3 fw-bold">Find a Room</h2>
+
+      <div class="d-flex gap-2 mb-3">
+        <form method="get" class="flex-grow-1 d-flex gap-2">
+          <input
+            type="text"
+            name="q"
+            class="form-control"
+            placeholder="Search by city, title, size..."
+            value="{{ query|default:'' }}"
+          >
+          <button class="btn btn-dark" type="submit">
+            <i class="bi bi-search"></i>
+          </button>
+        </form>
+        
+        <button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#filterPanel" aria-expanded="false">
+          <i class="bi bi-funnel me-2"></i> Filter
         </button>
-      </form>
+      </div>
+
+      <!-- Filter Panel (摺疊) -->
+      <div class="collapse" id="filterPanel">
+        <div class="card card-body bg-white">
+          <form method="get" class="row g-3">
+            <input type="hidden" name="q" value="{{ query|default:'' }}">
+            
+            <div class="col-md-6">
+              <label class="form-label">State</label>
+              <select name="state" class="form-select">
+                <option value="">-- All States --</option>
+                <option value="Johor" {% if state == 'Johor' %}selected{% endif %}>Johor</option>
+                <option value="Kedah" {% if state == 'Kedah' %}selected{% endif %}>Kedah</option>
+                <option value="Kelantan" {% if state == 'Kelantan' %}selected{% endif %}>Kelantan</option>
+                <option value="Melaka" {% if state == 'Melaka' %}selected{% endif %}>Melaka</option>
+                <option value="Negeri Sembilan" {% if state == 'Negeri Sembilan' %}selected{% endif %}>Negeri Sembilan</option>
+                <option value="Pahang" {% if state == 'Pahang' %}selected{% endif %}>Pahang</option>
+                <option value="Perak" {% if state == 'Perak' %}selected{% endif %}>Perak</option>
+                <option value="Perlis" {% if state == 'Perlis' %}selected{% endif %}>Perlis</option>
+                <option value="Pulau Pinang" {% if state == 'Pulau Pinang' %}selected{% endif %}>Pulau Pinang</option>
+                <option value="Sabah" {% if state == 'Sabah' %}selected{% endif %}>Sabah</option>
+                <option value="Sarawak" {% if state == 'Sarawak' %}selected{% endif %}>Sarawak</option>
+                <option value="Selangor" {% if state == 'Selangor' %}selected{% endif %}>Selangor</option>
+                <option value="Terengganu" {% if state == 'Terengganu' %}selected{% endif %}>Terengganu</option>
+                <option value="WP Kuala Lumpur" {% if state == 'WP Kuala Lumpur' %}selected{% endif %}>WP Kuala Lumpur</option>
+                <option value="WP Labuan" {% if state == 'WP Labuan' %}selected{% endif %}>WP Labuan</option>
+                <option value="WP Putrajaya" {% if state == 'WP Putrajaya' %}selected{% endif %}>WP Putrajaya</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">City / Area</label>
+              <select name="city" id="id_filter_city" class="form-select">
+                <option value="">-- All Cities --</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Unit Type</label>
+              <select name="unit_type" class="form-select">
+                <option value="">-- All Types --</option>
+                <option value="Studio" {% if unit_type == 'Studio' %}selected{% endif %}>Studio</option>
+                <option value="Apartment" {% if unit_type == 'Apartment' %}selected{% endif %}>Apartment</option>
+                <option value="Condo" {% if unit_type == 'Condo' %}selected{% endif %}>Condo</option>
+                <option value="Terrace" {% if unit_type == 'Terrace' %}selected{% endif %}>Terrace</option>
+                <option value="Semi-D" {% if unit_type == 'Semi-D' %}selected{% endif %}>Semi-D</option>
+                <option value="Bungalow" {% if unit_type == 'Bungalow' %}selected{% endif %}>Bungalow</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Room Type</label>
+              <select name="room_type" class="form-select">
+                <option value="">-- All Rooms --</option>
+                <option value="master" {% if room_type == 'master' %}selected{% endif %}>Master Room</option>
+                <option value="middle" {% if room_type == 'middle' %}selected{% endif %}>Middle Room</option>
+                <option value="small" {% if room_type == 'small' %}selected{% endif %}>Small Room</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Bathroom Type</label>
+              <select name="bathroom_type" class="form-select">
+                <option value="">-- All --</option>
+                <option value="private" {% if bathroom_type == 'private' %}selected{% endif %}>Private</option>
+                <option value="shared" {% if bathroom_type == 'shared' %}selected{% endif %}>Shared</option>
+              </select>
+            </div>
+
+            <!-- Characteristics Checkboxes -->
+            <div class="col-12">
+              <hr>
+              <h6 class="mb-3" style="color: #000;">Amenities & Features</h6>
+            </div>
+
+            <!-- Transport -->
+            <div class="col-12">
+              <small class="fw-bold" style="color:#a0785a;">🚆 Transport</small>
+              <hr class="my-1">
+            </div>
+            <div class="col-md-4">
+              <div class="form-check">
+                <input type="checkbox" name="near_mrt" class="form-check-input" {% if request.GET.near_mrt %}checked{% endif %}>
+                <label class="form-check-label">Near MRT</label>
+              </div>
+              <div class="form-check">
+                <input type="checkbox" name="near_bus_stop" class="form-check-input" {% if request.GET.near_bus_stop %}checked{% endif %}>
+                <label class="form-check-label">Near bus stop</label>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-check">
+                <input type="checkbox" name="near_lrt" class="form-check-input" {% if request.GET.near_lrt %}checked{% endif %}>
+                <label class="form-check-label">Near LRT</label>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-check">
+                <input type="checkbox" name="near_ktm" class="form-check-input" {% if request.GET.near_ktm %}checked{% endif %}>
+                <label class="form-check-label">Near KTM</label>
+              </div>
+            </div>
+
+            <!-- Facilities -->
+            <div class="col-12 mt-2">
+              <small class="fw-bold" style="color:#a0785a;">🏢 Facilities</small>
+              <hr class="my-1">
+            </div>
+            <div class="col-md-4">
+              <div class="form-check">
+                <input type="checkbox" name="security_24h" class="form-check-input" {% if request.GET.security_24h %}checked{% endif %}>
+                <label class="form-check-label">24h security</label>
+              </div>
+              <div class="form-check">
+                <input type="checkbox" name="covered_carpark" class="form-check-input" {% if request.GET.covered_carpark %}checked{% endif %}>
+                <label class="form-check-label">Covered carpark</label>
+              </div>
+              <div class="form-check">
+                <input type="checkbox" name="multi_purpose_hall" class="form-check-input" {% if request.GET.multi_purpose_hall %}checked{% endif %}>
+                <label class="form-check-label">Multi-purpose hall</label>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-check">
+                <input type="checkbox" name="swimming_pool" class="form-check-input" {% if request.GET.swimming_pool %}checked{% endif %}>
+                <label class="form-check-label">Swimming pool</label>
+              </div>
+              <div class="form-check">
+                <input type="checkbox" name="extra_parking" class="form-check-input" {% if request.GET.extra_parking %}checked{% endif %}>
+                <label class="form-check-label">Residential parking</label>
+              </div>
+              <div class="form-check">
+                <input type="checkbox" name="playground" class="form-check-input" {% if request.GET.playground %}checked{% endif %}>
+                <label class="form-check-label">Playground</label>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-check">
+                <input type="checkbox" name="gym_room" class="form-check-input" {% if request.GET.gym_room %}checked{% endif %}>
+                <label class="form-check-label">Gym room</label>
+              </div>
+              <div class="form-check">
+                <input type="checkbox" name="oku_friendly" class="form-check-input" {% if request.GET.oku_friendly %}checked{% endif %}>
+                <label class="form-check-label">OKU friendly</label>
+              </div>
+              <div class="form-check">
+                <input type="checkbox" name="co_living" class="form-check-input" {% if request.GET.co_living %}checked{% endif %}>
+                <label class="form-check-label">Co-living</label>
+              </div>
+            </div>
+
+            <!-- Nearby -->
+            <div class="col-12 mt-2">
+              <small class="fw-bold" style="color:#a0785a;">📍 Nearby</small>
+              <hr class="my-1">
+            </div>
+            <div class="col-md-4">
+              <div class="form-check">
+                <input type="checkbox" name="has_surau" class="form-check-input" {% if request.GET.has_surau %}checked{% endif %}>
+                <label class="form-check-label">Near surau / mosque</label>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-check">
+                <input type="checkbox" name="near_mini_market" class="form-check-input" {% if request.GET.near_mini_market %}checked{% endif %}>
+                <label class="form-check-label">Near mini market</label>
+              </div>
+            </div>
+            <div class="col-md-4"></div>
+
+            <!-- Utilities -->
+            <div class="col-12 mt-2">
+              <small class="fw-bold" style="color:#a0785a;">Utilities</small>
+              <hr class="my-1">
+            </div>
+            <div class="col-md-4">
+              <div class="form-check">
+                <input type="checkbox" name="has_aircond" class="form-check-input" {% if request.GET.has_aircond %}checked{% endif %}>
+                <label class="form-check-label">Air-conditioning</label>
+              </div>
+              <div class="form-check">
+                <input type="checkbox" name="cooking_allowed" class="form-check-input" {% if request.GET.cooking_allowed %}checked{% endif %}>
+                <label class="form-check-label">Cooking allowed</label>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-check">
+                <input type="checkbox" name="has_washing_machine" class="form-check-input" {% if request.GET.has_washing_machine %}checked{% endif %}>
+                <label class="form-check-label">Washing machine</label>
+              </div>
+              <div class="form-check">
+                <input type="checkbox" name="has_tv" class="form-check-input" {% if request.GET.has_tv %}checked{% endif %}>
+                <label class="form-check-label">TV</label>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-check">
+                <input type="checkbox" name="has_wifi" class="form-check-input" {% if request.GET.has_wifi %}checked{% endif %}>
+                <label class="form-check-label">Wi-Fi</label>
+              </div>
+              <div class="form-check">
+                <input type="checkbox" name="has_shower" class="form-check-input" {% if request.GET.has_shower %}checked{% endif %}>
+                <label class="form-check-label">Shower</label>
+              </div>
+            </div>
+
+            <!-- Preferences -->
+            <div class="col-12 mt-2">
+              <small class="fw-bold" style="color:#a0785a;">Preferences</small>
+              <hr class="my-1">
+            </div>
+            <div class="col-md-4">
+              <div class="form-check">
+                <input type="checkbox" name="pet_allowed" class="form-check-input" {% if request.GET.pet_allowed %}checked{% endif %}>
+                <label class="form-check-label">Pet allowed</label>
+              </div>
+              <div class="form-check">
+                <input type="checkbox" name="prefer_move_in_immediately" class="form-check-input" {% if request.GET.prefer_move_in_immediately %}checked{% endif %}>
+                <label class="form-check-label">Move-in immediately</label>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-check">
+                <input type="checkbox" name="smoking_allowed" class="form-check-input" {% if request.GET.smoking_allowed %}checked{% endif %}>
+                <label class="form-check-label">Smoking allowed</label>
+              </div>
+              <div class="form-check">
+                <input type="checkbox" name="prefer_muslim_friendly" class="form-check-input" {% if request.GET.prefer_muslim_friendly %}checked{% endif %}>
+                <label class="form-check-label">Muslim friendly</label>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-check">
+                <input type="checkbox" name="prefer_zero_deposit" class="form-check-input" {% if request.GET.prefer_zero_deposit %}checked{% endif %}>
+                <label class="form-check-label">Zero deposit</label>
+              </div>
+            </div>
+
+
+            <div class="col-12">
+              <button type="submit" class="btn btn-primary">Apply Filter</button>
+              <a href="{% url 'room_list' %}" class="btn btn-outline-secondary">Clear</a>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
 
     {% if query %}
@@ -38,17 +409,25 @@
       </p>
     {% endif %}
 
+    <!-- Search Results 標題 -->
+    {% if rooms %}
+      <h4 class="mb-4 section-heading">
+        <i class="bi bi-house-check me-2"></i> Search Results
+      </h4>
+    {% endif %}
+
+    <!-- 主要結果列表 -->
     <div class="row row-cols-1 row-cols-md-3 g-4">
       {% for room in rooms %}
       <div class="col">
-        <div class="room-card h-100 shadow-sm rounded-4">
+        <div class="room-card h-100">
           {% if room.image %}
-            <img src="{{ room.image.url }}" class="card-img-top room-img" alt="Room photo">
+            <img src="{{ room.image.url }}" class="room-img" alt="Room photo">
           {% endif %}
 
-          <div class="card-body">
+          <div class="p-3">
             <div class="d-flex justify-content-between align-items-start mb-2">
-              <h5 class="room-title mb-0">{{ room.title }}</h5>
+              <h5 class="room-title mb-0 fw-bold">{{ room.title }}</h5>
 
               {% if room.available %}
                 <span class="badge bg-success availability-badge">
@@ -59,33 +438,40 @@
               {% endif %}
             </div>
 
-            <p class="room-price mb-1">¥{{ room.rent }}/month</p>
+            <p class="room-price mb-1">RM {{ room.rent }}/month</p>
             <p class="room-location mb-2">
-              <i class="bi bi-geo-alt me-1"></i>{{ room.location }}
+              <i class="bi bi-geo-alt me-1"></i>
+              {{ room.state }}{% if room.city %} · {{ room.city }}{% endif %}{% if room.location_detail %} · {{ room.location_detail }}{% endif %}
             </p>
 
             <div class="badge-group">
               {% if room.size %}
-                <span class="badge-char">Size: {{ room.size }}</span>
+                <span class="badge-char">Size: {{ room.size }} sqft</span>
               {% endif %}
-              {% if room.has_internet %}
-                <span class="badge-char">Wi‑Fi included</span>
+              {% if room.room_type %}
+                <span class="badge-char">{{ room.get_room_type_display }}</span>
               {% endif %}
-              {% if room.has_private_bathroom %}
+              {% if room.bathroom_type == 'private' %}
                 <span class="badge-char">Private bathroom</span>
-              {% endif %}
-              {% if room.near_station %}
-                <span class="badge-char badge-char-success">
-                  <i class="bi bi-check-circle-fill me-1"></i>Near station
-                </span>
               {% else %}
-                <span class="badge-char">Near station</span>
+                <span class="badge-char">Shared bathroom</span>
+              {% endif %}
+              {% if room.has_aircond %}
+                <span class="badge-char">Aircond</span>
+              {% endif %}
+              {% if room.has_wifi %}
+                <span class="badge-char">Wi‑Fi</span>
+              {% endif %}
+              {% if room.near_mrt or room.near_lrt or room.near_ktm %}
+                <span class="badge-char badge-char-success">
+                  <i class="bi bi-train-front-fill me-1"></i>Near train
+                </span>
               {% endif %}
             </div>
           </div>
 
           <div class="card-footer bg-transparent border-0 pb-3 px-3">
-            <a href="#" class="btn btn-outline-dark card-footer-btn">
+            <a href="{% url 'room_detail' room.id %}" class="btn btn-outline-dark card-footer-btn">
               More detail
             </a>
           </div>
@@ -95,6 +481,136 @@
         <p>No rooms found{% if query %} for "{{ query }}"{% endif %}.</p>
       {% endfor %}
     </div>
+
+    <!-- Other Results Section -->
+    {% if other_results %}
+      <div class="mt-5 pt-4 border-top">
+        <h4 class="mb-4 section-heading">
+          <i class="bi bi-stars me-2"></i> You Might Also Like
+        </h4>
+        
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+          {% for room in other_results %}
+          <div class="col">
+            <div class="room-card h-100" style="opacity: 0.9;">
+              {% if room.image %}
+                <img src="{{ room.image.url }}" class="room-img" alt="Room photo">
+              {% endif %}
+
+              <div class="p-3">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <h5 class="room-title mb-0 fw-bold">{{ room.title }}</h5>
+
+                  {% if room.available %}
+                    <span class="badge bg-success availability-badge">
+                      <i class="bi bi-check-circle me-1"></i> Available
+                    </span>
+                  {% else %}
+                    <span class="badge bg-secondary availability-badge">Not available</span>
+                  {% endif %}
+                </div>
+
+                <p class="room-price mb-1">RM {{ room.rent }}/month</p>
+                <p class="room-location mb-2">
+                  <i class="bi bi-geo-alt me-1"></i>
+                  {{ room.state }}{% if room.city %} · {{ room.city }}{% endif %}{% if room.location_detail %} · {{ room.location_detail }}{% endif %}
+                </p>
+
+                <div class="badge-group">
+                  {% if room.size %}
+                    <span class="badge-char">Size: {{ room.size }} sqft</span>
+                  {% endif %}
+                  {% if room.room_type %}
+                    <span class="badge-char">{{ room.get_room_type_display }}</span>
+                  {% endif %}
+                  {% if room.bathroom_type == 'private' %}
+                    <span class="badge-char">Private bathroom</span>
+                  {% else %}
+                    <span class="badge-char">Shared bathroom</span>
+                  {% endif %}
+                  {% if room.has_aircond %}
+                    <span class="badge-char">Aircond</span>
+                  {% endif %}
+                  {% if room.has_wifi %}
+                    <span class="badge-char">Wi‑Fi</span>
+                  {% endif %}
+                  {% if room.near_mrt or room.near_lrt or room.near_ktm %}
+                    <span class="badge-char badge-char-success">
+                      <i class="bi bi-train-front-fill me-1"></i>Near train
+                    </span>
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="card-footer bg-transparent border-0 pb-3 px-3">
+                <a href="{% url 'room_detail' room.id %}" class="btn btn-outline-dark card-footer-btn">
+                  More detail
+                </a>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
   </div>
+
+    <script>
+    const FILTER_STATE_CITIES = {
+      "Johor": ["Johor Bahru", "Batu Pahat", "Muar", "Kluang", "Kulai", "Pontian", "Segamat", "Kota Tinggi", "Mersing", "Tangkak"],
+      "Kedah": ["Alor Setar", "Sungai Petani", "Kulim", "Langkawi", "Jitra", "Baling", "Kuala Kedah", "Yan", "Pendang"],
+      "Kelantan": ["Kota Bharu", "Pasir Mas", "Tanah Merah", "Tumpat", "Machang", "Kuala Krai", "Gua Musang", "Bachok"],
+      "Melaka": ["Melaka City", "Alor Gajah", "Jasin", "Masjid Tanah", "Ayer Keroh"],
+      "Negeri Sembilan": ["Seremban", "Port Dickson", "Nilai", "Bahau", "Tampin", "Kuala Pilah", "Rembau"],
+      "Pahang": ["Kuantan", "Temerloh", "Bentong", "Raub", "Jerantut", "Pekan", "Cameron Highlands", "Genting Highlands"],
+      "Perak": ["Ipoh", "Taiping", "Teluk Intan", "Sitiawan", "Lumut", "Kampar", "Batu Gajah", "Tapah", "Kuala Kangsar"],
+      "Perlis": ["Kangar", "Arau", "Padang Besar"],
+      "Pulau Pinang": ["George Town", "Butterworth", "Bukit Mertajam", "Bayan Lepas", "Nibong Tebal", "Balik Pulau", "Seberang Jaya"],
+      "Sabah": ["Kota Kinabalu", "Sandakan", "Tawau", "Lahad Datu", "Keningau", "Penampang", "Putatan", "Beaufort"],
+      "Sarawak": ["Kuching", "Miri", "Sibu", "Bintulu", "Samarahan", "Sri Aman", "Limbang", "Kapit"],
+      "Selangor": ["Shah Alam", "Petaling Jaya", "Subang Jaya", "Klang", "Kajang", "Ampang", "Puchong", "Rawang", "Bangi", "Cyberjaya", "Sepang", "Cheras"],
+      "Terengganu": ["Kuala Terengganu", "Kemaman", "Dungun", "Marang", "Besut", "Setiu", "Hulu Terengganu"],
+      "WP Kuala Lumpur": ["Bukit Bintang", "Cheras", "Kepong", "Setapak", "Wangsa Maju", "Sentul", "Bangsar", "Mont Kiara", "Brickfields", "Titiwangsa"],
+      "WP Labuan": ["Victoria", "Rancha-Rancha", "Patau-Patau"],
+      "WP Putrajaya": ["Presint 1", "Presint 2", "Presint 8", "Presint 9", "Presint 11", "Presint 14", "Presint 15", "Presint 16", "Presint 18"]
+    };
+
+    document.addEventListener('DOMContentLoaded', function () {
+      // 找到 filter panel 裡的 state select（第二個 state，因為第一個是搜尋列可能沒有）
+      const filterForm = document.querySelector('#filterPanel form');
+      if (!filterForm) return;
+
+      const stateSelect = filterForm.querySelector('select[name="state"]');
+      const citySelect = document.getElementById('id_filter_city');
+
+      if (!stateSelect || !citySelect) return;
+
+      const preselectedCity = "{{ city|default:'' }}";
+
+      function fillCities(state, selectCity) {
+        citySelect.innerHTML = '<option value="">-- All Cities --</option>';
+        const cities = FILTER_STATE_CITIES[state] || [];
+        cities.forEach(function (c) {
+          const opt = document.createElement('option');
+          opt.value = c;
+          opt.textContent = c;
+          if (selectCity && c === selectCity) {
+            opt.selected = true;
+          }
+          citySelect.appendChild(opt);
+        });
+      }
+
+      // 初始填一次（如果已選 state）
+      fillCities(stateSelect.value, preselectedCity);
+
+      // state 改變時更新 city
+      stateSelect.addEventListener('change', function () {
+        fillCities(stateSelect.value, '');
+      });
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

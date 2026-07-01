@@ -1,0 +1,234 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Applications</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <link rel="apple-touch-icon" sizes="180x180" href= "{% static "images/apple-touch-icon.png" %}"/>
+  <link rel="icon" type="image/png" sizes="32x32" href=" {% static "images/favicon-32x32.png" %}"/>
+  <link rel="icon" type="image/png" sizes="16x16" href=" {% static "images/favicon-16x16.png" %}"/>  
+  <link rel="manifest" href=" {% static "images/site.webmanifest" %}" />
+  
+  <style>
+    body {
+      background-color: #ffffff;
+      font-family: 'Inter', sans-serif;
+    }
+    .bb-header {
+      background-color: #ffefdb;
+      color: #000;
+      padding: 16px 0;
+      margin-bottom: 24px;
+    }
+    .bb-section {
+      background-color: #ffffff;
+      border: 1px solid #f0e4d4;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+      margin-bottom: 16px;
+    }
+    .badge-type {
+      background-color: #ffefdb;
+      color: #000;
+      border: 1px solid #e5c9a0;
+    }
+    .btn-outline-dark {
+      color: #000;
+      border-color: #000;
+    }
+    .btn-outline-dark:hover {
+      background-color: #000;
+      color: #fff;
+    }
+    h3, h5 { color: #000; }
+  </style>
+</head>
+<body>
+  <button
+    type="button"
+    onclick="window.history.back()"
+    style="
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      border: none;
+      background: #000;
+      color: #fff;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 9999;
+    "
+    aria-label="Close">
+    ×
+  </button>
+
+  <div class="bb-header">
+    <div class="container d-flex justify-content-between align-items-center">
+      <h3 class="mb-0 fw-bold">My Applications</h3>
+    </div>
+  </div>
+
+  <div class="container pb-4">
+
+    <!-- Room Applications -->
+    <div class="bb-section">
+      <h5 class="mb-3 fw-bold">Room Applications</h5>
+      <hr class="my-1">
+
+      {% if room_requests %}
+        <ul class="list-group list-group-flush">
+          {% for req in room_requests %}
+            <li class="list-group-item">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <div class="fw-bold">
+                    {{ req.room.title }}
+                    <span class="badge badge-type ms-1">Room</span>
+                  </div>
+                  <div class="text-muted small">
+                    {{ req.room.state }}{% if req.room.city %} · {{ req.room.city }}{% endif %}<br>
+                    Applied at: {{ req.created_at|date:"Y-m-d H:i" }}
+                  </div>
+
+                  {% if req.status == 'accepted' %}
+                    <div class="alert alert-success mt-2 mb-0 py-2">
+                      🎉 Congratulations! Your application has been <strong>accepted</strong>.
+                      Please contact the owner below to proceed.
+                    </div>
+                    <div class="mt-2 small">
+                      <strong>Contact Owner:</strong><br>
+                      {% with owner=req.room.owner %}
+                        {% if owner.userprofile.username %}
+                          Name: {{ owner.userprofile.username }}<br>
+                        {% else %}
+                          Name: {{ owner.username }}<br>
+                        {% endif %}
+                        {% if owner.email %}
+                          Email: {{ owner.email }}<br>
+                        {% endif %}
+                        {% if owner.userprofile.phone_number %}
+                          Phone: {{ owner.userprofile.phone_number }}<br>
+                        {% endif %}
+                      {% endwith %}
+                    </div>
+                  {% elif req.status == 'rejected' %}
+                    <div class="alert alert-danger mt-2 mb-0 py-2">
+                      Don't worry 💛 This application wasn't successful this time,
+                      but there are many other great rooms waiting for you.
+                    </div>
+                  {% else %}
+                    <div class="alert alert-warning mt-2 mb-0 py-2">
+                      ⏳ Your application is <strong>pending</strong>. Please wait for the owner's response.
+                    </div>
+                  {% endif %}
+                </div>
+
+                <div class="text-end">
+                  <span class="badge
+                    {% if req.status == 'pending' %}bg-warning text-dark
+                    {% elif req.status == 'accepted' %}bg-success
+                    {% else %}bg-danger{% endif %}">
+                    {{ req.get_status_display }}
+                  </span>
+                  <div class="mt-2">
+                    <a href="{% url 'room_detail' req.room.id %}" class="btn btn-sm btn-outline-dark">
+                      View Room
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="mb-0 text-muted">You haven't applied for any rooms yet.</p>
+      {% endif %}
+    </div>
+
+    <!-- Unit Applications -->
+    <div class="bb-section">
+      <h5 class="mb-3 fw-bold">Unit Applications</h5>
+      <hr class="my-1">
+
+      {% if unit_requests %}
+        <ul class="list-group list-group-flush">
+          {% for req in unit_requests %}
+            <li class="list-group-item">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <div class="fw-bold">
+                    {{ req.unit.title }}
+                    <span class="badge badge-type ms-1">Unit</span>
+                  </div>
+                  <div class="text-muted small">
+                    {{ req.unit.state }}{% if req.unit.city %} · {{ req.unit.city }}{% endif %}{% if req.unit.location_detail %} · {{ req.unit.location_detail }}{% endif %}<br>
+                    Applied at: {{ req.created_at|date:"Y-m-d H:i" }}
+                  </div>
+
+                  {% if req.status == 'accepted' %}
+                    <div class="alert alert-success mt-2 mb-0 py-2">
+                      🎉 Congratulations! Your application has been <strong>accepted</strong>.
+                      Please contact the owner below to proceed.
+                    </div>
+                    <div class="mt-2 small">
+                      <strong>Contact Owner:</strong><br>
+                      {% with owner=req.unit.owner %}
+                        {% if owner.userprofile.username %}
+                          Name: {{ owner.userprofile.username }}<br>
+                        {% else %}
+                          Name: {{ owner.username }}<br>
+                        {% endif %}
+                        {% if owner.email %}
+                          Email: {{ owner.email }}<br>
+                        {% endif %}
+                        {% if owner.userprofile.phone_number %}
+                          Phone: {{ owner.userprofile.phone_number }}<br>
+                        {% endif %}
+                      {% endwith %}
+                    </div>
+                  {% elif req.status == 'rejected' %}
+                    <div class="alert alert-danger mt-2 mb-0 py-2">
+                      Don't worry 💛 This application wasn't successful this time,
+                      but there are many other great units waiting for you.
+                    </div>
+                  {% else %}
+                    <div class="alert alert-warning mt-2 mb-0 py-2">
+                      ⏳ Your application is <strong>pending</strong>. Please wait for the owner's response.
+                    </div>
+                  {% endif %}
+                </div>
+
+                <div class="text-end">
+                  <span class="badge
+                    {% if req.status == 'pending' %}bg-warning text-dark
+                    {% elif req.status == 'accepted' %}bg-success
+                    {% else %}bg-danger{% endif %}">
+                    {{ req.get_status_display }}
+                  </span>
+                  <div class="mt-2">
+                    <a href="{% url 'unit_detail' req.unit.id %}" class="btn btn-sm btn-outline-dark">
+                      View Unit
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="mb-0 text-muted">You haven't applied for any units yet.</p>
+      {% endif %}
+    </div>
+
+  </div>
+</body>
+</html>

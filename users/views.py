@@ -41,7 +41,13 @@ def dashboard(request):
     print(f"DEBUG - first_name raw: '{request.user.first_name}'")
     print(f"DEBUG - final name: '{name}'")
     
-    return render(request, 'dashboard.html', {'display_name': name})
+    is_owner = (profile.role == 'owner')
+    
+    return render(request, 'dashboard.html', {
+        'display_name': name,
+        'is_owner': is_owner,
+    })
+
 
 def register_view(request):
     if request.user.is_authenticated:
