@@ -1,0 +1,306 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ unit.title }} - Details</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/basiclightbox@5/dist/basicLightbox.min.css">
+  
+  <link rel="apple-touch-icon" sizes="180x180" href= "{% static "images/apple-touch-icon.png" %}"/>
+  <link rel="icon" type="image/png" sizes="32x32" href=" {% static "images/favicon-32x32.png" %}"/>
+  <link rel="icon" type="image/png" sizes="16x16" href=" {% static "images/favicon-16x16.png" %}"/>  
+  <link rel="manifest" href=" {% static "images/site.webmanifest" %}" />
+  
+  <style>
+    body {
+      background-color: #ffffff;
+      font-family: 'Inter', sans-serif;
+    }
+    .bb-header {
+      background-color: #ffefdb;
+      color: #000;
+      padding: 16px 0;
+      margin-bottom: 24px;
+    }
+    .detail-card {
+      border-radius: 18px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+      background-color: #fff;
+      border: 1px solid #f0e4d4;
+      overflow: hidden;
+    }
+
+    .detail-img {
+      width: 100%;
+      height: 360px;
+      object-fit: contain;
+      background-color: #f8f4ee;
+      cursor: pointer;
+      border-radius: 12px;
+    }
+
+    .thumb-img {
+      height: 60px;
+      width: 70px;
+      object-fit: cover;
+      cursor: pointer;
+      border-radius: 8px;
+      border: 2px solid transparent;
+    }
+    .thumb-img.active { border-color: #000; }
+
+    .nav-img-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      font-weight: bold;
+      line-height: 1;
+      z-index: 5;
+    }
+    .section-title {
+      font-weight: 700;
+      color: #000;
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .price-tag {
+      color: #000;
+      font-weight: 700;
+    }
+    .badge-amenity {
+      background-color: #ffefdb;
+      color: #000;
+      border: 1px solid #e5c9a0;
+      border-radius: 999px;
+      padding: 5px 12px;
+      font-size: 0.8rem;
+      display: inline-block;
+      margin-right: 4px;
+      margin-bottom: 4px;
+    }
+    .btn-primary {
+      background-color: #000;
+      border-color: #000;
+    }
+    .btn-primary:hover {
+      background-color: #b4b4b4;
+      border-color: #b4b4b4;
+    }
+    a { color: #000; }
+  </style>
+
+  <button type="button" onclick="window.history.back()"
+    style="position:fixed;top:12px;right:12px;border:none;background:#000;color:#fff;width:32px;height:32px;border-radius:50%;font-weight:bold;cursor:pointer;z-index:9999;"
+    aria-label="Close">×</button>
+</head>
+<body>
+  <!-- Header -->
+  <div class="bb-header">
+    <div class="container d-flex justify-content-between align-items-center">
+      <h3 class="mb-0">{{ unit.title }}</h3>
+    </div>
+  </div>
+
+  <div class="container py-4">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="detail-card">
+
+          <!-- 圖片區：主圖 + 上/下一張 + 縮圖列 -->
+          <div class="p-3 pb-0">
+            {% if unit.image or unit.images.all %}
+              <div class="position-relative text-center mb-2">
+                {% if unit.image %}
+                  <img src="{{ unit.image.url }}" alt="Unit photo" class="detail-img js-main-image">
+                {% elif unit.images.all %}
+                  {% with first_img=unit.images.all.0 %}
+                    <img src="{{ first_img.image.url }}" alt="Unit photo" class="detail-img js-main-image">
+                  {% endwith %}
+                {% endif %}
+
+                <button type="button" class="btn btn-light nav-img-btn js-prev-image" style="left:12px;">‹</button>
+                <button type="button" class="btn btn-light nav-img-btn js-next-image" style="right:12px;">›</button>
+              </div>
+
+              <div class="d-flex flex-wrap gap-2 justify-content-center mb-2">
+                {% if unit.image %}
+                  <img src="{{ unit.image.url }}" alt="thumb" class="thumb-img js-thumb-image">
+                {% endif %}
+                {% for img in unit.images.all %}
+                  <img src="{{ img.image.url }}" alt="thumb" class="thumb-img js-thumb-image">
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+
+          <hr class="my-1">
+
+          <!-- 詳細內容 -->
+          <div class="p-4 pt-0">
+            <div class="d-flex justify-content-between align-items-center mb-2 mt-2">
+              <h4 class="mb-0">{{ unit.title }}</h4>
+              <span class="price-tag">RM {{ unit.rent }}/month</span>
+            </div>
+
+            <p class="text-muted mb-2">
+              {{ unit.state }}{% if unit.city %} · {{ unit.city }}{% endif %}{% if unit.location_detail %} · {{ unit.location_detail }}{% endif %}
+            </p>
+
+            <!-- Unit Details -->
+            <div class="section-title">Unit Details</div>
+            <p class="mb-1"><strong>Unit type:</strong> {{ unit.unit_type }}</p>
+            <p class="mb-1">
+              <strong>Floor level:</strong>
+              {% if unit.floor_level == 0 %}
+                Ground Floor
+              {% elif unit.floor_level <= 10 %}
+                Level {{ unit.floor_level }} (Low rise)
+              {% elif unit.floor_level <= 20 %}
+                Level {{ unit.floor_level }} (Mid rise)
+              {% else %}
+                Level {{ unit.floor_level }} (High rise)
+              {% endif %}
+            </p>
+            <p class="mb-3"><strong>Bedrooms:</strong> {{ unit.bedrooms }} / <strong>Bathrooms:</strong> {{ unit.bathrooms }}</p>
+            {% if unit.size %}<p class="mb-3"><strong>Size:</strong> {{ unit.size }}  sq.ft</p>{% endif %}
+
+            <hr class="my-1">
+
+            <!-- Nearby / Strategies -->
+            <div class="section-title">Nearby / Strategies</div>
+            <div class="mb-3">
+              {% if unit.near_mrt %}<span class="badge-amenity">Near MRT</span>{% endif %}
+              {% if unit.near_lrt %}<span class="badge-amenity">Near LRT</span>{% endif %}
+              {% if unit.near_ktm %}<span class="badge-amenity">Near KTM</span>{% endif %}
+              {% if unit.near_bus_stop %}<span class="badge-amenity">Near bus stop</span>{% endif %}
+              {% if unit.near_brt %}<span class="badge-amenity">Near BRT</span>{% endif %}
+              {% if unit.security_24h %}<span class="badge-amenity">24h security</span>{% endif %}
+              {% if unit.swimming_pool %}<span class="badge-amenity">Swimming pool</span>{% endif %}
+              {% if unit.gym_room %}<span class="badge-amenity">Gym room</span>{% endif %}
+              {% if unit.covered_carpark %}<span class="badge-amenity">Covered carpark</span>{% endif %}
+              {% if unit.near_mall %}<span class="badge-amenity">Near shopping mall</span>{% endif %}
+              {% if unit.near_shop_lots %}<span class="badge-amenity">Near shop lots</span>{% endif %}
+              {% if unit.near_convenience_store %}<span class="badge-amenity">Near convenience store</span>{% endif %}
+            </div>
+            
+            <hr class="my-1">
+
+            <!-- Utilities -->
+            <div class="section-title">Utilities</div>
+            <div class="mb-3">
+              {% if unit.has_aircond %}<span class="badge-amenity">Aircond</span>{% endif %}
+              {% if unit.has_washing_machine %}<span class="badge-amenity">Washing machine</span>{% endif %}
+              {% if unit.has_wifi %}<span class="badge-amenity">Wi‑Fi</span>{% endif %}
+              {% if unit.cooking_allowed %}<span class="badge-amenity">Cooking allowed</span>{% endif %}
+              {% if unit.shared_bathroom %}<span class="badge-amenity">Shared bathroom</span>{% endif %}
+              {% if unit.private_bathroom %}<span class="badge-amenity">Private bathroom</span>{% endif %}
+              {% if unit.has_tv %}<span class="badge-amenity">TV</span>{% endif %}
+              {% if unit.has_fridge %}<span class="badge-amenity">Fridge</span>{% endif %}
+            </div>
+            
+            <hr class="my-1">
+
+            <!-- Flexibility -->
+            <div class="section-title">Flexibility</div>
+            <div class="mb-3">
+              {% if unit.pet_allowed %}<span class="badge-amenity">Pet allowed</span>{% endif %}
+              {% if unit.smoking_allowed %}<span class="badge-amenity">Smoking allowed</span>{% endif %}
+            </div>
+
+            <hr class="my-1">
+
+            <!-- Availability + Request -->
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              {% if unit.available %}
+                <span class="badge bg-success">Available</span>
+              {% else %}
+                <span class="badge bg-secondary">Not available</span>
+              {% endif %}
+
+              {% if unit.available %}
+                {% if current_request %}
+                  {% if current_request.status == 'pending' %}
+                    <button class="btn btn-warning btn-sm" disabled>Application Pending</button>
+                  {% elif current_request.status == 'accepted' %}
+                    <button class="btn btn-success btn-sm" disabled>Application Accepted</button>
+                  {% else %}
+                    <button class="btn btn-danger btn-sm" disabled>Application Rejected</button>
+                  {% endif %}
+                {% else %}
+                  <form method="post" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary btn-sm">Apply to Rent</button>
+                  </form>
+                {% endif %}
+              {% endif %}
+            </div>
+
+            <!-- Contact -->
+            <h6 class="fw-bold mt-3">Contact</h6>
+            {% if unit.owner.userprofile and unit.owner.userprofile.username %}
+              <p class="mb-1">Owner: {{ unit.owner.userprofile.username }}</p>
+            {% else %}
+              <p class="mb-1">Owner: {{ unit.owner.username }}</p>
+            {% endif %}
+            {% if unit.owner.email %}<p class="mb-1">Email: {{ unit.owner.email }}</p>{% endif %}
+            {% if unit.owner.userprofile and unit.owner.userprofile.phone_number %}<p class="mb-1">Phone: {{ unit.owner.userprofile.phone_number }}</p>{% endif %}
+          </div>
+        </div>
+
+        <div class="text-center mt-3">
+          <a href="javascript:history.back()">← Back</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Carousel + Lightbox JS -->
+  <script src="https://cdn.jsdelivr.net/npm/basiclightbox@5/dist/basicLightbox.umd.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const mainImg = document.querySelector('.js-main-image');
+      const thumbs = Array.from(document.querySelectorAll('.js-thumb-image'));
+      const prevBtn = document.querySelector('.js-prev-image');
+      const nextBtn = document.querySelector('.js-next-image');
+
+      if (!mainImg || thumbs.length === 0) return;
+
+      let currentIndex = 0;
+
+      function showIndex(index) {
+        if (index < 0) index = thumbs.length - 1;
+        if (index >= thumbs.length) index = 0;
+        currentIndex = index;
+        mainImg.src = thumbs[currentIndex].src;
+        thumbs.forEach(function (t, i) {
+          if (i === currentIndex) { t.classList.add('active'); }
+          else { t.classList.remove('active'); }
+        });
+      }
+
+      showIndex(0);
+      thumbs.forEach(function (img, i) {
+        img.addEventListener('click', function () { showIndex(i); });
+      });
+
+      if (prevBtn) prevBtn.addEventListener('click', function () { showIndex(currentIndex - 1); });
+      if (nextBtn) nextBtn.addEventListener('click', function () { showIndex(currentIndex + 1); });
+
+      mainImg.addEventListener('click', function () {
+        if (!window.basicLightbox) return;
+        basicLightbox.create(
+          '<img src="' + mainImg.src + '" style="max-width:90vw;max-height:90vh;display:block;margin:auto;" />'
+        ).show();
+      });
+    });
+  </script>
+</body>
+</html>
