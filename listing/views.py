@@ -76,13 +76,31 @@ def room_list(request):
     # 儲存原始篩選條件（用於區分 exact match）
     filter_applied = bool(state or unit_type or floor_level or bathroom_type)
 
-    # 基本篩選（非搜尋）
+        # 基本篩選（非搜尋）
     if unit_type:
         rooms = rooms.filter(unit_type=unit_type)
     if floor_level:
         rooms = rooms.filter(floor_level=floor_level)
     if bathroom_type:
         rooms = rooms.filter(bathroom_type=bathroom_type)
+
+    # Characteristic checkbox 篩選（有勾選才篩）
+    checkbox_fields = [
+        'near_mrt', 'near_lrt', 'near_ktm', 'near_bus_stop', 'near_train',
+        'security_24h', 'swimming_pool', 'gym_room', 'covered_carpark',
+        'oku_friendly', 'multi_purpose_hall', 'playground', 'has_surau',
+        'near_mini_market', 'co_living', 'extra_parking',
+        'has_aircond', 'has_washing_machine', 'has_wifi', 'cooking_allowed',
+        'has_tv', 'shared_bathroom', 'private_bathroom', 'has_shower',
+        'pet_allowed', 'smoking_allowed',
+        'prefer_zero_deposit', 'prefer_move_in_immediately',
+        'prefer_pet_allowed', 'prefer_muslim_friendly', 'prefer_smoking_allowed',
+    ]
+
+    for field in checkbox_fields:
+        if request.GET.get(field) == 'on':
+            rooms = rooms.filter(**{field: True})
+
 
     # 分成兩個結果集：精確匹配 + 其他
     exact_match = rooms.filter(state=state) if state else rooms
@@ -214,6 +232,23 @@ def unit_list(request):
     if bathrooms:
         units = units.filter(bathrooms=bathrooms)
 
+    # Characteristic checkbox 篩選（有勾選才篩）
+    checkbox_fields = [
+        'near_mrt', 'near_lrt', 'near_ktm', 'near_bus_stop', 'near_train',
+        'security_24h', 'swimming_pool', 'gym_room', 'covered_carpark',
+        'oku_friendly', 'multi_purpose_hall', 'playground', 'has_surau',
+        'near_mini_market', 'co_living', 'extra_parking',
+        'has_aircond', 'has_washing_machine', 'has_wifi', 'cooking_allowed',
+        'has_tv', 'shared_bathroom', 'private_bathroom', 'has_shower',
+        'pet_allowed', 'smoking_allowed',
+        'prefer_zero_deposit', 'prefer_move_in_immediately',
+        'prefer_pet_allowed', 'prefer_muslim_friendly', 'prefer_smoking_allowed',
+    ]
+
+    for field in checkbox_fields:
+        if request.GET.get(field) == 'on':
+            rooms = rooms.filter(**{field: True})
+            
     # 分成兩個結果集：精確匹配 + 其他
     exact_match = units.filter(state=state) if state else units
 
