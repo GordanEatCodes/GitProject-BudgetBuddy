@@ -244,7 +244,13 @@ def delete_roommate(request, id):
 
     if request.method == 'POST':
         post.delete()
-        return redirect('roommate_list')
+
+        messages.success(
+            request,
+            "Roommate post deleted successfully!"
+        )
+
+    return redirect('roommate_list')
 
     return render(request, 'roommate/confirm_delete.html', {
         'post': post
@@ -285,6 +291,11 @@ def edit_roommate(request, id):
             )
 
         post.save()
+
+        messages.success(
+            request,
+            "Roommate post updated successfully!"
+        )
 
         return redirect('roommate_list')
 
@@ -479,7 +490,12 @@ def apply_roommate(request, id):
                 message=message
             )
 
-        return redirect('my_roommate_applications')
+    messages.success(
+        request,
+        "Application submitted successfully!"
+    )
+
+    return redirect('my_roommate_applications')
 
     return render(request, 'roommate/apply_roommate.html', {
         'post': post
@@ -524,6 +540,26 @@ def update_application_status(request, application_id, status):
 
         update_roommate_post_status(application.roommate_post)
 
+        if status == "accepted":
+            messages.success(
+                request,
+                "Application accepted successfully!"
+             )
+
+        elif status == "rejected":
+            messages.success(
+                request,
+                "Application rejected successfully!"
+            )
+
+        else:
+            messages.success(
+                 request,
+                 "Application updated successfully!"
+             )
+
+        update_roommate_post_status(application.roommate_post)
+
     return redirect('applications_received')
 
 
@@ -540,6 +576,11 @@ def cancel_accepted_application(request, application_id):
             application.save()
 
             update_roommate_post_status(application.roommate_post)
+
+            messages.success(
+                request,
+                "Accepted application has been cancelled."
+            )
 
     return redirect('my_roommate_applications')
 
@@ -585,6 +626,11 @@ def close_roommate_post(request, id):
         post.post_status = 'closed'
         post.save()
 
+        messages.success(
+            request,
+            "Roommate post closed successfully!"
+        )
+
     return redirect('roommate_detail', id=post.id)
 
 
@@ -604,6 +650,10 @@ def reopen_roommate_post(request, id):
             post.post_status = 'open'
 
         post.save()
+        messages.success(
+            request,
+             "Roommate post reopened successfully!"
+        )
 
     return redirect('roommate_detail', id=post.id)
 
@@ -671,10 +721,21 @@ def toggle_favourite(request, id):
 
         if favourite:
             favourite.delete()
+
+            messages.success(
+                request,
+                "Removed from favourites."
+            )
+            
         else:
             RoommateFavourite.objects.create(
                 user=request.user,
                 roommate_post=post
+            )
+
+            messages.success(
+                  request,
+                  "Added to favourites."
             )
 
     next_url = request.POST.get('next', 'roommate_list')
