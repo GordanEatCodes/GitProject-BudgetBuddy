@@ -105,7 +105,7 @@
   <!-- Header -->
   <div class="bb-header">
     <div class="container d-flex justify-content-between align-items-center">
-      <h3 class="mb-0">{{ unit.title }}</h3>
+      <h3 class="mb-0 fw-bold">{{ unit.title }}</h3>
     </div>
   </div>
 
@@ -146,7 +146,7 @@
           <!-- 詳細內容 -->
           <div class="p-4 pt-0">
             <div class="d-flex justify-content-between align-items-center mb-2 mt-2">
-              <h4 class="mb-0">{{ unit.title }}</h4>
+              <h4 class="mb-0 fw-bold">{{ unit.title }}</h4>
               <span class="price-tag">RM {{ unit.rent }}/month</span>
             </div>
 
@@ -155,6 +155,7 @@
             </p>
 
             <!-- Unit Details -->
+             <hr class="my-1">
             <div class="section-title">Unit Details</div>
             <p class="mb-1"><strong>Unit type:</strong> {{ unit.unit_type }}</p>
             <p class="mb-1">
@@ -170,7 +171,7 @@
               {% endif %}
             </p>
             <p class="mb-3"><strong>Bedrooms:</strong> {{ unit.bedrooms }} / <strong>Bathrooms:</strong> {{ unit.bathrooms }}</p>
-            {% if unit.size %}<p class="mb-3"><strong>Size:</strong> {{ unit.size }}  sq.ft</p>{% endif %}
+            {% if unit.size %}<p class="mb-3"><strong>Size:</strong> {{ unit.size }}  sqft</p>{% endif %}
 
             <hr class="my-1">
 
