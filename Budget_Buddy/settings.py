@@ -135,10 +135,10 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 
-EMAIL_BACKEND = 'anymail.backends.resend.EmailBackend'
+EMAIL_BACKEND = 'anymail.backends.brevo.EmailBackend'
 
 ANYMAIL = {
-    "RESEND_API_KEY": os.environ.get('RESEND_API_KEY', ''),
+    "BREVO_API_KEY": os.environ.get('BREVO_API_KEY', ''),
 }
 
 EMAIL_HOST = 'smtp.gmail.com'
@@ -148,7 +148,8 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 
-DEFAULT_FROM_EMAIL = 'Budget Buddy <onboarding@resend.dev'
+DEFAULT_FROM_EMAIL = 'Budget Buddy<gordan.ng.hungzhuen@student.mmu.edu.my>'
+
 
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
