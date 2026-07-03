@@ -146,6 +146,15 @@
                 <div class="mt-2">
                   <a href="{% url 'room_edit' room.id %}" class="btn btn-sm btn-outline-dark">Edit</a>
 
+                  <form method="post" action="{% url 'room_delete' room.id %}" class="d-inline"
+                          onsubmit="return confirm('Are you sure you want to delete this room listing?');">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-sm btn-outline-danger">
+                        Delete
+                      </button>
+                  </form>
+
+
                   <form method="post" action="{% url 'room_toggle_available' room.id %}" class="d-inline">
                     {% csrf_token %}
                     {% if room.available %}
@@ -182,6 +191,14 @@
 
               <div class="mt-2">
                 <a href="{% url 'unit_edit' unit.id %}" class="btn btn-sm btn-outline-dark">Edit</a>
+
+                <form method="post" action="{% url 'unit_delete' unit.id %}" class="d-inline"
+                      onsubmit="return confirm('Are you sure you want to delete this unit listing?');">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm btn-outline-danger">
+                    Delete
+                  </button>
+                </form>
 
                 <form method="post" action="{% url 'unit_toggle_available' unit.id %}" class="d-inline">
                   {% csrf_token %}
