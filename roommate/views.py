@@ -250,11 +250,15 @@ def delete_roommate(request, id):
             "Roommate post deleted successfully!"
         )
 
-    return redirect('roommate_list')
+        return redirect('roommate_list')
 
-    return render(request, 'roommate/confirm_delete.html', {
-        'post': post
-    })
+    return render(
+        request,
+        'roommate/confirm_delete.html',
+        {
+            'post': post
+        }
+    )
 
 
 @login_required(login_url='/login/')
