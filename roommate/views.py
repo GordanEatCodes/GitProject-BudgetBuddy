@@ -494,12 +494,12 @@ def apply_roommate(request, id):
                 message=message
             )
 
-    messages.success(
-        request,
-        "Application submitted successfully!"
-    )
+        messages.success(
+            request,
+            "Application submitted successfully!"
+        )
 
-    return redirect('my_roommate_applications')
+        return redirect('my_roommate_applications')
 
     return render(request, 'roommate/apply_roommate.html', {
         'post': post

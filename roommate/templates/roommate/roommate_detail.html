@@ -401,9 +401,12 @@
 
                 {% if post.post_status == 'open' and post.created_by %}
 
-                    <a href="{% url 'apply_roommate' post.id %}" class="btn btn-primary">
-                        Apply to be Roommate
-                    </a>
+                    <form method="POST" action="{% url 'apply_roommate' post.id %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary">
+                             Apply to be Roommate
+                        </button>
+                    </form>
 
                 {% elif post.post_status == 'full' %}
 
