@@ -21,6 +21,14 @@
       background-color: #f7f6f0;
       font-family: 'Inter', sans-serif;
     }
+    .navbar {
+      background-color: #ffffff !important;
+      border-bottom: 1px solid #ded7ce;
+      padding: 18px 45px;
+    }
+    .logo-wrap img {
+      object-fit: contain;
+    }
     .room-card {
       background-color: #ffffff;
       border-radius: 18px;
@@ -114,6 +122,14 @@
   </style>
 </head>
 <body>
+  <nav class="navbar d-flex justify-content-between align-items-center">
+
+    <a class= "logo-wrap" href="{% url 'dashboard' %}">
+      <img src="{% static 'images/LOGO-bgremove.png' %}" alt="Budget Buddy" height="42">
+    </a>
+
+  </nav>
+
   <button
     type="button"
     onclick="window.history.back()"
@@ -134,7 +150,7 @@
     aria-label="Close">
     ×
   </button>
-
+  
   <div class="container py-4">
     <!-- 頂端顏色區 + 搜尋 + Filter 按鈕 -->
     <div class="mb-4 p-3 rounded-3 search-band">

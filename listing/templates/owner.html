@@ -20,11 +20,19 @@
       background-color: #f7f6f0;
       font-family: 'Inter', sans-serif;
     }
+    .navbar {
+      background-color: #ffffff !important;
+      border-bottom: 1px solid #ded7ce;
+      padding: 18px 45px;
+    }
+    .logo-wrap img {
+      object-fit: contain;
+    }
     .bb-header {
       background-color: #ffffffff;
       color: #000;
       border-radius: 0 0 18px 18px;
-      padding: 20px 0;
+      padding: 16px 0 20px ;
       margin-bottom: 24px;
     }
     .bb-section {
@@ -33,6 +41,16 @@
       border-radius: 18px;
       padding: 20px;
       box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    }
+    .header-divider {
+      width: 2px;
+      height: 36px;
+      background-color: #000;
+      border-radius: 2px;
+    }
+    .header-title {
+      font-size: 1.6rem;
+      line-height: 1.1;
     }
     .listing-item-title {
       font-weight: 600;
@@ -84,12 +102,17 @@
     aria-label="Close">
     ×
   </button>
-  
+
   <!-- Header -->
   <div class="bb-header">
     <div class="container">
-      <h2 class="mb-1 fw-bold">Owner Page</h2>
-      <p class="mb-0">Manage your room and unit listings.</p>
+      <div class="d-flex align-items-center gap-3 mb-1">
+        <a href="{% url 'dashboard' %}">
+          <img src="{% static 'images/LOGO-bgremove.png' %}" alt="BudgetBuddy" height="40">
+        </a>
+        <div class="header-divider"></div>
+        <h2 class="mb-0 fw-bold">Owner Page</h2>
+      </div>
     </div>
   </div>
 
