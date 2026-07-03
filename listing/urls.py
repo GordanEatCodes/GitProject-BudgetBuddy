@@ -33,4 +33,10 @@ urlpatterns = [
     path('owner/units/<int:pk>/edit/', views.unit_edit, name='unit_edit'),
     path('owner/units/<int:pk>/toggle/', views.unit_toggle_available, name='unit_toggle_available'),
 
+    path('owner/rooms/<int:pk>/delete/', views.room_delete, name='room_delete'),
+    path('owner/units/<int:pk>/delete/', views.unit_delete, name='unit_delete'),
+
+    path('my-requests/rooms/<int:request_id>/delete/', views.my_room_request_delete, name='my_room_request_delete'),
+    path('my-requests/units/<int:request_id>/delete/', views.my_unit_request_delete, name='my_unit_request_delete'),
+
 ]

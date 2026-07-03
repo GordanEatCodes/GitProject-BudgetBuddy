@@ -530,3 +530,50 @@ def unit_toggle_available(request, pk):
 
     return redirect('owner_dashboard')
 
+@login_required
+def room_delete(request, pk):
+    if not user_is_owner(request.user):
+        return HttpResponseForbidden("You are not allowed to delete room listings.")
+
+    room = get_object_or_404(Room, pk=pk, owner=request.user)
+
+    if request.method == 'POST':
+        room.delete()
+        return redirect('owner_dashboard')
+
+    return HttpResponseForbidden("Invalid request method.")
+
+
+@login_required
+def unit_delete(request, pk):
+    if not user_is_owner(request.user):
+        return HttpResponseForbidden("You are not allowed to delete unit listings.")
+
+    unit = get_object_or_404(Unit, pk=pk, owner=request.user)
+
+    if request.method == 'POST':
+        unit.delete()
+        return redirect('owner_dashboard')
+
+    return HttpResponseForbidden("Invalid request method.")
+
+@login_required
+def my_room_request_delete(request, request_id):
+    req = get_object_or_404(RoomRequest, pk=request_id, tenant=request.user)
+
+    if request.method == 'POST':
+        req.delete()
+        return redirect('my_room_requests')
+
+    return HttpResponseForbidden("Invalid request method.")
+
+
+@login_required
+def my_unit_request_delete(request, request_id):
+    req = get_object_or_404(UnitRequest, pk=request_id, tenant=request.user)
+
+    if request.method == 'POST':
+        req.delete()
+        return redirect('my_room_requests')
+
+    return HttpResponseForbidden("Invalid request method.")
