@@ -273,51 +273,7 @@
     <div class="bb-section mb-4">
       <h5 class="mb-3 fw-bold">Rental Applications for Your Units</h5>
 
-      <hr class="my-1">
-
-      {% if unit_requests %}
-        <ul class="list-group list-group-flush">
-          {% for req in unit_requests %}
-            <li class="list-group-item">
-              <div class="d-flex justify-content-between align-items-center">
-                <div>
-                  <div class="listing-item-title">
-                    {{ req.unit.title }}
-                    <span class="badge badge-type ms-1">Unit</span>
-                  </div>
-                  <div class="listing-item-sub">
-                    From: {{ req.tenant.username }} · {{ req.created_at|date:"Y-m-d H:i" }}
-                  </div>
-                </div>
-
-                <div class="text-end">
-                  <span class="badge
-                    {% if req.status == 'pending' %}bg-warning text-dark
-                    {% elif req.status == 'accepted' %}bg-success
-                    {% else %}bg-danger{% endif %}">
-                    {{ req.get_status_display }}
-                  </span>
-
-                  {% if req.status == 'pending' %}
-                    <div class="mt-2">
-                      <form method="post" action="{% url 'unit_request_action' req.id 'accept' %}" class="d-inline">
-                        {% csrf_token %}
-                        <button class="btn btn-sm btn-success">Accept</button>
-                      </form>
-                      <form method="post" action="{% url 'unit_request_action' req.id 'reject' %}" class="d-inline ms-1">
-                        {% csrf_token %}
-                        <button class="btn btn-sm btn-danger">Reject</button>
-                      </form>
-                    </div>
-                  {% endif %}
-                </div>
-              </div>
-            </li>
-          {% endfor %}
-        </ul>
-      {% else %}
-        <p class="mb-0 text-muted">No unit rental applications yet.</p>
-      {% endif %}
+      <hr class="my-1"
 
       {% if unit_requests %}
         <ul class="list-group list-group-flush">
