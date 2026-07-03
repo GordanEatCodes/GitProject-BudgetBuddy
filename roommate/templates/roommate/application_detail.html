@@ -226,7 +226,7 @@
 
                 <form method="POST" action="{% url 'update_application_status' application.id 'accepted' %}" class="d-inline">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-success">
+                    <button type="submit" class="btn btn-open">
                         Accept Applicant
                     </button>
                 </form>
@@ -381,7 +381,7 @@
     {% endif %}
 
     <a href="{% url 'roommate_dashboard' %}" class="btn btn-secondary">
-        Back to Dashboard
+        Back to My Summary
     </a>
 
 </div>

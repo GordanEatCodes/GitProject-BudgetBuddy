@@ -250,11 +250,15 @@ def delete_roommate(request, id):
             "Roommate post deleted successfully!"
         )
 
-    return redirect('roommate_list')
+        return redirect('roommate_list')
 
-    return render(request, 'roommate/confirm_delete.html', {
-        'post': post
-    })
+    return render(
+        request,
+        'roommate/confirm_delete.html',
+        {
+            'post': post
+        }
+    )
 
 
 @login_required(login_url='/login/')
@@ -755,6 +759,7 @@ def saved_roommate_posts(request):
 
 from django.http import JsonResponse
 from django.utils.dateformat import format
+from django.utils import timezone
 
 @login_required(login_url='/login/')
 def get_chat_messages(request, application_id):
@@ -786,7 +791,7 @@ def get_chat_messages(request, application_id):
             ),
             "is_me": msg.sender == request.user,
             "message": msg.message,
-            "time": format(msg.created_at, "d M Y, h:i A")
+            "time": format(timezone.localtime(msg.created_at), "d M Y, h:i A")
         })
 
     return JsonResponse(data, safe=False)
